@@ -391,27 +391,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         </div>
       </div>
 
-      <!-- PRIMETIME (NFL only) -->
-      <div class="fs" id="primetime-section" style="display:none">
-        <div class="fs-head">
-          <div class="fs-title">primetime</div>
-          <label class="tog"><input type="checkbox" id="w-pt-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
-        </div>
-        <div class="nest" id="pt-nest">
-          <div class="fw"><div class="fw-lbl">SNF / MNF / TNF bonus</div><input type="number" class="fw-num" id="w-pt-val" value="300"/></div>
-        </div>
-      </div>
 
-      <!-- COMMISSIONER'S CUP (WNBA only) -->
-      <div class="fs" id="cup-section" style="display:none">
-        <div class="fs-head">
-          <div class="fs-title">commissioner's cup</div>
-          <label class="tog"><input type="checkbox" id="w-cup-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
-        </div>
-        <div class="nest" id="cup-nest">
-          <div class="fw"><div class="fw-lbl">Bonus amount</div><input type="number" class="fw-num" id="w-cup" value="250"/></div>
-        </div>
-      </div>
 
       <!-- TEAM FILTER -->
       <div class="fs">
@@ -459,32 +439,69 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- PLAYOFF LEVERAGE (NBA/WNBA) -->
       <div class="fs" id="playoff-section">
         <div class="fs-head">
-          <div class="fs-title">playoff leverage</div>
+          <div class="fs-title">playoff bonuses</div>
           <label class="tog"><input type="checkbox" id="w-lev-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
         </div>
         <div class="nest" id="lev-nest">
           <div class="fw"><div class="fw-lbl">Game 1</div><input type="number" class="fw-num" id="w-game1" value="100"/></div>
           <div class="fw"><div class="fw-lbl">Tied series</div><input type="number" class="fw-num" id="w-tied" value="200"/></div>
-          <div class="fw"><div class="fw-lbl">Series lead</div><input type="number" class="fw-num" id="w-lead" value="150"/></div>
-          <div class="fw"><div class="fw-lbl">Sweep (3-0)</div><input type="number" class="fw-num" id="w-sweep" value="-500"/></div>
+          <div class="fw" id="sweep-row"><div class="fw-lbl">Sweep (3-0)</div><input type="number" class="fw-num" id="w-sweep" value="-500"/></div>
           <div class="fw"><div class="fw-lbl">Elimination</div><input type="number" class="fw-num" id="w-elim" value="300"/></div>
           <div class="fw" id="game7-row"><div class="fw-lbl">Game 7</div><input type="number" class="fw-num" id="w-game7" value="200"/></div>
-          <div class="fw" id="game5-row" style="display:none"><div class="fw-lbl">Game 5 (clincher)</div><input type="number" class="fw-num" id="w-game5" value="200"/></div>
+          <div class="fw" id="game5-row" style="display:none"><div class="fw-lbl">Game 5</div><input type="number" class="fw-num" id="w-game5" value="200"/></div>
         </div>
       </div>
 
-      <!-- DIVISIONAL MATCHUP (NFL only) -->
-      <div class="fs" id="divisional-section" style="display:none">
+      <!-- IN-SEASON TOURNAMENT (NBA only) -->
+      <div class="fs" id="ist-section" style="display:none">
         <div class="fs-head">
-          <div class="fs-title">divisional matchup</div>
-          <label class="tog"><input type="checkbox" id="w-div-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
+          <div class="fs-title">in-season tournament</div>
+          <label class="tog"><input type="checkbox" id="w-ist-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
         </div>
-        <div class="nest" id="div-nest">
-          <div class="fw"><div class="fw-lbl">Bonus amount</div><input type="number" class="fw-num" id="w-div-val" value="200"/></div>
+        <div class="nest" id="ist-nest">
+          <div class="fw"><div class="fw-lbl">Bonus amount</div><input type="number" class="fw-num" id="w-ist-val" value="250"/></div>
+        </div>
+      </div>
+
+      <!-- COMMISSIONER'S CUP (WNBA only) -->
+      <div class="fs" id="cup-section" style="display:none">
+        <div class="fs-head">
+          <div class="fs-title">commissioner's cup</div>
+          <label class="tog"><input type="checkbox" id="w-cup-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
+        </div>
+        <div class="nest" id="cup-nest">
+          <div class="fw"><div class="fw-lbl">Bonus amount</div><input type="number" class="fw-num" id="w-cup" value="250"/></div>
         </div>
       </div>
 
 
+
+
+      <!-- NFL BONUSES (NFL only) -->
+      <div class="fs" id="nfl-bonuses-section" style="display:none">
+        <div class="fs-head">
+          <div class="fs-title">bonuses</div>
+          <label class="tog"><input type="checkbox" id="w-nfl-bon-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
+        </div>
+        <div class="nest" id="nfl-bon-nest">
+          <div class="fw">
+            <div class="fw-lbl">Sunday Night Football<span class="fw-sub">NBC</span></div>
+            <input type="number" class="fw-num" id="w-snf-val" value="300"/>
+          </div>
+          <div class="fw">
+            <div class="fw-lbl">Monday Night Football<span class="fw-sub">ESPN / ABC</span></div>
+            <input type="number" class="fw-num" id="w-mnf-val" value="300"/>
+          </div>
+          <div class="fw">
+            <div class="fw-lbl">Thursday Night Football<span class="fw-sub">Prime Video</span></div>
+            <input type="number" class="fw-num" id="w-tnf-val" value="300"/>
+          </div>
+          <div class="fw" style="margin-top:8px;padding-top:8px;border-top:.5px solid var(--border-light)">
+            <div class="fw-lbl">Divisional matchup</div>
+            <input type="number" class="fw-num" id="w-div-val" value="200"/>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -522,6 +539,8 @@ var LEAGUE_CONFIGS = {
     showWeekBar: false,
     showDateBar: true,
     seriesMax: 7,
+    showSweep: true,
+    showIST: true,
     networks: ['ESPN','ABC','NBC','TNT','TBS','Prime Video','Peacock'],
     logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/nba/500/'+espn+'.png'; },
     teams: [
@@ -573,6 +592,8 @@ var LEAGUE_CONFIGS = {
     showWeekBar: false,
     showDateBar: true,
     seriesMax: 5,
+    showSweep: false,
+    showIST: false,
     networks: ['ESPN','ESPN2','ABC','ION','Prime Video','CBS','NBA TV'],
     logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/wnba/500/'+espn+'.png'; },
     teams: [
@@ -887,13 +908,19 @@ function buildSeasonSelector(){
 }
 
 function onSeasonChange(){
-  var s=document.getElementById('season-select');
+  // Read from the visible select (two exist: one in date-bar, one in week-bar)
+  var allSels=document.querySelectorAll('#season-select');
+  var visibleSel=null;
+  allSels.forEach(function(el){
+    if(el.offsetParent!==null)visibleSel=el; // offsetParent is null when hidden
+  });
+  var s=visibleSel||allSels[0];
   currentSeason=s?+s.value:currentSeason;
-  // Sync sibling selects
+  // Sync all sibling selects
   document.querySelectorAll('#season-select').forEach(function(el){el.value=currentSeason;});
   applySeasonToUI();
-  // For NBA/WNBA: jump date picker to season start. For NFL: rebuild weeks.
   if(currentLeague==='nfl'){
+    nflWeeks=[];
     buildNflWeeksForYear(currentSeason);
   } else {
     jumpToSeasonStart();
@@ -932,6 +959,8 @@ function jumpToSeasonStart(){
   if(d){
     currentDate=d;
     document.getElementById('date-picker').value=ival(d);
+    var nflSingle=document.getElementById('nfl-single-date');
+    if(nflSingle)nflSingle.value=ival(d);
     loadGames();
   }
 }
@@ -960,7 +989,10 @@ function buildNflWeeksForYear(yr){
   if(nflWeekIdx<0)nflWeekIdx=0;
   sel.value=nflWeekIdx;
   // For past seasons always start at week 1
-  if(currentSeason<new Date().getFullYear())nflWeekIdx=0,sel.value=0;
+  if(currentSeason<new Date().getFullYear()){nflWeekIdx=0;sel.value=0;}
+  // Update single-date picker to match week 1 start of selected season
+  var nflSingle=document.getElementById('nfl-single-date');
+  if(nflSingle&&nflWeeks.length)nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
   loadGames();
 }
 function setWeekMode(m){
@@ -1097,12 +1129,12 @@ function updateStates(){
   if(LC&&LC.showPlayoff) collapseBody('lev-nest',chk('w-lev-on'));
   collapseBody('stars-nest',chk('w-stars-on'));
   collapseBody('team-body',chk('w-team-on'));
-  // NFL primetime card
-  tog('pt-nest',!chk('w-pt-on'));
-  // Divisional (NFL standalone card)
-  tog('div-nest',!chk('w-div-on'));
   // Cup (WNBA standalone card)
   tog('cup-nest',!chk('w-cup-on'));
+  // IST (NBA standalone card)
+  tog('ist-nest',!chk('w-ist-on'));
+  // NFL bonuses master toggle
+  tog('nfl-bon-nest',!chk('w-nfl-bon-on'));
 }
 function resetFilters(){
   document.getElementById('w-dt-on').checked=true;
@@ -1117,16 +1149,18 @@ function resetFilters(){
   document.getElementById('w-elim').value=300;
   document.getElementById('w-tied').value=200;
   document.getElementById('w-game1').value=100;
-  document.getElementById('w-lead').value=150;
   document.getElementById('w-game7').value=200;
   document.getElementById('w-sweep').value=-500;
   document.getElementById('w-game5').value=200;
   document.getElementById('w-cup').value=250;
-  document.getElementById('w-pt-on').checked=true;
-  document.getElementById('w-pt-val').value=300;
-  document.getElementById('w-div-on').checked=true;
+  document.getElementById('w-nfl-bon-on').checked=true;
+  document.getElementById('w-snf-val').value=300;
+  document.getElementById('w-mnf-val').value=300;
+  document.getElementById('w-tnf-val').value=300;
   document.getElementById('w-div-val').value=200;
   document.getElementById('w-cup-on').checked=true;
+  document.getElementById('w-ist-on').checked=true;
+  document.getElementById('w-ist-val').value=250;
   document.getElementById('w-stars-on').checked=true;
   setStarPicker('stars-min-picker',1);setStarPicker('stars-max-picker',5);
   setDotPicker('dots-min-picker',1);setDotPicker('dots-max-picker',5);
@@ -1155,7 +1189,7 @@ function getFilterState(){
     tvOn:document.getElementById('w-tv-on').checked,tvBonus:document.getElementById('w-tv-bonus').value,
     levOn:document.getElementById('w-lev-on').checked,
     elim:document.getElementById('w-elim').value,tied:document.getElementById('w-tied').value,
-    game1:document.getElementById('w-game1').value,lead:document.getElementById('w-lead').value,game7:document.getElementById('w-game7').value,
+    game1:document.getElementById('w-game1').value,game7:document.getElementById('w-game7').value,
     sweep:document.getElementById('w-sweep').value,
     starsOn:document.getElementById('w-stars-on').checked,
     starsMin:document.getElementById('stars-min-picker').dataset.val,
@@ -1177,7 +1211,6 @@ function applyFilterState(s){
   document.getElementById('w-elim').value=s.elim||300;
   document.getElementById('w-tied').value=s.tied||200;
   document.getElementById('w-game1').value=s.game1||100;
-  document.getElementById('w-lead').value=s.lead||150;
   document.getElementById('w-game7').value=s.game7||200;
   document.getElementById('w-sweep').value=s.sweep||-500;
   document.getElementById('w-stars-on').checked=!!s.starsOn;
@@ -1253,22 +1286,28 @@ function processEvent(ev,tz){
   var isCup=false,isPrimetime=false,isDivisional=false;
 
   if(currentLeague==='nfl'){
-    // NFL bonuses
-    if(isNat&&document.getElementById('w-pt-on').checked&&isNflPrimetime(watch,utc)){
-      lev+=+document.getElementById('w-pt-val').value||0;levLbl='primetime';isPrimetime=true;
-    }
+    // NFL per-game bonuses
+    var day=utc.getUTCDay(),hr=utc.getUTCHours();
+    var nflBonOn=document.getElementById('w-nfl-bon-on')?document.getElementById('w-nfl-bon-on').checked:true;
+    var snfVal=nflBonOn?(+document.getElementById('w-snf-val')?.value||0):0;
+    var mnfVal=nflBonOn?(+document.getElementById('w-mnf-val')?.value||0):0;
+    var tnfVal=nflBonOn?(+document.getElementById('w-tnf-val')?.value||0):0;
+    if(watch==='NBC'&&day===0&&hr>=23&&snfVal){lev+=snfVal;levLbl='SNF';isPrimetime=true;}
+    else if((watch==='ESPN'||watch==='ABC')&&day===1&&mnfVal){lev+=mnfVal;levLbl='MNF';isPrimetime=true;}
+    else if(watch==='Prime Video'&&day===4&&tnfVal){lev+=tnfVal;levLbl='TNF';isPrimetime=true;}
     // Divisional
     var awayTeamData=null,homeTeamData=null;
     for(var i=0;i<LC.teams.length;i++){
       if(LC.teams[i].abbr===ad.abbr)awayTeamData=LC.teams[i];
       if(LC.teams[i].abbr===hd.abbr)homeTeamData=LC.teams[i];
     }
-    if(awayTeamData&&homeTeamData&&awayTeamData.div&&awayTeamData.div===homeTeamData.div&&document.getElementById('w-div-on').checked){
-      lev+=+document.getElementById('w-div-val').value||0;
+    var divVal=nflBonOn?(+document.getElementById('w-div-val')?.value||0):0;
+    if(awayTeamData&&homeTeamData&&awayTeamData.div&&awayTeamData.div===homeTeamData.div&&divVal){
+      lev+=divVal;
       levLbl=levLbl?levLbl+' + div':'divisional';isDivisional=true;
     }
-  } else if(comp.series){
-    // NBA/WNBA playoff series
+  } else if(comp.series&&comp.series.type&&comp.series.type.id!=='1'){
+    // NBA/WNBA playoff series (type id 1 = regular season h2h, ignore)
     var ser=comp.series;
     var st=(comp.status||{}).type||{};
     var done=!!(st.completed||st.name==='STATUS_FINAL'||st.name==='STATUS_FINAL_OT'||st.name==='STATUS_FINAL_2OT'||st.name==='STATUS_FINAL_3OT');
@@ -1297,12 +1336,15 @@ function processEvent(ev,tz){
       var notes=comp.notes||[];
       isCup=notes.some(function(n){return(n.headline||'').toLowerCase().includes('commissioner');});
       if(isCup&&document.getElementById('w-cup-on')&&document.getElementById('w-cup-on').checked){lev+=+document.getElementById('w-cup').value||0;levLbl='cup game';}
+      // NBA In-Season Tournament
+      var isIST=currentLeague==='nba'&&notes.some(function(n){return(n.headline||'').toLowerCase().includes('in-season')||( n.headline||'').toLowerCase().includes('tournament');});
+      if(isIST&&document.getElementById('w-ist-on')&&document.getElementById('w-ist-on').checked){lev+=+document.getElementById('w-ist-val').value||0;levLbl='tournament';}
     }
 
     if(levOn){
       var tot=rawAW+rawHW;
-      var serMax=LC.seriesMax===5?2:3; // wins needed to sweep
-      if((rawAW===serMax&&rawHW===0)||(rawHW===serMax&&rawAW===0)){
+      var serMax=LC.seriesMax===5?2:3;
+      if(LC.showSweep&&(rawAW===serMax&&rawHW===0)||(LC.showSweep&&rawHW===serMax&&rawAW===0)){
         lev=+document.getElementById('w-sweep').value||0;levLbl='sweep';
       } else if(rawAW===serMax||rawHW===serMax){
         lev=+document.getElementById('w-elim').value||0;levLbl='elim';
@@ -1314,8 +1356,6 @@ function processEvent(ev,tz){
         lev=+document.getElementById('w-tied').value||0;levLbl='tied';
       } else if(gameNum===1){
         lev=+document.getElementById('w-game1').value||0;levLbl='game 1';
-      } else if(rawAW!==rawHW){
-        lev=+document.getElementById('w-lead').value||0;levLbl='series lead';
       }
     }
   }
@@ -1359,7 +1399,9 @@ function applyFilters(games){
     if(bcastVal==='national')games=games.filter(function(g){return g.isNat&&g.watch!=='NFL Network'&&g.watch!=='Peacock';});
     else if(bcastVal==='lp')games=games.filter(function(g){return!g.isNat;});
     else if(bcastVal==='nflnet')games=games.filter(function(g){return g.watch==='NFL Network';});
-    games=games.filter(function(g){if(!g.isNat)return true;return enabledNets[g.watch]!==false;});
+    else{// bcastVal==='all': apply individual network pill filter
+      games=games.filter(function(g){if(!g.isNat)return true;return enabledNets[g.watch]!==false;});
+    }
   }
   var dtOn=document.getElementById('w-dt-on').checked;
   if(dtOn){
@@ -1404,7 +1446,7 @@ function renderCards(games){
     else if(g.isNat)badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
     else badge='<span class="g-badge badge-lp">'+( LC.showLeaguePass?'League Pass':'Local')+'</span>';
     var bonuses='';
-    if(g.lev>0)bonuses+='<div class="g-bonuses">+'+g.lev+' '+g.levLbl+'</div>';
+    if(g.lev!==0)bonuses+='<div class="g-bonuses">'+(g.lev>0?'+':'')+g.lev+' '+g.levLbl+'</div>';
     if(g.tvBonus>0)bonuses+='<div class="g-bonuses">+'+g.tvBonus+' natl tv</div>';
     var dateTimeLine=
       '<div style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text);text-align:center;margin:2px 0">'+g.dateLabel+'</div>'+
@@ -1701,6 +1743,9 @@ function switchLeague(lg){
   currentLeague=lg;
   LC=LEAGUE_CONFIGS[lg];
 
+  // Destroy existing map chart so it reloads fresh for new league
+  if(mapChartInst){mapChartInst.destroy();mapChartInst=null;}
+
   // theme color
   var themes={
     nba:  {amber:'#BA7517', amberDark:'#854F0B', blue:'#185FA5', blueLight:'#E6F1FB'},
@@ -1722,16 +1767,18 @@ function switchLeague(lg){
   $sty('week-bar','display',LC.showWeekBar?'block':'none');
   $sty('date-bar','display',LC.showDateBar?'block':'none');
   $sty('playoff-section','display',LC.showPlayoff?'block':'none');
+  var sweepRow=document.getElementById('sweep-row');if(sweepRow)sweepRow.style.display=(LC.showSweep?'':'none');
+  $sty('ist-section','display',LC.showIST?'block':'none');
   // Broadcast card: swap natl-tv-row <-> primetime-row
   $sty('natl-tv-row','display',lg!=='nfl'?'':'none');
   $sty('tv-nest','display',lg!=='nfl'?'':'none');
-  $sty('primetime-section','display',lg==='nfl'?'block':'none');
+  $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   // Broadcast pills: swap NBA/WNBA <-> NFL options
   document.querySelectorAll('.nba-wnba-pill').forEach(function(el){el.style.display=lg==='nfl'?'none':'';});
   document.querySelectorAll('.nfl-pill').forEach(function(el){el.style.display=lg==='nfl'?'':'none';});
   setBcast('all'); // reset to all on league switch
   // Standalone bonus cards
-  $sty('divisional-section','display',lg==='nfl'?'block':'none');
+
   $sty('cup-section','display',lg==='wnba'?'block':'none');
 
   // WNBA-specific fields
