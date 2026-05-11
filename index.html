@@ -13,7 +13,7 @@
 :root{
   --bg:#F5F4F0;--surface:#fff;--border:#e0deda;--border-light:#ede9e3;
   --text:#1a1a1a;--text-2:#888780;--text-3:#B4B2A9;
-  --amber:#BA7517;--amber-dark:#854F0B;--blue:#185FA5;--blue-light:#E6F1FB;
+  --amber:#C8102E;--amber-dark:#9a0c23;--blue:#185FA5;--blue-light:#E6F1FB;
   --green:#3B6D11;
   --radius:12px;--radius-sm:7px;
   --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;
@@ -32,13 +32,13 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .season-sel:focus{outline:none;border-color:var(--amber)}
 
 /* ── TIER BADGES ── */
-.tier-badge{font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.5px;flex-shrink:0;display:inline-block}
-.tier-S{background:#4a0080;color:#e0aaff;border:.5px solid #9d4edd}
-.tier-A{background:#002a5c;color:#90c2ff;border:.5px solid #3a7bd5}
-.tier-B{background:#004d20;color:#90ee90;border:.5px solid #2d8a4e}
-.tier-C{background:#4d3800;color:#ffd166;border:.5px solid #c9a227}
-.tier-D{background:#4d1a00;color:#ffaa80;border:.5px solid #cc5500}
-.tier-F{background:#3a0000;color:#ff8080;border:.5px solid #993333}
+.tier-badge{font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;letter-spacing:.3px;flex-shrink:0;display:inline-block;background:var(--bg);border:.5px solid var(--border)}
+.tier-S{color:var(--amber);border-color:var(--amber)}
+.tier-A{color:var(--text-2);border-color:var(--border)}
+.tier-B{color:var(--text-2);border-color:var(--border)}
+.tier-C{color:var(--text-3);border-color:var(--border)}
+.tier-D{color:var(--text-3);border-color:var(--border)}
+.tier-F{color:var(--text-3);border-color:var(--border)}
 .tier-divider{display:block;height:0;border:none;border-top:2px dashed var(--border-light);opacity:.6;margin:1px 0}
 .tier-divider.tier-S-line{border-top-color:#9d4edd;opacity:.5}
 /* ── LEAGUE SWITCHER ── */
@@ -108,7 +108,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .game-rank-num{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1;color:#fff;border-radius:6px;padding:2px 8px;display:inline-block}
 .rank-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 .game-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;text-align:center}
-.g-team img{width:62px;height:62px;object-fit:contain;display:block;margin:0 auto 6px}
+.g-team{position:relative;display:inline-block;text-align:center}
+.g-team img{width:62px;height:62px;object-fit:contain;display:block;margin:0 auto 0}
+.tier-on-logo{position:absolute;bottom:2px;right:0;font-family:var(--mono);font-size:8px;font-weight:700;padding:1px 3px;border-radius:2px;background:var(--bg);border:.5px solid var(--border);color:var(--text-2);letter-spacing:.2px;line-height:1}
 .g-abbr{font-size:16px;font-weight:500;color:var(--text)}
 .g-elo{font-family:var(--mono);font-size:12px;color:var(--amber);margin-top:2px}
 .g-dots{margin-top:3px}
@@ -191,7 +193,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <header class="site-header">
   <div>
     <div class="site-title" id="site-title">GAME RANKER</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.0 <span style="color:var(--text-3);margin-left:6px">2026-05-11</span></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.1 <span style="color:var(--text-3);margin-left:6px">2026-05-11</span></div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:.3px" id="site-version">nba.v4.7</div>
   </div>
   <div class="league-switcher">
@@ -226,7 +228,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <button class="btn" onclick="newTierRound()">↺ new round</button>
     <button class="btn btn-amber" onclick="switchTab('games')">games ↗</button>
   </div>
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;margin-top:1.25rem" id="tier-rankings-header" style="display:none">
+  <div style="display:none;justify-content:space-between;align-items:center;margin-bottom:.5rem;margin-top:1.25rem" id="tier-rankings-header">
     <div class="section-label">cross-sport tier rankings</div>
     <div style="display:flex;gap:6px">
       <button class="btn btn-sm btn-outline" onclick="seedTierFromPercentile();renderTierRankings();saveTierElo()">sort by sport %ile</button>
@@ -588,7 +590,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v5.2', vdate: '2026-05-11',
+    title: 'NBA', version: 'nba.v5.3', vdate: '2026-05-11',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -641,7 +643,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v1.7', vdate: '2026-05-11',
+    title: 'WNBA', version: 'wnba.v1.8', vdate: '2026-05-11',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -679,7 +681,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v1.0', vdate: '2026-05-11',
+    title: 'ALL SPORTS', version: 'all.v1.1', vdate: '2026-05-11',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -696,7 +698,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   nfl: {
-    title: 'NFL', version: 'nfl.v2.0', vdate: '2026-05-11',
+    title: 'NFL', version: 'nfl.v2.1', vdate: '2026-05-11',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -806,21 +808,40 @@ function getTierLabel(abbr){
 }
 
 function getAllTeamTierRankings(){
-  // All teams from all sports sorted by tierElo descending
   var all=[];
   ['nba','wnba','nfl'].forEach(function(lg){
     LEAGUE_CONFIGS[lg].teams.forEach(function(t){
       all.push({abbr:t.abbr,name:t.name,league:lg,logo:LEAGUE_CONFIGS[lg].logo(t.espn),elo:tierElo[t.abbr]||TIER_DEFAULT});
     });
   });
+  // Sort by elo to establish percentile
   all.sort(function(a,b){return b.elo-a.elo;});
+  // Compute tier inline from percentile rank (avoids calling getTierLabel which would recurse)
+  var n=all.length;
+  all.forEach(function(t,i){
+    var pct=i/n;
+    t.tier=pct<0.05?'S':pct<0.20?'A':pct<0.40?'B':pct<0.60?'C':pct<0.80?'D':'F';
+  });
+  // Sort by tier then elo within tier
+  var TO={S:0,A:1,B:2,C:3,D:4,F:5};
+  all.sort(function(a,b){
+    var d=(TO[a.tier]||0)-(TO[b.tier]||0);
+    return d!==0?d:b.elo-a.elo;
+  });
   return all;
 }
 
+function tierOnLogo(abbr){
+  if(!abbr)return'';
+  var lbl=getTierLabel(abbr);
+  var display=lbl==='?'?'X':lbl;
+  return'<span class="tier-on-logo tier-'+(lbl==='?'?'F':lbl)+'">'+display+'</span>';
+}
 function tierBadgeHtml(abbr){
   if(!abbr)return'';
   var lbl=getTierLabel(abbr);
-  return'<span class="tier-badge tier-'+lbl+'">'+lbl+'</span>';
+  var display=lbl==='?'?'X':lbl;
+  return'<span class="tier-badge tier-'+(lbl==='?'?'F':lbl)+'">'+display+'</span>';
 }
 
 // Seed tier Elo from within-sport percentiles
@@ -951,15 +972,18 @@ function renderTierRankings(){
   var mx=all[0].elo, mn=all[all.length-1].elo;
   var n=all.length;
   var lgIcons={nba:'🏀',wnba:'🏀',nfl:'🏈'};
+  // Fixed cutoff indices — dividers appear at these positions regardless of elo spread
+  var cuts=[Math.floor(n*0.05),Math.floor(n*0.20),Math.floor(n*0.40),Math.floor(n*0.60),Math.floor(n*0.80)];
+  var cutTiers=['S','A','B','C','D'];
   var html='';
-  var lastTier='';
   all.forEach(function(t,i){
-    var pct=mx===mn?100:Math.round(((t.elo-mn)/(mx-mn))*100);
-    var tier=getTierLabel(t.abbr);
-    if(tier!==lastTier&&lastTier!==''){
-      html+='<hr class="tier-divider'+(lastTier==='S'?' tier-S-line':'')+'" title="'+lastTier+' / '+tier+'"/>';
+    // Divider before this row if it's at a tier boundary
+    var cutIdx=cuts.indexOf(i);
+    if(cutIdx>=0){
+      html+='<hr class="tier-divider'+(cutTiers[cutIdx]==='S'?' tier-S-line':'')+'" title="'+cutTiers[cutIdx]+'"/>';
     }
-    lastTier=tier;
+    var pct=mx===mn?100:Math.round(((t.elo-mn)/(mx-mn))*100);
+    var tier=t.tier||'?';
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<span class="tier-badge tier-'+tier+'" style="margin-right:3px">'+tier+'</span>'+
@@ -972,10 +996,6 @@ function renderTierRankings(){
   var el=document.getElementById('tier-rankings');
   if(el)el.innerHTML=html;
 }
-
-// Tier rating profiles
-var KEY_TIER_PROFILES='all_tier_profiles';
-var allRatingProfiles={};
 function saveAllRatingProfile(){
   var name=prompt('Name this tier profile:','my tier ratings');
   if(!name||!name.trim())return;
@@ -1114,7 +1134,16 @@ function rankByRecord(){
             if(s.name==='wins')wins=+s.value||0;
             if(s.name==='losses')losses=+s.value||0;
           });
-          if(abbr&&wins+losses>0){entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});if(!window.recordCache)window.recordCache={};window.recordCache[abbr]=wins+'-'+losses;}
+          if(abbr&&wins+losses>0){
+            // Normalize ESPN abbreviations to match our team abbr
+            var ESPN_NORM_ALL={'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA',
+              'WSH':'WAS','GS':'GSW','CONN':'CON','LV':'LVA','LA':'LAS',
+              'WSH':'WAS','NE':'NE'};
+            var normAbbr=ESPN_NORM_ALL[abbr]||abbr;
+            entries.push({abbr:normAbbr,pct:wins/(wins+losses),wins:wins,losses:losses});
+            if(!window.recordCache)window.recordCache={};
+            window.recordCache[normAbbr]=wins+'-'+losses;
+          }
         });
       });
       if(!entries.length){document.getElementById('saved-note').textContent='could not parse standings';return;}
@@ -1135,7 +1164,12 @@ function rankByRecord(){
 }
 
 function render(){
-  if(currentLeague==='all'){loadAllGames();return;}
+  if(currentLeague==='all'){
+    // Only reload games if we're on the games tab
+    var gamesView=document.getElementById('view-games');
+    if(gamesView&&gamesView.style.display!=='none')loadAllGames();
+    return;
+  }
   renderRankings();
   var done=current>=matchups.length;
   var pct=matchups.length?Math.round((current/matchups.length)*100):0;
@@ -1632,8 +1666,8 @@ function renderFilterProfiles(){
   var names=Object.keys(filterProfiles);
   wrap.style.display=names.length?'block':'none';
   bar.innerHTML=names.map(function(n){
-    return'<div class="prof-chip" onclick="loadFilterProfile(\''+n.replace(/'/g,"\\'")+'\')">'+
-      n+'<span class="prof-del" onclick="event.stopPropagation();deleteFilterProfile(\''+n.replace(/'/g,"\\'")+'\')"> ✕</span></div>';
+    return'<div class="prof-chip" data-n="'+n.replace(/"/g,'&quot;')+'" onclick="loadFilterProfile(this.dataset.n)">'+
+      n+'<span class="prof-del" onclick="event.stopPropagation();deleteFilterProfile(this.parentElement.dataset.n)"> ✕</span></div>';
   }).join('');
 }
 
@@ -1795,6 +1829,10 @@ function processEvent(ev,tz){
   return{
     homeAbbr:hd.abbr,awayAbbr:ad.abbr,homeEspn:hd.espn,awayEspn:ad.espn,
     homeLogo:home.team.logo,awayLogo:away.team.logo,
+    awayRec:away.records&&away.records[0]?away.records[0].summary:'',
+    homeRec:home.records&&home.records[0]?home.records[0].summary:'',
+    awayRec:away.records&&away.records[0]?away.records[0].summary:'',
+    homeRec:home.records&&home.records[0]?home.records[0].summary:'',
     homeElo:hd.elo,awayElo:ad.elo,combined:combined,
     homeDots:teamQ(hd.elo),awayDots:teamQ(ad.elo),
     totalStars:gameStars(total),flame:total>getCombinedRange().max*0.95,
@@ -1892,14 +1930,14 @@ function renderCards(games){
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
-        '<div class="g-team"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'"/><div class="g-abbr">'+g.awayAbbr+' '+tierBadgeHtml(g.awayAbbr)+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-elo">'+g.awayElo+'</div><div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
+        '<div class="g-team"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'"/>'+tierOnLogo(g.awayAbbr)+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-elo">'+g.awayElo+'</div><div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
         '<div class="g-mid">'+
           dateTimeLine+badge+seriesBlock+
           '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
           '<div class="g-combined">'+g.total+'</div>'+
           bonuses+
         '</div>'+
-        '<div class="g-team"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'"/><div class="g-abbr">'+g.homeAbbr+' '+tierBadgeHtml(g.homeAbbr)+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-elo">'+g.homeElo+'</div><div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
+        '<div class="g-team"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'"/>'+tierOnLogo(g.homeAbbr)+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-elo">'+g.homeElo+'</div><div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -1975,7 +2013,9 @@ function finishAllLoad(games,callback){
   var maxScore=Math.max.apply(null,games.map(function(g){return g.watchScore;}));
   maxScore=maxScore||1;
   games=games.map(function(g){return Object.assign({},g,{watchPct:Math.round(g.watchScore/maxScore*100)});});
+  LC=LEAGUE_CONFIGS['all']||origLC; // ensure all-tab filters apply
   games=applyFilters(games);
+  LC=origLC;
   games.sort(function(a,b){return b.watchScore-a.watchScore;});
   games.forEach(function(g,i){g.dotColor=getDotColor(i);});
   lastGames=games;
@@ -2029,14 +2069,14 @@ function renderAllCard(g,i){
       (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn">📅 add to gcal</a>':'')+
     '</div>'+
     '<div class="game-teams">'+
-      '<div class="g-team"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'"/>'+
-        '<div class="g-abbr">'+g.awayAbbr+' '+tierBadgeHtml(g.awayAbbr)+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
+      '<div class="g-team"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'"/>'+tierOnLogo(g.awayAbbr)+
+        '<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
         '<div class="g-elo">'+g.awayElo+'</div><div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
       '<div class="g-mid">'+dateTimeLine+badge+seriesBlock+
         '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
         '<div class="g-combined">'+g.total+'</div>'+bonuses+'</div>'+
-      '<div class="g-team"><img src="'+(g.homeLogo||'')+'" alt="'+g.homeAbbr+'"/>'+
-        '<div class="g-abbr">'+g.homeAbbr+' '+tierBadgeHtml(g.homeAbbr)+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
+      '<div class="g-team"><img src="'+(g.homeLogo||'')+'" alt="'+g.homeAbbr+'"/>'+tierOnLogo(g.homeAbbr)+
+        '<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
         '<div class="g-elo">'+g.homeElo+'</div><div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
     '</div>'+
   '</div>';
@@ -2076,7 +2116,13 @@ function loadGames(callback){
       games=applyFilters(games);
       if(!games.length){el.innerHTML='<div class="no-games">no games match your filters</div>';lastGames=[];return;}
       games.sort(function(a,b){return b.score-a.score;});
-      games.forEach(function(g,i){g.dotColor=getDotColor(i);});
+      games.forEach(function(g,i){
+        g.dotColor=getDotColor(i);
+        // Update recordCache from live game data
+        if(!window.recordCache)window.recordCache={};
+        if(g.awayRec&&g.awayRec!=='0-0')window.recordCache[g.awayAbbr]=g.awayRec;
+        if(g.homeRec&&g.homeRec!=='0-0')window.recordCache[g.homeAbbr]=g.homeRec;
+      });
       lastGames=games;renderCards(games);
       document.getElementById('games-note').textContent=games.length+' game'+(games.length!==1?'s':'')+' · ranked by elo';
       if(callback)callback();
@@ -2223,8 +2269,8 @@ function renderRatingProfiles(){
   var names=Object.keys(ratingProfiles);
   wrap.style.display=names.length?'block':'none';
   bar.innerHTML=names.map(function(n){
-    return'<div class="prof-chip" onclick="loadRatingProfile(\''+n.replace(/'/g,"\\'")+'\')">'+n+
-      '<span class="prof-del" onclick="event.stopPropagation();deleteRatingProfile(\''+n.replace(/'/g,"\\'")+'\')"> ✕</span></div>';
+    return'<div class="prof-chip" data-n="'+n.replace(/"/g,'&quot;')+'" onclick="loadRatingProfile(this.dataset.n)">'+n+
+      '<span class="prof-del" onclick="event.stopPropagation();deleteRatingProfile(this.parentElement.dataset.n)"> ✕</span></div>';
   }).join('');
 }
 
@@ -2279,17 +2325,16 @@ function switchTab(tab){
   // For "all" league: swap standard ranker for tier ranker
   var tierRanker=document.getElementById('view-tier-ranker');
   var stdRanker=document.getElementById('view-ranker');
+  // view-ranker is controlled manually — don't let the forEach above affect it
+  if(stdRanker)stdRanker.style.display='none';
+  if(tierRanker)tierRanker.style.display='none';
   if(tab==='ranker'){
     if(currentLeague==='all'){
       if(tierRanker)tierRanker.style.display='block';
-      if(stdRanker)stdRanker.style.display='none';
       renderTierRanker();
     } else {
-      if(tierRanker)tierRanker.style.display='none';
       if(stdRanker)stdRanker.style.display='block';
     }
-  } else {
-    if(tierRanker)tierRanker.style.display='none';
   }
   if(tab==='games'){
     if(currentLeague==='all'){
@@ -2321,10 +2366,10 @@ function switchLeague(lg){
 
   // theme color
   var themes={
-    nba:  {amber:'#BA7517', amberDark:'#854F0B', blue:'#185FA5', blueLight:'#E6F1FB'},
-    wnba: {amber:'#E85D04', amberDark:'#C44C00', blue:'#185FA5', blueLight:'#E6F1FB'},
+    nba:  {amber:'#C8102E', amberDark:'#9a0c23', blue:'#185FA5', blueLight:'#E6F1FB'},
+    wnba: {amber:'#FF8C00', amberDark:'#CC6F00', blue:'#185FA5', blueLight:'#E6F1FB'},
     nfl:  {amber:'#185FA5', amberDark:'#0D4070', blue:'#185FA5', blueLight:'#E6F1FB'},
-    all:  {amber:'#888780', amberDark:'#555', blue:'#185FA5', blueLight:'#E6F1FB'},
+    all:  {amber:'#BA7517', amberDark:'#854F0B', blue:'#185FA5', blueLight:'#E6F1FB'},
   };
   var t=themes[lg]||themes.nba;
   var root=document.documentElement;
@@ -2376,7 +2421,7 @@ function switchLeague(lg){
   // reload elo for this league
   lastGames=[];
   initRatingsForLeague();
-  initRound();
+  if(lg!=='all'){initRound();}else{initTierRound();}
   render();
 
   // repopulate team dropdowns
@@ -2394,8 +2439,8 @@ function switchLeague(lg){
   buildSeasonSelector();
   // build NFL weeks
   if(lg==='nfl')buildNflWeeksForYear(currentSeason||new Date().getFullYear());
-  // for 'all' tab: init tier system
-  if(lg==='all'){initTierElo();initTierRound();}
+  // for 'all' tab: render tier rankings now that everything is ready
+  if(lg==='all')renderTierRanker();
 
   updateStates();
   loadGames();
