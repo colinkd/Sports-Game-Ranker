@@ -30,6 +30,17 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 /* season selector */
 .season-sel{font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:4px 7px;cursor:pointer;flex-shrink:0}
 .season-sel:focus{outline:none;border-color:var(--amber)}
+
+/* ── TIER BADGES ── */
+.tier-badge{font-family:var(--mono);font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.5px;flex-shrink:0;display:inline-block}
+.tier-S{background:#4a0080;color:#e0aaff;border:.5px solid #9d4edd}
+.tier-A{background:#002a5c;color:#90c2ff;border:.5px solid #3a7bd5}
+.tier-B{background:#004d20;color:#90ee90;border:.5px solid #2d8a4e}
+.tier-C{background:#4d3800;color:#ffd166;border:.5px solid #c9a227}
+.tier-D{background:#4d1a00;color:#ffaa80;border:.5px solid #cc5500}
+.tier-F{background:#3a0000;color:#ff8080;border:.5px solid #993333}
+.tier-divider{display:block;height:0;border:none;border-top:2px dashed var(--border-light);opacity:.6;margin:1px 0}
+.tier-divider.tier-S-line{border-top-color:#9d4edd;opacity:.5}
 /* ── LEAGUE SWITCHER ── */
 .league-switcher{display:flex;gap:1px;background:var(--border);border-radius:var(--radius-sm);padding:1px;}
 .league-btn{padding:6px 10px;font-size:12px;font-weight:500;font-family:var(--mono);text-align:center;cursor:pointer;color:var(--text-2);background:transparent;border:none;border-radius:calc(var(--radius-sm) - 1px);transition:all .15s;letter-spacing:.3px;white-space:nowrap}
@@ -180,10 +191,11 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <header class="site-header">
   <div>
     <div class="site-title" id="site-title">GAME RANKER</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v1.7 <span style="color:var(--text-3);margin-left:6px">2026-05-11</span></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.0 <span style="color:var(--text-3);margin-left:6px">2026-05-11</span></div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:.3px" id="site-version">nba.v4.7</div>
   </div>
   <div class="league-switcher">
+    <button class="league-btn" id="lgbtn-all" onclick="switchLeague('all')">🏆 All</button>
     <button class="league-btn active" id="lgbtn-nba" onclick="switchLeague('nba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NBA</button>
     <button class="league-btn" id="lgbtn-wnba" onclick="switchLeague('wnba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> WNBA</button>
     <button class="league-btn" id="lgbtn-nfl" onclick="switchLeague('nfl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NFL</button>
@@ -193,11 +205,43 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
 <div class="tabs">
   <button class="tab active" id="tab-games"  onclick="switchTab('games')">games</button>
-  <button class="tab"        id="tab-ranker" onclick="switchTab('ranker')">elo rankings</button>
+  <button class="tab"        id="tab-ranker" onclick="switchTab('ranker')">elo ratings</button>
   <button class="tab"        id="tab-map"    onclick="switchTab('map')">matchup map</button>
 </div>
 
 <!-- ══ RANKER ══ -->
+<!-- ══ ALL-TAB RANKER (tier rounds) ══ -->
+<div id="view-tier-ranker" style="display:none;max-width:640px;margin:0 auto">
+  <div style="font-family:var(--mono);font-size:11px;color:var(--text-3);text-align:center;margin-bottom:6px;letter-spacing:.5px" id="tier-progress"></div>
+  <div style="background:var(--border-light);border-radius:3px;height:4px;margin-bottom:.75rem"><div style="height:4px;border-radius:3px;background:var(--amber);transition:width .2s" id="tier-round-bar" style="width:0%"></div></div>
+  <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-align:center;margin-bottom:.75rem">← left &nbsp;·&nbsp; → right &nbsp;·&nbsp; ↓ skip · pick the better team across all sports</div>
+  <div class="vs-wrap" id="tier-vs-wrap">
+    <button class="team-btn" id="tier-btn-a"><img id="tier-logo-a" src="" alt=""/><div class="t-name" id="tier-name-a"></div><div style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:4px" id="tier-sport-a"></div></button>
+    <div class="vs-mid">vs</div>
+    <button class="team-btn" id="tier-btn-b"><img id="tier-logo-b" src="" alt=""/><div class="t-name" id="tier-name-b"></div><div style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:4px" id="tier-sport-b"></div></button>
+  </div>
+  <div class="skip-wrap"><button class="skip-btn" onclick="tierSkip()">skip — too close to call</button></div>
+  <div id="tier-done-banner" style="display:none" class="done-banner">
+    <div class="done-text"><strong>round complete</strong>tier ratings saved</div>
+    <button class="btn" onclick="newTierRound()">↺ new round</button>
+    <button class="btn btn-amber" onclick="switchTab('games')">games ↗</button>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;margin-top:1.25rem" id="tier-rankings-header" style="display:none">
+    <div class="section-label">cross-sport tier rankings</div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-sm btn-outline" onclick="seedTierFromPercentile();renderTierRankings();saveTierElo()">sort by sport %ile</button>
+      <button class="btn btn-sm btn-outline" onclick="saveAllRatingProfile()">save profile</button>
+      <div style="display:flex;align-items:center;gap:4px"><button class="btn btn-sm btn-outline" onclick="confirmTierReset()">reset to</button><input type="number" id="tier-reset-val" value="1200" style="font-family:var(--mono);font-size:11px;width:54px;background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:3px 5px;color:var(--text);text-align:right"/></div>
+    </div>
+  </div>
+  <div id="all-prof-bar-wrap" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:7px 10px;margin-bottom:.5rem">
+    <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">saved profiles</div>
+    <div class="prof-bar" id="all-prof-bar" style="margin-bottom:0"></div>
+  </div>
+  <div class="rank-list" id="tier-rankings"></div>
+  <div class="saved-note" id="tier-saved-note"></div>
+</div>
+
 <div id="view-ranker" style="display:none">
   <div class="matchup-progress" id="progress"></div>
   <div class="round-bar-wrap"><div class="round-bar-track"><div class="round-bar-fill" id="round-bar" style="width:0%"></div></div></div>
@@ -218,7 +262,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div style="display:flex;gap:6px">
       <button class="btn btn-sm btn-outline" onclick="rankByRecord()">sort by current record</button>
       <button class="btn btn-sm btn-outline" onclick="saveRatingProfile()">save profile</button>
-      <button class="btn btn-sm btn-outline" onclick="confirmReset()">reset to 1200</button>
+      <div style="display:flex;align-items:center;gap:4px"><button class="btn btn-sm btn-outline" onclick="confirmReset()">reset to</button><input type="number" id="reset-val" value="1200" style="font-family:var(--mono);font-size:11px;width:54px;background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:3px 5px;color:var(--text);text-align:right"/></div>
     </div>
   </div>
   <div id="prof-bar-wrap" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:7px 10px;margin-bottom:.5rem">
@@ -366,15 +410,17 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div class="fw" id="bcast-show-row">
             <div class="fw-lbl">Show</div>
             <div class="pills" id="bcast-filter">
-              <div class="pill on" data-val="all" onclick="setBcast('all')">all networks</div>
+              <div class="pill on" data-val="all" onclick="setBcast('all')">all</div>
               <!-- NBA/WNBA pills -->
-              <div class="pill nba-wnba-pill" data-val="national" onclick="setBcast('national')">national TV</div>
-              <div class="pill nba-wnba-pill" data-val="lp" onclick="setBcast('lp')">league pass</div>
+              <div class="pill nba-wnba-pill" data-val="national" onclick="setBcast('national')">nat. tv</div>
+              <div class="pill nba-wnba-pill" data-val="lp" onclick="setBcast('lp')">LP / NFL Net</div>
               <div class="pill nba-wnba-pill" data-val="streaming" onclick="setBcast('streaming')">streaming</div>
               <!-- NFL pills -->
-              <div class="pill nfl-pill" data-val="national" onclick="setBcast('national')" style="display:none">national TV</div>
+              <div class="pill nfl-pill" data-val="national" onclick="setBcast('national')" style="display:none">nat. tv</div>
               <div class="pill nfl-pill" data-val="nflnet" onclick="setBcast('nflnet')" style="display:none">nfl network</div>
               <div class="pill nfl-pill" data-val="streaming" onclick="setBcast('streaming')" style="display:none">streaming</div>
+              <!-- custom (always visible, auto-selected when network pills edited) -->
+              <div class="pill" data-val="custom" onclick="setBcast('custom')" id="bcast-custom-pill">custom</div>
             </div>
           </div>
           <div class="fw" style="flex-wrap:wrap;gap:4px">
@@ -396,7 +442,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
 
       <!-- TEAM FILTER -->
-      <div class="fs">
+      <div class="fs" id="team-filter-card">
         <div class="fs-head"><div class="fs-title">team filter</div><label class="tog"><input type="checkbox" id="w-team-on" checked onchange="updateStates()"/><span class="tog-track"></span></label></div>
         <div class="fs-body" id="team-body">
           <div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">include</div>
@@ -479,6 +525,12 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
 
 
+      <!-- ALL TAB NOTE -->
+      <div id="all-tab-note" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:11px 12px;margin-top:4px">
+        <div style="font-family:var(--mono);font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px">team filters &amp; bonuses</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">are carried over from each individual sport's current settings</div>
+      </div>
+
       <!-- NFL BONUSES (NFL only) -->
       <div class="fs" id="nfl-bonuses-section" style="display:none">
         <div class="fs-head">
@@ -536,7 +588,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v5.1', vdate: '2026-05-11',
+    title: 'NBA', version: 'nba.v5.2', vdate: '2026-05-11',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -589,7 +641,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v1.6', vdate: '2026-05-11',
+    title: 'WNBA', version: 'wnba.v1.7', vdate: '2026-05-11',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -626,8 +678,25 @@ var LEAGUE_CONFIGS = {
     CMIN:2850, CMAX:3300,
     chartMin:1350, chartMax:1700,
   },
+  all: {
+    title: 'ALL SPORTS', version: 'all.v1.0', vdate: '2026-05-11',
+    icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
+    showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
+    showWeekBar: false, showDateBar: true, seriesMax: 0,
+    showSweep: false, showIST: false,
+    networks: ['ESPN','ABC','NBC','TNT','TBS','Prime Video','Peacock','League Pass',
+               'CBS','Fox','NFL Network','ESPN2','ION','NBA TV'],
+    logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/nba/500/'+espn+'.png'; },
+    teams: [], // populated dynamically from all leagues
+    defaultElo: 1200, quintileDividers: [],
+    TMIN:900, TMAX:1500, CMIN:1820, CMAX:3000, chartMin:800, chartMax:1700,
+    scoreGame: function(g, v, em){ return 0; }, // handled by each sport's scoreGame
+    parseExtra: function(){ return {}; },
+    extraBadges: function(){ return ''; },
+    extraVsInfo: function(){ return ''; },
+  },
   nfl: {
-    title: 'NFL', version: 'nfl.v1.9', vdate: '2026-05-11',
+    title: 'NFL', version: 'nfl.v2.0', vdate: '2026-05-11',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -693,7 +762,250 @@ var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 var MONTHS_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 // ── ELO per-league ──
-var ratingsStore = {}; // keyed by league storageKey
+var ratingsStore = {};
+
+// ════════════════════════════════════════════════════════════
+// TIER SYSTEM
+// ════════════════════════════════════════════════════════════
+var TIER_KEY = 'cross_tier_elo';
+var tierElo = {}; // abbr -> cross-sport Elo (1200 default)
+var TIER_DEFAULT = 1200;
+
+function loadTierElo(){
+  try{var s=localStorage.getItem(TIER_KEY);if(s)return JSON.parse(s);}catch(e){}
+  return null;
+}
+function saveTierElo(){
+  try{localStorage.setItem(TIER_KEY,JSON.stringify(tierElo));}catch(e){}
+}
+function initTierElo(){
+  var saved=loadTierElo();
+  if(saved&&Object.keys(saved).length>0){tierElo=saved;return;} // already populated
+  tierElo={};
+  ['nba','wnba','nfl'].forEach(function(lg){
+    if(!LEAGUE_CONFIGS[lg])return;
+    LEAGUE_CONFIGS[lg].teams.forEach(function(t){tierElo[t.abbr]=TIER_DEFAULT;});
+  });
+}
+
+// Convert cross-sport Elo to tier label
+function getTierLabel(abbr){
+  if(!abbr)return'?';
+  var all=getAllTeamTierRankings();
+  var n=all.length;
+  if(!n)return'?';
+  var idx=all.findIndex(function(t){return t.abbr===abbr;});
+  if(idx<0)return'?';
+  var pct=idx/n;
+  if(pct<0.05)return'S';
+  if(pct<0.20)return'A';
+  if(pct<0.40)return'B';
+  if(pct<0.60)return'C';
+  if(pct<0.80)return'D';
+  return'F';
+}
+
+function getAllTeamTierRankings(){
+  // All teams from all sports sorted by tierElo descending
+  var all=[];
+  ['nba','wnba','nfl'].forEach(function(lg){
+    LEAGUE_CONFIGS[lg].teams.forEach(function(t){
+      all.push({abbr:t.abbr,name:t.name,league:lg,logo:LEAGUE_CONFIGS[lg].logo(t.espn),elo:tierElo[t.abbr]||TIER_DEFAULT});
+    });
+  });
+  all.sort(function(a,b){return b.elo-a.elo;});
+  return all;
+}
+
+function tierBadgeHtml(abbr){
+  if(!abbr)return'';
+  var lbl=getTierLabel(abbr);
+  return'<span class="tier-badge tier-'+lbl+'">'+lbl+'</span>';
+}
+
+// Seed tier Elo from within-sport percentiles
+function seedTierFromPercentile(){
+  ['nba','wnba','nfl'].forEach(function(lg){
+    var cfg=LEAGUE_CONFIGS[lg];
+    var ratings_lg;
+    try{var s=localStorage.getItem(lg+'_elo_ratings');ratings_lg=s?JSON.parse(s):null;}catch(e){}
+    var teams=cfg.teams;
+    if(!ratings_lg){
+      // All at default
+      teams.forEach(function(t){tierElo[t.abbr]=TIER_DEFAULT;});
+      return;
+    }
+    var sorted=teams.slice().sort(function(a,b){return(ratings_lg[b.abbr]||cfg.defaultElo)-(ratings_lg[a.abbr]||cfg.defaultElo);});
+    var n=sorted.length;
+    // Map rank to Elo range 900-1500
+    sorted.forEach(function(t,i){
+      var pct=i/(n-1||1);
+      tierElo[t.abbr]=Math.round(1500-(pct*600));
+    });
+  });
+  saveTierElo();
+}
+
+
+// ════════════════════════════════════════════════════════════
+// TIER RANKER (cross-sport matchups)
+// ════════════════════════════════════════════════════════════
+var tierMatchups=[], tierCurrent=0, tierRoundSeed=null, tierFlipMap={};
+var KEY_TIER_ROUND='cross_tier_round';
+
+function loadTierRoundState(){try{var s=localStorage.getItem(KEY_TIER_ROUND);if(s)return JSON.parse(s);}catch(e){}return null;}
+function saveTierRoundState(){try{localStorage.setItem(KEY_TIER_ROUND,JSON.stringify({matchups:tierMatchups,current:tierCurrent,seed:tierRoundSeed}));}catch(e){}}
+function clearTierRoundState(){try{localStorage.removeItem(KEY_TIER_ROUND);}catch(e){}}
+
+function buildTierMatchups(seed){
+  tierRoundSeed=seed||Date.now(); tierMatchups=[];
+  var all=getAllTeamTierRankings();
+  for(var i=0;i<all.length;i++)for(var j=i+1;j<all.length;j++)tierMatchups.push([i,j]);
+  var rng=mulberry32(tierRoundSeed);
+  for(var k=tierMatchups.length-1;k>0;k--){var r=Math.floor(rng()*(k+1)),tmp=tierMatchups[k];tierMatchups[k]=tierMatchups[r];tierMatchups[r]=tmp;}
+  tierFlipMap={};var rng2=mulberry32(tierRoundSeed+1);
+  for(var m=0;m<tierMatchups.length;m++)tierFlipMap[m]=rng2()<0.5;
+  tierCurrent=0;
+}
+
+function initTierRound(){
+  var s=loadTierRoundState();
+  if(s&&s.matchups&&s.matchups.length){
+    tierMatchups=s.matchups;tierCurrent=s.current||0;tierRoundSeed=s.seed;
+    tierFlipMap={};var rng2=mulberry32((tierRoundSeed||0)+1);
+    for(var m=0;m<tierMatchups.length;m++)tierFlipMap[m]=rng2()<0.5;
+  }else{buildTierMatchups();}
+}
+
+function updateTierElo(wa,la){
+  var ra=tierElo[wa]||TIER_DEFAULT,rb=tierElo[la]||TIER_DEFAULT;
+  var ea=1/(1+Math.pow(10,(rb-ra)/400));
+  tierElo[wa]=Math.round(ra+32*(1-ea));
+  tierElo[la]=Math.round(rb+32*(0-(1-ea)));
+  saveTierElo();
+}
+
+function assignTierButtons(){
+  if(tierCurrent>=tierMatchups.length)return;
+  var all=getAllTeamTierRankings();
+  var p=tierMatchups[tierCurrent],flip=!!tierFlipMap[tierCurrent];
+  if(!all[p[0]]||!all[p[1]])return;
+  var L=all[flip?p[1]:p[0]],R=all[flip?p[0]:p[1]];
+  var lgLabels={nba:'NBA',wnba:'WNBA',nfl:'NFL'};
+  document.getElementById('tier-logo-a').src=L.logo;
+  document.getElementById('tier-name-a').textContent=L.name;
+  var recA=window.recordCache&&window.recordCache[L.abbr]?window.recordCache[L.abbr]:'';
+  document.getElementById('tier-sport-a').textContent=(lgLabels[L.league]||'')+(recA?' · '+recA:'');
+  document.getElementById('tier-sport-a').textContent=lgLabels[L.league]||'';
+  document.getElementById('tier-logo-b').src=R.logo;
+  document.getElementById('tier-name-b').textContent=R.name;
+  var recB=window.recordCache&&window.recordCache[R.abbr]?window.recordCache[R.abbr]:'';
+  document.getElementById('tier-sport-b').textContent=(lgLabels[R.league]||'')+(recB?' · '+recB:'');
+  document.getElementById('tier-sport-b').textContent=lgLabels[R.league]||'';
+  (function(l,r){
+    document.getElementById('tier-btn-a').onclick=function(){updateTierElo(l.abbr,r.abbr);tierCurrent++;saveTierRoundState();renderTierRanker();};
+    document.getElementById('tier-btn-b').onclick=function(){updateTierElo(r.abbr,l.abbr);tierCurrent++;saveTierRoundState();renderTierRanker();};
+  })(L,R);
+}
+
+function tierSkip(){if(tierCurrent<tierMatchups.length){tierCurrent++;saveTierRoundState();renderTierRanker();}}
+
+function newTierRound(){
+  clearTierRoundState();buildTierMatchups();
+  $sty('tier-done-banner','display','none');
+  $sty('tier-vs-wrap','display','grid');
+  renderTierRanker();
+}
+
+function confirmTierReset(){
+  var val=+(document.getElementById('tier-reset-val').value)||TIER_DEFAULT;
+  if(!confirm('Reset all tier ratings to '+val+'?'))return;
+  tierElo={};
+  ['nba','wnba','nfl'].forEach(function(lg){
+    if(LEAGUE_CONFIGS[lg])LEAGUE_CONFIGS[lg].teams.forEach(function(t){tierElo[t.abbr]=val;});
+  });
+  saveTierElo();clearTierRoundState();buildTierMatchups();
+  $sty('tier-done-banner','display','none');
+  $sty('tier-vs-wrap','display','grid');
+  document.getElementById('tier-saved-note').textContent='tier ratings reset to '+val;
+  renderTierRanker();
+}
+
+function renderTierRanker(){
+  renderTierRankings();
+  var done=tierCurrent>=tierMatchups.length;
+  var pct=tierMatchups.length?Math.round((tierCurrent/tierMatchups.length)*100):0;
+  $sty('tier-round-bar','width',pct+'%');
+  $sty('tier-done-banner','display',done?'flex':'none');
+  $sty('tier-vs-wrap','display',done?'none':'grid');
+  var skipWrap=document.querySelector('.skip-wrap');if(skipWrap)skipWrap.style.display=done?'none':'block';
+  var hdr=document.getElementById('tier-rankings-header');if(hdr)hdr.style.display='flex';
+  var prog=document.getElementById('tier-progress');
+  if(prog)prog.textContent=done?'round complete!':(tierCurrent+1)+' / '+tierMatchups.length;
+  if(!done)assignTierButtons();
+}
+
+function renderTierRankings(){
+  var all=getAllTeamTierRankings();
+  if(!all.length)return;
+  var mx=all[0].elo, mn=all[all.length-1].elo;
+  var n=all.length;
+  var lgIcons={nba:'🏀',wnba:'🏀',nfl:'🏈'};
+  var html='';
+  var lastTier='';
+  all.forEach(function(t,i){
+    var pct=mx===mn?100:Math.round(((t.elo-mn)/(mx-mn))*100);
+    var tier=getTierLabel(t.abbr);
+    if(tier!==lastTier&&lastTier!==''){
+      html+='<hr class="tier-divider'+(lastTier==='S'?' tier-S-line':'')+'" title="'+lastTier+' / '+tier+'"/>';
+    }
+    lastTier=tier;
+    html+='<div class="rank-row">'+
+      '<div class="rank-num">'+(i+1)+'</div>'+
+      '<span class="tier-badge tier-'+tier+'" style="margin-right:3px">'+tier+'</span>'+
+      '<span style="font-size:10px;margin-right:4px">'+(lgIcons[t.league]||'')+'</span>'+
+      '<div class="rank-name">'+t.name+(window.recordCache&&window.recordCache[t.abbr]?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+window.recordCache[t.abbr]+'</span>':'')+'</div>'+
+      '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
+      '<div class="rank-elo">'+t.elo+'</div>'+
+    '</div>';
+  });
+  var el=document.getElementById('tier-rankings');
+  if(el)el.innerHTML=html;
+}
+
+// Tier rating profiles
+var KEY_TIER_PROFILES='all_tier_profiles';
+var allRatingProfiles={};
+function saveAllRatingProfile(){
+  var name=prompt('Name this tier profile:','my tier ratings');
+  if(!name||!name.trim())return;
+  allRatingProfiles[name.trim()]=JSON.parse(JSON.stringify(tierElo));
+  try{localStorage.setItem(KEY_TIER_PROFILES,JSON.stringify(allRatingProfiles));}catch(e){}
+  renderAllRatingProfiles();
+}
+function loadAllRatingProfile(name){
+  if(!allRatingProfiles[name])return;
+  Object.assign(tierElo,allRatingProfiles[name]);
+  saveTierElo();
+  document.getElementById('tier-saved-note').textContent='loaded: '+name;
+  renderTierRankings();
+}
+function renderAllRatingProfiles(){
+  var bar=document.getElementById('all-prof-bar');
+  var wrap=document.getElementById('all-prof-bar-wrap');
+  if(!bar||!wrap)return;
+  var names=Object.keys(allRatingProfiles);
+  wrap.style.display=names.length?'block':'none';
+  var html='';
+  names.forEach(function(name){
+    var safe=name.replace(/"/g,'&quot;');
+    html+='<div class="prof-chip" onclick="loadAllRatingProfile(this.dataset.n)" data-n="'+safe+'">'+name+
+      '<span class="prof-del" onclick="event.stopPropagation();var n=this.parentElement.dataset.n;delete allRatingProfiles[n];try{localStorage.setItem('+JSON.stringify(KEY_TIER_PROFILES)+',JSON.stringify(allRatingProfiles));}catch(e){}renderAllRatingProfiles();"> ✕</span></div>';
+  });
+  bar.innerHTML=html;
+}
+
+ // keyed by league storageKey
 var ratings = {};
 var matchups=[], current=0, roundSeed=null, flipMap={};
 var K=32;
@@ -709,6 +1021,7 @@ function saveRatings(){
   try{localStorage.setItem(LC.storageKey+'_elo_ratings',JSON.stringify(ratings));}catch(e){}
 }
 function initRatingsForLeague(){
+  if(!LC.teams||!LC.teams.length){ratings={};return;} // all tab
   var saved=loadRatings();
   if(saved){ ratings=saved; document.getElementById('saved-note').textContent='↑ continuing from saved ratings'; }
   else{ ratings={}; LC.teams.forEach(function(t){ratings[t.abbr]=LC.defaultElo;}); }
@@ -724,6 +1037,7 @@ function $sty(id,prop,val){var e=$el(id);if(e)e.style[prop]=val;}
 function $styQ(sel,prop,val){var e=document.querySelector(sel);if(e)e.style[prop]=val;}
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function buildMatchups(seed){
+  if(!LC.teams||!LC.teams.length){matchups=[];current=0;return;} // all tab
   roundSeed=seed||Date.now();matchups=[];
   for(var i=0;i<LC.teams.length;i++)for(var j=i+1;j<LC.teams.length;j++)matchups.push([i,j]);
   var rng=mulberry32(roundSeed);
@@ -750,9 +1064,11 @@ function assignButtons(){
   var p=matchups[current],flip=!!flipMap[current];
   var L=LC.teams[flip?p[1]:p[0]],R=LC.teams[flip?p[0]:p[1]];
   document.getElementById('logo-a').src=LC.logo(L.espn);
-  document.getElementById('name-a').textContent=L.name;
+  var nameEl_a=document.getElementById('name-a');
+  if(nameEl_a){nameEl_a.innerHTML=L.name+(window.recordCache&&window.recordCache[L.abbr]?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+window.recordCache[L.abbr]+'</div>':'');}
   document.getElementById('logo-b').src=LC.logo(R.espn);
-  document.getElementById('name-b').textContent=R.name;
+  var nameEl_b=document.getElementById('name-b');
+  if(nameEl_b){nameEl_b.innerHTML=R.name+(window.recordCache&&window.recordCache[R.abbr]?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+window.recordCache[R.abbr]+'</div>':'');}
   (function(l,r){
     document.getElementById('btn-a').onclick=function(){updateElo(l.abbr,r.abbr);current++;saveRoundState();render();};
     document.getElementById('btn-b').onclick=function(){updateElo(r.abbr,l.abbr);current++;saveRoundState();render();};
@@ -767,13 +1083,14 @@ function newRound(){
   render();
 }
 function confirmReset(){
-  if(!confirm('Reset all ratings to '+LC.defaultElo+'?'))return;
-  ratings={};LC.teams.forEach(function(t){ratings[t.abbr]=LC.defaultElo;});
+  var val=+(document.getElementById('reset-val')?document.getElementById('reset-val').value:LC.defaultElo)||LC.defaultElo;
+  if(!confirm('Reset all ratings to '+val+'?'))return;
+  ratings={};LC.teams.forEach(function(t){ratings[t.abbr]=val;});
   saveRatings();clearRoundState();buildMatchups();
   $sty('done-banner','display','none');
   $sty('vs-wrap','display','grid');
   $styQ('.skip-wrap','display','block');
-  document.getElementById('saved-note').textContent='ratings reset to '+LC.defaultElo;
+  document.getElementById('saved-note').textContent='ratings reset to '+val;
   render();
 }
 
@@ -797,11 +1114,13 @@ function rankByRecord(){
             if(s.name==='wins')wins=+s.value||0;
             if(s.name==='losses')losses=+s.value||0;
           });
-          if(abbr&&wins+losses>0)entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});
+          if(abbr&&wins+losses>0){entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});if(!window.recordCache)window.recordCache={};window.recordCache[abbr]=wins+'-'+losses;}
         });
       });
       if(!entries.length){document.getElementById('saved-note').textContent='could not parse standings';return;}
       entries.sort(function(a,b){return b.pct!==a.pct?b.pct-a.pct:b.wins-a.wins;});
+      if(!window.recordCache)window.recordCache={};
+      entries.forEach(function(e){window.recordCache[e.abbr]=e.wins+'-'+e.losses;});
       var n=entries.length, lo=900, hi=1500;
       entries.forEach(function(e,idx){
         var t=null;for(var j=0;j<LC.teams.length;j++){if(LC.teams[j].abbr===e.abbr){t=LC.teams[j];break;}}
@@ -816,6 +1135,7 @@ function rankByRecord(){
 }
 
 function render(){
+  if(currentLeague==='all'){loadAllGames();return;}
   renderRankings();
   var done=current>=matchups.length;
   var pct=matchups.length?Math.round((current/matchups.length)*100):0;
@@ -829,8 +1149,11 @@ function render(){
   assignButtons();
 }
 function renderRankings(){
+  if(currentLeague==='all'){renderTierRankings();return;}
+  if(!LC.teams||!LC.teams.length)return;
   var sorted=LC.teams.slice().sort(function(a,b){return (ratings[b.abbr]||LC.defaultElo)-(ratings[a.abbr]||LC.defaultElo);});
-  var mx=ratings[sorted[0].abbr],mn=ratings[sorted[sorted.length-1].abbr];
+  if(!sorted.length)return;
+  var mx=ratings[sorted[0].abbr]||LC.defaultElo,mn=ratings[sorted[sorted.length-1].abbr]||LC.defaultElo;
   var n=sorted.length;
   var qdivs=[Math.floor(n*0.2)-1, Math.floor(n*0.4)-1, Math.floor(n*0.6)-1, Math.floor(n*0.8)-1];
   var html='';
@@ -840,7 +1163,7 @@ function renderRankings(){
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img class="rank-logo" src="'+LC.logo(t.espn)+'" alt="'+t.abbr+'"/>'+
-      '<div class="rank-name">'+t.name+xpTag+'</div>'+
+      '<div class="rank-name">'+t.name+xpTag+(window.recordCache&&window.recordCache[t.abbr]?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+window.recordCache[t.abbr]+'</span>':'')+'</div>'+
       '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
       '<div class="rank-elo">'+(ratings[t.abbr]||LC.defaultElo)+'</div></div>';
     if(qdivs.indexOf(i)>=0)html+='<hr class="quintile-divider"/>';
@@ -848,11 +1171,23 @@ function renderRankings(){
   document.getElementById('rankings').innerHTML=html;
 }
 document.addEventListener('keydown',function(e){
-  var vr=document.getElementById('view-ranker');if(!vr||vr.style.display==='none')return;
-  if(current>=matchups.length)return;
-  if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('btn-a').click();}
-  else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('btn-b').click();}
-  else if(e.key==='ArrowDown'){e.preventDefault();skip();}
+  // Standard ranker
+  var vr=document.getElementById('view-ranker');
+  if(vr&&vr.style.display!=='none'){
+    if(current>=matchups.length)return;
+    if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('btn-a').click();}
+    else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('btn-b').click();}
+    else if(e.key==='ArrowDown'){e.preventDefault();skip();}
+    return;
+  }
+  // Tier ranker
+  var vtr=document.getElementById('view-tier-ranker');
+  if(vtr&&vtr.style.display!=='none'){
+    if(tierCurrent>=tierMatchups.length)return;
+    if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('tier-btn-a').click();}
+    else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('tier-btn-b').click();}
+    else if(e.key==='ArrowDown'){e.preventDefault();tierSkip();}
+  }
 });
 
 // ── DATE / TIME ──
@@ -1050,7 +1385,7 @@ function onWeekChange(){
 
 // ── QUINTILES ──
 function getEloRange(){
-  var vals=LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;});
+  var vals=(LC.teams&&LC.teams.length)?LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;}): [1200];
   var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
   // Pad slightly so teams at exact min/max still get quintile 1/5
   return{min:mn-1, max:mx+1};
@@ -1102,37 +1437,41 @@ function setDateMode(mode){
 }
 function setBcast(v){
   bcastVal=v;
+  // Update pill active states (skip hidden pills, skip custom — it auto-shows)
   document.querySelectorAll('#bcast-filter .pill').forEach(function(el){
+    if(el.dataset.val==='custom')return; // handled separately
     if(el.style.display==='none')return;
     el.classList.toggle('on',el.dataset.val===v);
   });
+  // custom pill: always visible, just toggle active state
+  var custPill=document.getElementById('bcast-custom-pill');
+  if(custPill)custPill.classList.toggle('on',v==='custom');
+  // Network pills: always interactive (never dim)
   var netWrap=document.getElementById('network-pills');
-  if(v==='lp'){netWrap.style.opacity='0.35';netWrap.style.pointerEvents='none';}
-  else{netWrap.style.opacity='';netWrap.style.pointerEvents='';}
-  // For NBA/WNBA: update network pills for streaming
+  if(netWrap){netWrap.style.opacity='';netWrap.style.pointerEvents='';}
+  if(v==='custom')return; // custom: leave network pills as-is
+  var streaming=['Prime Video','Peacock'];
   if(currentLeague!=='nfl'){
-    var streaming=['Prime Video','Peacock'];
+    var lpNets=['League Pass','NFL Network'];
     document.querySelectorAll('#network-pills .net-pill').forEach(function(el){
       var n=el.dataset.net;
       var on;
       if(v==='streaming') on=streaming.indexOf(n)>=0;
-      else if(v==='national') on=n!=='League Pass'&&streaming.indexOf(n)<0;
-      else if(v==='lp') on=n==='League Pass';
-      else on=true;
+      else if(v==='national') on=n!=='League Pass'&&n!=='NFL Network'&&streaming.indexOf(n)<0;
+      else if(v==='lp') on=lpNets.indexOf(n)>=0; // LP / NFL Net = League Pass + NFL Network
+      else on=true; // all
       enabledNets[n]=on; el.classList.toggle('on',on);
     });
   }
-  // For NFL: update which network pills are lit based on the filter selection
   if(currentLeague==='nfl'){
-    var nflNat=['CBS','Fox','NBC','ESPN','ESPN2','ABC']; // excludes streaming+nflnet
-    var streaming=['Prime Video','Peacock'];
+    var nflNat=['CBS','Fox','NBC','ESPN','ESPN2','ABC'];
     document.querySelectorAll('#network-pills .net-pill').forEach(function(el){
       var n=el.dataset.net;
       var on;
-      if(v==='national'){on=nflNat.indexOf(n)>=0;}
-      else if(v==='nflnet'){on=n==='NFL Network';}
-      else if(v==='streaming'){on=streaming.indexOf(n)>=0;}
-      else{on=true;}
+      if(v==='national') on=nflNat.indexOf(n)>=0;
+      else if(v==='nflnet') on=n==='NFL Network';
+      else if(v==='streaming') on=streaming.indexOf(n)>=0;
+      else on=true;
       enabledNets[n]=on; el.classList.toggle('on',on);
     });
   }
@@ -1145,7 +1484,20 @@ function setDay(v){
   else if(v==='weekend'){Object.keys(enabledDows).forEach(function(d){enabledDows[d]=(+d===5||+d===6||+d===0);});}
   document.querySelectorAll('#dow-pills .net-pill').forEach(function(el){el.classList.toggle('on',enabledDows[+el.dataset.dow]);});
 }
-function toggleNet(el){var n=el.dataset.net;enabledNets[n]=!enabledNets[n];el.classList.toggle('on',enabledNets[n]);}
+function toggleNet(el){
+  var n=el.dataset.net;
+  enabledNets[n]=!enabledNets[n];
+  el.classList.toggle('on',enabledNets[n]);
+  // Switch broadcast mode to 'custom' since user manually changed network selection
+  bcastVal='custom';
+  document.querySelectorAll('#bcast-filter .pill').forEach(function(p){
+    if(p.dataset.val==='custom')return;
+    if(p.style.display==='none')return;
+    p.classList.remove('on');
+  });
+  var custPill=document.getElementById('bcast-custom-pill');
+  if(custPill)custPill.classList.add('on');
+}
 function toggleDow(el){
   var d=+el.dataset.dow;enabledDows[d]=!enabledDows[d];el.classList.toggle('on',enabledDows[d]);
   var allOn=Object.values(enabledDows).every(Boolean);
@@ -1466,9 +1818,9 @@ function applyFilters(games){
     else if(bcastVal==='lp')games=games.filter(function(g){return!g.isNat;});
     else if(bcastVal==='nflnet')games=games.filter(function(g){return g.watch==='NFL Network';});
     else if(bcastVal==='streaming')games=games.filter(function(g){return STREAMING.indexOf(g.watch)>=0;});
-    else{// bcastVal==='all': apply individual network pill filter
+    else{// bcastVal==='all' or 'custom': apply individual network pill filter
       games=games.filter(function(g){
-        if(!g.isNat)return enabledNets['League Pass']!==false; // League Pass chip controls non-national
+        if(!g.isNat)return enabledNets['League Pass']!==false;
         return enabledNets[g.watch]!==false;
       });
     }
@@ -1540,14 +1892,14 @@ function renderCards(games){
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
-        '<div class="g-team"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'"/><div class="g-abbr">'+g.awayAbbr+'</div><div class="g-elo">'+g.awayElo+'</div><div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
+        '<div class="g-team"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'"/><div class="g-abbr">'+g.awayAbbr+' '+tierBadgeHtml(g.awayAbbr)+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-elo">'+g.awayElo+'</div><div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
         '<div class="g-mid">'+
           dateTimeLine+badge+seriesBlock+
           '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
           '<div class="g-combined">'+g.total+'</div>'+
           bonuses+
         '</div>'+
-        '<div class="g-team"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'"/><div class="g-abbr">'+g.homeAbbr+'</div><div class="g-elo">'+g.homeElo+'</div><div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
+        '<div class="g-team"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'"/><div class="g-abbr">'+g.homeAbbr+' '+tierBadgeHtml(g.homeAbbr)+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-elo">'+g.homeElo+'</div><div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -1564,7 +1916,134 @@ function getTz(){
   var sel=document.getElementById(id);
   return sel?sel.value:'ET';
 }
+
+// ════════════════════════════════════════════════════════════
+// ALL-TAB MULTI-SPORT FETCH
+// ════════════════════════════════════════════════════════════
+function loadAllGames(callback){
+  var el=document.getElementById('games-content');
+  if(el)el.innerHTML='<div class="loading">loading all sports...</div>';
+  var noteEl=document.getElementById('games-note');
+  if(noteEl)noteEl.textContent='';
+  var dp=document.getElementById('date-picker').value;
+  if(dp){var p=dp.split('-');currentDate=new Date(+p[0],+p[1]-1,+p[2]);}
+  var ds=dstr(currentDate);
+  var sports=[
+    {sport:'basketball',league:'nba',cfg:LEAGUE_CONFIGS.nba},
+    {sport:'basketball',league:'wnba',cfg:LEAGUE_CONFIGS.wnba},
+    {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl},
+  ];
+  var allEvents=[];
+  var pending=sports.length;
+  sports.forEach(function(sp){
+    var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+'&limit=20';
+    fetch(url).then(function(r){return r.json();})
+      .then(function(data){
+        var origLC=LC;
+        LC=sp.cfg;
+        var events=(data.events||[]).map(function(ev){
+          var g=parseGame(ev,sp.cfg);
+          if(g)g._league=sp.league;
+          return g;
+        }).filter(Boolean);
+        LC=origLC;
+        allEvents=allEvents.concat(events);
+        pending--;
+        if(pending===0)finishAllLoad(allEvents,callback);
+      })
+      .catch(function(){pending--;if(pending===0)finishAllLoad(allEvents,callback);});
+  });
+}
+
+function finishAllLoad(games,callback){
+  var origLC=LC;
+  // Score each game using its sport's own config + that sport's saved ratings
+  games=games.map(function(g){
+    var sportCfg=LEAGUE_CONFIGS[g._league];
+    var sportRatings=null;
+    try{var s=localStorage.getItem(g._league+'_elo_ratings');sportRatings=s?JSON.parse(s):null;}catch(e){}
+    var sportEloMap={};
+    sportCfg.teams.forEach(function(t){sportEloMap[t.abbr]=(sportRatings&&sportRatings[t.abbr])||sportCfg.defaultElo;});
+    // Temporarily set LC so getBonusVals reads correct sidebar
+    LC=sportCfg;
+    var v=getBonusVals();
+    var ws=sportCfg.scoreGame?sportCfg.scoreGame(g,v,sportEloMap):((sportEloMap[g.awayAbbr]||1200)+(sportEloMap[g.homeAbbr]||1200));
+    LC=origLC;
+    g.watchScore=ws;
+    return g;
+  });
+  var maxScore=Math.max.apply(null,games.map(function(g){return g.watchScore;}));
+  maxScore=maxScore||1;
+  games=games.map(function(g){return Object.assign({},g,{watchPct:Math.round(g.watchScore/maxScore*100)});});
+  games=applyFilters(games);
+  games.sort(function(a,b){return b.watchScore-a.watchScore;});
+  games.forEach(function(g,i){g.dotColor=getDotColor(i);});
+  lastGames=games;
+  var el=document.getElementById('games-content');
+  if(!games.length){
+    if(el)el.innerHTML='<div class="no-games">no games across all sports today</div>';
+  } else {
+    var html='<div class="cards">';
+    games.forEach(function(g,i){
+      LC=LEAGUE_CONFIGS[g._league];
+      html+=renderAllCard(g,i);
+      LC=origLC;
+    });
+    html+='</div>';
+    if(el)el.innerHTML=html;
+  }
+  var noteEl=document.getElementById('games-note');
+  if(noteEl)noteEl.textContent=games.length+' game'+(games.length!==1?'s':'')+' across all sports';
+  if(callback)callback();
+}
+
+function renderAllCard(g,i){
+  var rank=i+1;
+  var rc=rank===1?'#BA7517':rank===2?'#888780':rank===3?'#854F0B':'var(--text-3)';
+  var isMust=g.watchPct>=85,isLP=g.watchPct>=60&&!isMust;
+  var badge='';
+  if(g.watchTBD)badge='<span class="g-badge badge-lp">TBD</span>';
+  else if(g.isCup)badge='<span class="g-badge badge-cup">Cup</span>';
+  else if(g.isNat)badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
+  else badge='<span class="g-badge badge-lp">'+(LC.showLeaguePass?'League Pass':'Local')+'</span>';
+  var lgColors={nba:'#BA7517',wnba:'#E85D04',nfl:'#185FA5'};
+  var sportTag='<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:'+(lgColors[g._league]||'#888')+';margin-left:6px">'+(g._league||'').toUpperCase()+'</span>';
+  var bonuses='';
+  if(g.lev!==0)bonuses+='<div class="g-bonuses">'+(g.lev>0?'+':'')+g.lev+' '+g.levLbl+'</div>';
+  var dateTimeLine=
+    '<div style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text);text-align:center;margin:2px 0">'+g.dateLabel+'</div>'+
+    '<div style="font-size:10px;color:var(--text-3);font-family:var(--mono);text-align:center;letter-spacing:.5px;margin:1px 0">at</div>'+
+    '<div style="font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text);text-align:center;margin:2px 0">'+g.time+'</div>';
+  var seriesBlock='';
+  if(g.gameNum!=null){
+    var sl=(g.awaySerWins!=null)?(g.awayAbbr+' '+g.awaySerWins+' – '+g.homeSerWins+' '+g.homeAbbr):'tbd';
+    seriesBlock='<div style="margin-top:4px;padding-top:4px;border-top:.5px solid var(--border-light)">'+
+      '<div style="font-family:var(--mono);font-size:10px;color:var(--amber);text-align:center;font-weight:600">game '+g.gameNum+'</div>'+
+      '<div style="font-family:var(--mono);font-size:11px;color:var(--text-2);text-align:center">'+sl+'</div></div>';
+  }
+  return'<div class="game-card">'+
+    '<div class="game-card-header">'+
+      '<span class="rank-dot" style="background:'+g.dotColor+'"></span>'+
+      '<span class="game-rank-num" style="background:'+rc+';">#'+rank+'</span>'+
+      sportTag+
+      (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn">📅 add to gcal</a>':'')+
+    '</div>'+
+    '<div class="game-teams">'+
+      '<div class="g-team"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'"/>'+
+        '<div class="g-abbr">'+g.awayAbbr+' '+tierBadgeHtml(g.awayAbbr)+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
+        '<div class="g-elo">'+g.awayElo+'</div><div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
+      '<div class="g-mid">'+dateTimeLine+badge+seriesBlock+
+        '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
+        '<div class="g-combined">'+g.total+'</div>'+bonuses+'</div>'+
+      '<div class="g-team"><img src="'+(g.homeLogo||'')+'" alt="'+g.homeAbbr+'"/>'+
+        '<div class="g-abbr">'+g.homeAbbr+' '+tierBadgeHtml(g.homeAbbr)+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
+        '<div class="g-elo">'+g.homeElo+'</div><div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
+    '</div>'+
+  '</div>';
+}
+
 function loadGames(callback){
+  if(currentLeague==='all'){loadAllGames(callback);return;}
   var el=document.getElementById('games-content');
   el.innerHTML='<div class="loading">loading games...</div>';
   document.getElementById('games-note').textContent='';
@@ -1766,7 +2245,7 @@ function populateTeamDropdowns(){
     var sel=document.getElementById(id);
     // clear existing options except first
     while(sel.options.length>1)sel.remove(1);
-    LC.teams.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(t){
+    (LC.teams||[]).slice().sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(t){
       var o=document.createElement('option');o.value=t.abbr;o.textContent=t.name;sel.appendChild(o);
     });
   });
@@ -1797,11 +2276,32 @@ function switchTab(tab){
     document.getElementById('tab-'+t).className='tab'+(t===tab?' active':'');
     var ve=document.getElementById('view-'+t);if(ve)ve.style.display=t===tab?'block':'none';
   });
-  if(tab==='games'&&!lastGames.length)loadGames();
+  // For "all" league: swap standard ranker for tier ranker
+  var tierRanker=document.getElementById('view-tier-ranker');
+  var stdRanker=document.getElementById('view-ranker');
+  if(tab==='ranker'){
+    if(currentLeague==='all'){
+      if(tierRanker)tierRanker.style.display='block';
+      if(stdRanker)stdRanker.style.display='none';
+      renderTierRanker();
+    } else {
+      if(tierRanker)tierRanker.style.display='none';
+      if(stdRanker)stdRanker.style.display='block';
+    }
+  } else {
+    if(tierRanker)tierRanker.style.display='none';
+  }
+  if(tab==='games'){
+    if(currentLeague==='all'){
+      if(!lastGames.length)loadAllGames();
+    } else if(!lastGames.length){
+      loadGames();
+    }
+  }
   if(tab==='map'){
     if(!lastGames.length){
-      // Load games first, then build chart once done
-      loadGames(function(){buildMapChart();});
+      if(currentLeague==='all')loadAllGames(function(){buildMapChart();});
+      else loadGames(function(){buildMapChart();});
     } else {
       buildMapChart();
     }
@@ -1811,7 +2311,7 @@ function switchTab(tab){
 // ── LEAGUE SWITCH ──
 function switchLeague(lg){
   currentLeague=lg;
-  LC=LEAGUE_CONFIGS[lg];
+  LC=LEAGUE_CONFIGS[lg]||LEAGUE_CONFIGS.nba;
 
   // Destroy existing map chart and reset UI for new league
   if(mapChartInst){mapChartInst.destroy();mapChartInst=null;}
@@ -1824,6 +2324,7 @@ function switchLeague(lg){
     nba:  {amber:'#BA7517', amberDark:'#854F0B', blue:'#185FA5', blueLight:'#E6F1FB'},
     wnba: {amber:'#E85D04', amberDark:'#C44C00', blue:'#185FA5', blueLight:'#E6F1FB'},
     nfl:  {amber:'#185FA5', amberDark:'#0D4070', blue:'#185FA5', blueLight:'#E6F1FB'},
+    all:  {amber:'#888780', amberDark:'#555', blue:'#185FA5', blueLight:'#E6F1FB'},
   };
   var t=themes[lg]||themes.nba;
   var root=document.documentElement;
@@ -1840,6 +2341,12 @@ function switchLeague(lg){
   $sty('week-bar','display',LC.showWeekBar?'block':'none');
   $sty('date-bar','display',LC.showDateBar?'block':'none');
   $sty('playoff-section','display',LC.showPlayoff?'block':'none');
+  // All tab: hide sport-specific sections, show note
+  var isAll=lg==='all';
+  $sty('all-tab-note','display',isAll?'block':'none');
+  $sty('ist-section','display',isAll?'none':(LC.showIST?'block':'none'));
+  $sty('cup-section','display',isAll?'none':(lg==='wnba'?'block':'none'));
+  $sty('team-filter-card','display',isAll?'none':'');
   var sweepRow=document.getElementById('sweep-row');if(sweepRow)sweepRow.style.display=(LC.showSweep?'':'none');
   $sty('ist-section','display',LC.showIST?'block':'none');
   // Broadcast card: swap natl-tv-row <-> primetime-row
@@ -1887,6 +2394,8 @@ function switchLeague(lg){
   buildSeasonSelector();
   // build NFL weeks
   if(lg==='nfl')buildNflWeeksForYear(currentSeason||new Date().getFullYear());
+  // for 'all' tab: init tier system
+  if(lg==='all'){initTierElo();initTierRound();}
 
   updateStates();
   loadGames();
@@ -1908,7 +2417,14 @@ document.getElementById('nfl-single-date').value=ival(currentDate);
   document.getElementById('w-to').value=ival(n);
 })();
 
-// boot into NBA
+// boot
+initTierElo();
+// Pre-populate record cache with 0-0 placeholders; real records overwrite on standings fetch
+window.recordCache={};
+['nba','wnba','nfl'].forEach(function(lg){
+  if(LEAGUE_CONFIGS[lg])LEAGUE_CONFIGS[lg].teams.forEach(function(t){window.recordCache[t.abbr]='0-0';});
+});
+try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.parse(tp);}catch(e){}
 switchLeague('nba');
 document.getElementById('w-dt-on').checked=true;
 updateStates();
