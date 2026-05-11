@@ -28,10 +28,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 
 
 /* season selector */
-.season-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .season-sel{font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:4px 7px;cursor:pointer;flex-shrink:0}
 .season-sel:focus{outline:none;border-color:var(--amber)}
-.season-lbl{font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.3px}
 /* ── LEAGUE SWITCHER ── */
 .league-switcher{display:flex;gap:1px;background:var(--border);border-radius:var(--radius-sm);padding:1px;}
 .league-btn{padding:6px 10px;font-size:12px;font-weight:500;font-family:var(--mono);text-align:center;cursor:pointer;color:var(--text-2);background:transparent;border:none;border-radius:calc(var(--radius-sm) - 1px);transition:all .15s;letter-spacing:.3px;white-space:nowrap}
@@ -182,7 +180,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <header class="site-header">
   <div>
     <div class="site-title" id="site-title">GAME RANKER</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v1.0 <span style="color:var(--text-3);margin-left:6px">2026-05-10</span></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v1.4 <span style="color:var(--text-3);margin-left:6px">2026-05-10</span></div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:.3px" id="site-version">nba.v4.7</div>
   </div>
   <div class="league-switcher">
@@ -235,17 +233,15 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <div id="view-games">
   <div class="games-layout">
     <div class="games-list-col">
-      <!-- SEASON SELECTOR -->
-      <div class="season-bar" id="season-bar">
-        <span class="season-lbl">season</span>
-        <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
-      </div>
-
       <div id="date-bar" style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div class="pills">
-            <div class="pill on" id="mode-single" onclick="setDateMode('single')">single date</div>
-            <div class="pill" id="mode-range" onclick="setDateMode('range')">date range</div>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
+            <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+            <div class="pills">
+              <div class="pill on" id="mode-single" onclick="setDateMode('single')">single date</div>
+              <div class="pill" id="mode-range" onclick="setDateMode('range')">date range</div>
+            </div>
           </div>
           <select class="tz-select" id="tz-select">
             <option value="ET">ET</option><option value="CT">CT</option>
@@ -267,10 +263,14 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- NFL week selector (hidden for NBA/WNBA) -->
       <div id="week-bar" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <div class="pills" style="flex-shrink:0">
-            <div class="pill on" id="wmode-week" onclick="setWeekMode('week')">by week</div>
-            <div class="pill" id="wmode-single" onclick="setWeekMode('single')">single date</div>
-            <div class="pill" id="wmode-range" onclick="setWeekMode('range')">date range</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
+            <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+            <div class="pills" style="flex-shrink:0">
+              <div class="pill on" id="wmode-week" onclick="setWeekMode('week')">by week</div>
+              <div class="pill" id="wmode-single" onclick="setWeekMode('single')">single date</div>
+              <div class="pill" id="wmode-range" onclick="setWeekMode('range')">date range</div>
+            </div>
           </div>
           <select class="tz-select" id="nfl-tz-select" style="margin-left:auto">
             <option value="ET">ET</option><option value="CT">CT</option>
@@ -465,6 +465,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         <div class="nest" id="lev-nest">
           <div class="fw"><div class="fw-lbl">Game 1</div><input type="number" class="fw-num" id="w-game1" value="100"/></div>
           <div class="fw"><div class="fw-lbl">Tied series</div><input type="number" class="fw-num" id="w-tied" value="200"/></div>
+          <div class="fw"><div class="fw-lbl">Series lead</div><input type="number" class="fw-num" id="w-lead" value="150"/></div>
           <div class="fw"><div class="fw-lbl">Sweep (3-0)</div><input type="number" class="fw-num" id="w-sweep" value="-500"/></div>
           <div class="fw"><div class="fw-lbl">Elimination</div><input type="number" class="fw-num" id="w-elim" value="300"/></div>
           <div class="fw" id="game7-row"><div class="fw-lbl">Game 7</div><input type="number" class="fw-num" id="w-game7" value="200"/></div>
@@ -511,7 +512,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v4.7', vdate: '2025-05-07',
+    title: 'NBA', version: 'nba.v4.8', vdate: '2026-05-10',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -562,7 +563,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v1.0', vdate: '2026-05-10',
+    title: 'WNBA', version: 'wnba.v1.3', vdate: '2026-05-10',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -591,14 +592,14 @@ var LEAGUE_CONFIGS = {
       {name:"Golden State Valkyries",abbr:"GSV",espn:"gsv",expansion:true},
       {name:"Portland Fire",abbr:"PDX",espn:"por",expansion:true},
     ],
-    defaultElo: 1500,
+    defaultElo: 1200,
     quintileDividers: [2,5,8,11],
     TMIN:1400, TMAX:1650,
     CMIN:2850, CMAX:3300,
     chartMin:1350, chartMax:1700,
   },
   nfl: {
-    title: 'NFL', version: 'nfl.v1.2', vdate: '2025-05-07',
+    title: 'NFL', version: 'nfl.v1.5', vdate: '2026-05-10',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -771,7 +772,7 @@ function rankByRecord(){
       });
       if(!entries.length){document.getElementById('saved-note').textContent='could not parse standings';return;}
       entries.sort(function(a,b){return b.pct!==a.pct?b.pct-a.pct:b.wins-a.wins;});
-      var n=entries.length, lo=LC.defaultElo-290, hi=LC.defaultElo+290;
+      var n=entries.length, lo=900, hi=1500;
       entries.forEach(function(e,idx){
         var t=null;for(var j=0;j<LC.teams.length;j++){if(LC.teams[j].abbr===e.abbr){t=LC.teams[j];break;}}
         if(!t)return;
@@ -849,7 +850,7 @@ var nflWeeks=[], nflWeekIdx=0, nflWeekMode='week';
 var currentSeason = null; // year integer — for NFL/WNBA = the season year; NBA = end year (e.g. 2025 = 2024-25)
 
 function buildSeasonSelector(){
-  var sel=document.getElementById('season-select');
+  var sel=document.getElementById('season-select')||document.querySelector('.season-sel[id="season-select"]');
   if(!sel)return;
   var now=new Date();
   var seasons=[];
@@ -877,11 +878,19 @@ function buildSeasonSelector(){
   // Default to first (most recent)
   currentSeason=seasons[0]?seasons[0].value:now.getFullYear();
   sel.value=currentSeason;
+  // Sync all season selects (date-bar + week-bar both have one)
+  document.querySelectorAll('#season-select').forEach(function(s){
+    s.innerHTML=sel.innerHTML;
+    s.value=currentSeason;
+  });
   applySeasonToUI();
 }
 
 function onSeasonChange(){
-  currentSeason=+document.getElementById('season-select').value;
+  var s=document.getElementById('season-select');
+  currentSeason=s?+s.value:currentSeason;
+  // Sync sibling selects
+  document.querySelectorAll('#season-select').forEach(function(el){el.value=currentSeason;});
   applySeasonToUI();
   // For NBA/WNBA: jump date picker to season start. For NFL: rebuild weeks.
   if(currentLeague==='nfl'){
@@ -1108,6 +1117,7 @@ function resetFilters(){
   document.getElementById('w-elim').value=300;
   document.getElementById('w-tied').value=200;
   document.getElementById('w-game1').value=100;
+  document.getElementById('w-lead').value=150;
   document.getElementById('w-game7').value=200;
   document.getElementById('w-sweep').value=-500;
   document.getElementById('w-game5').value=200;
@@ -1145,7 +1155,7 @@ function getFilterState(){
     tvOn:document.getElementById('w-tv-on').checked,tvBonus:document.getElementById('w-tv-bonus').value,
     levOn:document.getElementById('w-lev-on').checked,
     elim:document.getElementById('w-elim').value,tied:document.getElementById('w-tied').value,
-    game1:document.getElementById('w-game1').value,game7:document.getElementById('w-game7').value,
+    game1:document.getElementById('w-game1').value,lead:document.getElementById('w-lead').value,game7:document.getElementById('w-game7').value,
     sweep:document.getElementById('w-sweep').value,
     starsOn:document.getElementById('w-stars-on').checked,
     starsMin:document.getElementById('stars-min-picker').dataset.val,
@@ -1167,6 +1177,7 @@ function applyFilterState(s){
   document.getElementById('w-elim').value=s.elim||300;
   document.getElementById('w-tied').value=s.tied||200;
   document.getElementById('w-game1').value=s.game1||100;
+  document.getElementById('w-lead').value=s.lead||150;
   document.getElementById('w-game7').value=s.game7||200;
   document.getElementById('w-sweep').value=s.sweep||-500;
   document.getElementById('w-stars-on').checked=!!s.starsOn;
@@ -1303,6 +1314,8 @@ function processEvent(ev,tz){
         lev=+document.getElementById('w-tied').value||0;levLbl='tied';
       } else if(gameNum===1){
         lev=+document.getElementById('w-game1').value||0;levLbl='game 1';
+      } else if(rawAW!==rawHW){
+        lev=+document.getElementById('w-lead').value||0;levLbl='series lead';
       }
     }
   }
@@ -1439,7 +1452,7 @@ function getTz(){
   var sel=document.getElementById(id);
   return sel?sel.value:'ET';
 }
-function loadGames(){
+function loadGames(callback){
   var el=document.getElementById('games-content');
   el.innerHTML='<div class="loading">loading games...</div>';
   document.getElementById('games-note').textContent='';
@@ -1475,6 +1488,7 @@ function loadGames(){
       games.forEach(function(g,i){g.dotColor=DOT_COLORS[i%DOT_COLORS.length];});
       lastGames=games;renderCards(games);
       document.getElementById('games-note').textContent=games.length+' game'+(games.length!==1?'s':'')+' · ranked by elo';
+      if(callback)callback();
     })
     .catch(function(){el.innerHTML='<div class="no-games">couldn\'t load games</div>';});
 }
@@ -1672,7 +1686,14 @@ function switchTab(tab){
     var ve=document.getElementById('view-'+t);if(ve)ve.style.display=t===tab?'block':'none';
   });
   if(tab==='games'&&!lastGames.length)loadGames();
-  if(tab==='map')buildMapChart();
+  if(tab==='map'){
+    if(!lastGames.length){
+      // Load games first, then build chart once done
+      loadGames(function(){buildMapChart();});
+    } else {
+      buildMapChart();
+    }
+  }
 }
 
 // ── LEAGUE SWITCH ──
