@@ -136,7 +136,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 .fw-num{font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:3px 6px;width:64px;text-align:right}
 .fw-num:focus{outline:none;border-color:var(--amber)}
 .pills{display:flex;gap:4px;flex-wrap:wrap}
-.pill{font-family:var(--mono);font-size:10px;padding:5px 8px 4px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-2);background:var(--bg);transition:all .12s;display:flex;align-items:center;line-height:1;white-space:nowrap}
+.pill{font-family:var(--mono);font-size:10px;padding:4px 6px 3px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-2);background:var(--bg);transition:all .12s;display:flex;align-items:center;line-height:1;white-space:nowrap}
 .pill.on{background:var(--amber);color:#fff;border-color:var(--amber)}
 .date-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
 .date-lbl{font-family:var(--mono);font-size:10px;color:var(--text-3)}
@@ -180,7 +180,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <header class="site-header">
   <div>
     <div class="site-title" id="site-title">GAME RANKER</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v1.6 <span style="color:var(--text-3);margin-left:6px">2026-05-11</span></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v1.7 <span style="color:var(--text-3);margin-left:6px">2026-05-11</span></div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:.3px" id="site-version">nba.v4.7</div>
   </div>
   <div class="league-switcher">
@@ -366,13 +366,15 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div class="fw" id="bcast-show-row">
             <div class="fw-lbl">Show</div>
             <div class="pills" id="bcast-filter">
-              <div class="pill on" data-val="all" onclick="setBcast('all')">all</div>
+              <div class="pill on" data-val="all" onclick="setBcast('all')">all networks</div>
               <!-- NBA/WNBA pills -->
               <div class="pill nba-wnba-pill" data-val="national" onclick="setBcast('national')">national TV</div>
               <div class="pill nba-wnba-pill" data-val="lp" onclick="setBcast('lp')">league pass</div>
+              <div class="pill nba-wnba-pill" data-val="streaming" onclick="setBcast('streaming')">streaming</div>
               <!-- NFL pills -->
               <div class="pill nfl-pill" data-val="national" onclick="setBcast('national')" style="display:none">national TV</div>
               <div class="pill nfl-pill" data-val="nflnet" onclick="setBcast('nflnet')" style="display:none">nfl network</div>
+              <div class="pill nfl-pill" data-val="streaming" onclick="setBcast('streaming')" style="display:none">streaming</div>
             </div>
           </div>
           <div class="fw" style="flex-wrap:wrap;gap:4px">
@@ -534,7 +536,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v5.0', vdate: '2026-05-11',
+    title: 'NBA', version: 'nba.v5.1', vdate: '2026-05-11',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -546,7 +548,7 @@ var LEAGUE_CONFIGS = {
     seriesMax: 7,
     showSweep: true,
     showIST: true,
-    networks: ['ESPN','ABC','NBC','TNT','TBS','Prime Video','Peacock'],
+    networks: ['ESPN','ABC','NBC','TNT','TBS','Prime Video','Peacock','League Pass'],
     logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/nba/500/'+espn+'.png'; },
     teams: [
       {name:"Portland Trail Blazers",abbr:"POR",espn:"por"},
@@ -587,7 +589,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v1.5', vdate: '2026-05-11',
+    title: 'WNBA', version: 'wnba.v1.6', vdate: '2026-05-11',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -599,7 +601,7 @@ var LEAGUE_CONFIGS = {
     seriesMax: 5,
     showSweep: false,
     showIST: false,
-    networks: ['ESPN','ESPN2','ABC','ION','Prime Video','CBS','NBA TV'],
+    networks: ['ESPN','ESPN2','ABC','ION','Prime Video','CBS','NBA TV','League Pass'],
     logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/wnba/500/'+espn+'.png'; },
     teams: [
       {name:"New York Liberty",abbr:"NYL",espn:"ny"},
@@ -625,7 +627,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   nfl: {
-    title: 'NFL', version: 'nfl.v1.8', vdate: '2026-05-11',
+    title: 'NFL', version: 'nfl.v1.9', vdate: '2026-05-11',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1100,7 +1102,6 @@ function setDateMode(mode){
 }
 function setBcast(v){
   bcastVal=v;
-  // Only toggle pills that are currently visible (avoids toggling hidden NFL/NBA-WNBA duplicates)
   document.querySelectorAll('#bcast-filter .pill').forEach(function(el){
     if(el.style.display==='none')return;
     el.classList.toggle('on',el.dataset.val===v);
@@ -1108,6 +1109,33 @@ function setBcast(v){
   var netWrap=document.getElementById('network-pills');
   if(v==='lp'){netWrap.style.opacity='0.35';netWrap.style.pointerEvents='none';}
   else{netWrap.style.opacity='';netWrap.style.pointerEvents='';}
+  // For NBA/WNBA: update network pills for streaming
+  if(currentLeague!=='nfl'){
+    var streaming=['Prime Video','Peacock'];
+    document.querySelectorAll('#network-pills .net-pill').forEach(function(el){
+      var n=el.dataset.net;
+      var on;
+      if(v==='streaming') on=streaming.indexOf(n)>=0;
+      else if(v==='national') on=n!=='League Pass'&&streaming.indexOf(n)<0;
+      else if(v==='lp') on=n==='League Pass';
+      else on=true;
+      enabledNets[n]=on; el.classList.toggle('on',on);
+    });
+  }
+  // For NFL: update which network pills are lit based on the filter selection
+  if(currentLeague==='nfl'){
+    var nflNat=['CBS','Fox','NBC','ESPN','ESPN2','ABC']; // excludes streaming+nflnet
+    var streaming=['Prime Video','Peacock'];
+    document.querySelectorAll('#network-pills .net-pill').forEach(function(el){
+      var n=el.dataset.net;
+      var on;
+      if(v==='national'){on=nflNat.indexOf(n)>=0;}
+      else if(v==='nflnet'){on=n==='NFL Network';}
+      else if(v==='streaming'){on=streaming.indexOf(n)>=0;}
+      else{on=true;}
+      enabledNets[n]=on; el.classList.toggle('on',on);
+    });
+  }
 }
 function setDay(v){
   dayVal=v;
@@ -1284,12 +1312,20 @@ function processEvent(ev,tz){
 
   var watch=LC.showLeaguePass?'League Pass':'Local',isNat=false,watchTBD=false;
   var hasBroadcast=comp.broadcasts&&comp.broadcasts.length&&comp.broadcasts[0].names&&comp.broadcasts[0].names.length;
+  // Normalize ESPN broadcast names to canonical form
+  var BROADCAST_NORM={'FOX':'Fox','fox':'Fox','CBS':'CBS','NBC':'NBC','ESPN2':'ESPN2',
+    'ESPNU':'ESPN','ESPN':'ESPN','ABC':'ABC','PRIME VIDEO':'Prime Video',
+    'AMAZON PRIME':'Prime Video','NFL NETWORK':'NFL Network','PEACOCK':'Peacock'};
+  var NFL_NAT=['CBS','Fox','NBC','ESPN','ESPN2','ABC','Prime Video','NFL Network','Peacock'];
   if(hasBroadcast){
     var ns=comp.broadcasts[0].names||[];
     for(var i=0;i<ns.length;i++){
       var n=ns[i];
+      // Normalize
+      n=BROADCAST_NORM[n]||BROADCAST_NORM[n.toUpperCase()]||n;
       if(n==='ESPN2'&&currentLeague==='nba')n='ESPN';
-      if(LC.networks.indexOf(n)>=0){watch=n;isNat=true;break;}
+      var netList=currentLeague==='nfl'?NFL_NAT:LC.networks;
+      if(netList.indexOf(n)>=0){watch=n;isNat=true;break;}
     }
   }
   var isPostseason=ev.season&&ev.season.type===3;
@@ -1298,7 +1334,7 @@ function processEvent(ev,tz){
   var levOn=document.getElementById('w-lev-on').checked;
   var lev=0,levLbl='';
   var gameNum=null,awaySerWins=null,homeSerWins=null;
-  var isCup=false,isPrimetime=false,isDivisional=false;
+  var isCup=false,isPrimetime=false,isDivisional=false,isIST=false;
 
   if(currentLeague==='nfl'){
     // NFL per-game bonuses
@@ -1306,10 +1342,17 @@ function processEvent(ev,tz){
     var snfVal=nflBonOn?(+document.getElementById('w-snf-val')?.value||0):0;
     var mnfVal=nflBonOn?(+document.getElementById('w-mnf-val')?.value||0):0;
     var tnfVal=nflBonOn?(+document.getElementById('w-tnf-val')?.value||0):0;
-    // Detect by network only — NBC=SNF, ESPN/ABC=MNF, Prime Video=TNF
-    if(watch==='NBC'&&snfVal){lev+=snfVal;levLbl='SNF';isPrimetime=true;}
-    else if((watch==='ESPN'||watch==='ESPN2'||watch==='ABC')&&mnfVal){lev+=mnfVal;levLbl='MNF';isPrimetime=true;}
-    else if(watch==='Prime Video'&&tnfVal){lev+=tnfVal;levLbl='TNF';isPrimetime=true;}
+    // Primetime: day + time window (after 6:30pm ET = 22:30 UTC during EDT)
+    // Convert utc to ET hour
+    var etOffset=tzOff('ET'); // accounts for DST
+    var etMs=utc.getTime()+(etOffset*3600000)+(utc.getTimezoneOffset()*60000);
+    var etDate=new Date(etMs);
+    var etDay=etDate.getDay(); // 0=Sun,1=Mon...4=Thu
+    var etHr=etDate.getHours()+etDate.getMinutes()/60;
+    var isPT_time=etHr>=19; // after 7pm ET
+    if(etDay===0&&isPT_time&&snfVal){lev+=snfVal;levLbl='SNF';isPrimetime=true;}
+    else if(etDay===1&&isPT_time&&mnfVal){lev+=mnfVal;levLbl='MNF';isPrimetime=true;}
+    else if(etDay===4&&isPT_time&&tnfVal){lev+=tnfVal;levLbl='TNF';isPrimetime=true;}
     // Divisional
     var awayTeamData=null,homeTeamData=null;
     for(var i=0;i<LC.teams.length;i++){
@@ -1352,6 +1395,13 @@ function processEvent(ev,tz){
       isCup=notes.some(function(n){return(n.headline||'').toLowerCase().includes('commissioner');});
       if(isCup&&document.getElementById('w-cup-on')&&document.getElementById('w-cup-on').checked){lev+=+document.getElementById('w-cup').value||0;levLbl='cup game';}
       // NBA In-Season Tournament
+      // Commissioner's Cup: ESPN notes OR date range June 1-20
+      var cupByNotes=notes.some(function(n){return(n.headline||'').toLowerCase().includes('commissioner');});
+      var cupByDate=(function(){
+        var m=utc.getMonth(),d=utc.getDate(); // month 0-indexed
+        return m===5&&d>=1&&d<=20; // June 1-20
+      })();
+      isCup=cupByNotes||cupByDate;
       var isIST=currentLeague==='nba'&&notes.some(function(n){return(n.headline||'').toLowerCase().includes('in-season')||( n.headline||'').toLowerCase().includes('tournament');});
       if(isIST&&document.getElementById('w-ist-on')&&document.getElementById('w-ist-on').checked){lev+=+document.getElementById('w-ist-val').value||0;levLbl='tournament';}
     }
@@ -1411,11 +1461,16 @@ function applyFilters(games){
   if(excludeTeams.length>0)games=games.filter(function(g){return excludeTeams.indexOf(g.homeAbbr)<0&&excludeTeams.indexOf(g.awayAbbr)<0;});
   var bcastOn=document.getElementById('w-bcast-on').checked;
   if(bcastOn){
-    if(bcastVal==='national')games=games.filter(function(g){return g.isNat&&g.watch!=='NFL Network'&&g.watch!=='Peacock';});
+    var STREAMING=['Prime Video','Peacock'];
+    if(bcastVal==='national')games=games.filter(function(g){return g.isNat&&g.watch!=='NFL Network'&&STREAMING.indexOf(g.watch)<0;});
     else if(bcastVal==='lp')games=games.filter(function(g){return!g.isNat;});
     else if(bcastVal==='nflnet')games=games.filter(function(g){return g.watch==='NFL Network';});
+    else if(bcastVal==='streaming')games=games.filter(function(g){return STREAMING.indexOf(g.watch)>=0;});
     else{// bcastVal==='all': apply individual network pill filter
-      games=games.filter(function(g){if(!g.isNat)return true;return enabledNets[g.watch]!==false;});
+      games=games.filter(function(g){
+        if(!g.isNat)return enabledNets['League Pass']!==false; // League Pass chip controls non-national
+        return enabledNets[g.watch]!==false;
+      });
     }
   }
   var dtOn=document.getElementById('w-dt-on').checked;
@@ -1758,8 +1813,11 @@ function switchLeague(lg){
   currentLeague=lg;
   LC=LEAGUE_CONFIGS[lg];
 
-  // Destroy existing map chart so it reloads fresh for new league
+  // Destroy existing map chart and reset UI for new league
   if(mapChartInst){mapChartInst.destroy();mapChartInst=null;}
+  $sty('map-nogames','display','block');
+  $sty('map-content','display','none');
+  var mc=document.getElementById('map-legend');if(mc)mc.innerHTML='';
 
   // theme color
   var themes={
@@ -1789,8 +1847,6 @@ function switchLeague(lg){
   $sty('tv-nest','display',lg!=='nfl'?'':'none');
   $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   // Broadcast pills: swap NBA/WNBA <-> NFL options
-  document.querySelectorAll('.nba-wnba-pill').forEach(function(el){el.style.display=lg==='nfl'?'none':'';});
-  document.querySelectorAll('.nfl-pill').forEach(function(el){el.style.display=lg==='nfl'?'':'none';});
   setBcast('all'); // reset to all on league switch
   // Standalone bonus cards
 
@@ -1801,11 +1857,9 @@ function switchLeague(lg){
   $sty('game5-row','display',LC.seriesMax===5?'flex':'none');
   $sty('cup-row','display',lg==='wnba'?'flex':'none');
 
-  // show/hide League Pass pill
-  var lpPill=document.querySelector('#bcast-filter .pill[data-val="lp"]');
-  if(lpPill)lpPill.style.display=LC.showLeaguePass?'':'none';
-  var natPill=document.querySelector('#bcast-filter .pill[data-val="national"]');
-  if(natPill)natPill.style.display=LC.showLeaguePass?'':'none';
+  // show/hide bcast filter pills per league
+  document.querySelectorAll('.nba-wnba-pill').forEach(function(el){el.style.display=lg==='nfl'?'none':'';});
+  document.querySelectorAll('.nfl-pill').forEach(function(el){el.style.display=lg==='nfl'?'':'none';});
 
   // rebuild network pills
   document.getElementById('network-pills').innerHTML='';
