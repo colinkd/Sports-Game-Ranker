@@ -199,12 +199,12 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <header class="site-header">
   <div>
     <div class="site-title" id="site-title">GAME RANKER</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.5 <span style="color:var(--text-3);margin-left:6px">2026-05-12</span></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.6 <span style="color:var(--text-3);margin-left:6px">2026-05-12</span></div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:.3px" id="site-version">nba.v4.7</div>
   </div>
   <div class="league-switcher">
     <button class="league-btn" id="lgbtn-all" onclick="switchLeague('all')">🏆 All</button>
-    <button class="league-btn active" id="lgbtn-nba" onclick="switchLeague('nba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NBA</button>
+    <button class="league-btn" id="lgbtn-nba" onclick="switchLeague('nba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NBA</button>
     <button class="league-btn" id="lgbtn-wnba" onclick="switchLeague('wnba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> WNBA</button>
     <button class="league-btn" id="lgbtn-nfl" onclick="switchLeague('nfl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NFL</button>
   </div>
@@ -574,7 +574,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v5.7', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v5.8', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -627,7 +627,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.2', vdate: '2026-05-12',
+    title: 'WNBA', version: 'wnba.v2.3', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -665,7 +665,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v1.5', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v1.6', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -682,7 +682,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   nfl: {
-    title: 'NFL', version: 'nfl.v2.5', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v2.6', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -739,7 +739,7 @@ var LEAGUE_CONFIGS = {
 // ════════════════════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════════════════════
-var currentLeague = 'nba';
+var currentLeague = 'all';
 var currentTab = 'games';
 var LC = LEAGUE_CONFIGS.nba; // shorthand, updated on switch
 var DOT_TOP3=["#BA7517","#888780","#854F0B"]; // gold, silver, bronze
@@ -965,7 +965,7 @@ function renderTierRankings(){
       html+='<hr class="tier-divider '+lineClass+'"/>';
     }
     lastTier=tier;
-    var rec=(function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+t.abbr];return r&&r!=='0-0'?r:'';})() ;
+    var rec=(function(){var r=window.recordCache&&(window.recordCache[t.league+'_'+t.abbr]);return r&&r!=='0-0'?r:'';})();
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
@@ -1113,7 +1113,15 @@ function rankByRecord(){
       var NORM_WNBA={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
         'IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG',
         'PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'};
-      var NORM_NFL={'WSH':'WSH','LA':'LAR','JAC':'JAX'};
+      var NORM_NFL={
+        'JAC':'JAX','LA':'LAR','WSH':'WSH','LV':'LV',
+        'NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO',
+        'BUF':'BUF','MIA':'MIA','NYJ':'NYJ','BAL':'BAL','CIN':'CIN',
+        'CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN',
+        'DEN':'DEN','LAC':'LAC','DAL':'DAL','NYG':'NYG','PHI':'PHI',
+        'CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR',
+        'ARI':'ARI','SEA':'SEA'
+      };
       var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:NORM_NBA;
       // Handle both data.children (NBA/NFL) and flat data.standings (WNBA)
       var confs=data.children||[data];
@@ -1184,7 +1192,7 @@ function renderRankings(){
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img class="rank-logo" src="'+LC.logo(t.espn)+'" alt="'+t.abbr+'"/>'+
-      '<div class="rank-name">'+t.name+xpTag+(window.recordCache&&window.recordCache[t.abbr]?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+window.recordCache[t.abbr]+'</span>':'')+'</div>'+
+      '<div class="rank-name">'+t.name+xpTag+(function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+t.abbr];return r&&r!=='0-0'?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+r+'</span>':'';})()+'</div>'+
       '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
       '<div class="rank-elo">'+(ratings[t.abbr]||LC.defaultElo)+'</div></div>';
     if(qdivs.indexOf(i)>=0)html+='<hr class="quintile-divider"/>';
@@ -2485,7 +2493,15 @@ window.recordCache={};
   var NORM_WNBA={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
     'IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG',
     'PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'};
-  var NORM_NFL={'WSH':'WSH','LA':'LAR','JAC':'JAX','LV':'LV'};
+  var NORM_NFL={
+    'JAC':'JAX','LA':'LAR','WSH':'WSH','LV':'LV',
+    'NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO',
+    'BUF':'BUF','MIA':'MIA','NYJ':'NYJ','BAL':'BAL','CIN':'CIN',
+    'CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN',
+    'DEN':'DEN','LAC':'LAC','DAL':'DAL','NYG':'NYG','PHI':'PHI',
+    'CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR',
+    'ARI':'ARI','SEA':'SEA'
+  };
   var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,nfl:NORM_NFL};
   [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'football',league:'nfl'}]
   .forEach(function(sp){
@@ -2501,7 +2517,7 @@ window.recordCache={};
           var wins=0,losses=0;
           (e.stats||[]).forEach(function(s){if(s.name==='wins')wins=+s.value;if(s.name==='losses')losses=+s.value;});
           if(abbr&&(wins+losses>0)){
-            window.recordCache[currentLeague+'_'+abbr]=wins+'-'+losses;
+            window.recordCache[sp.league+'_'+abbr]=wins+'-'+losses;
             entries.push({abbr:abbr,wins:wins,losses:losses});
           }
         });
@@ -2517,7 +2533,7 @@ window.recordCache={};
   });
 })();
 try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.parse(tp);}catch(e){}
-switchLeague('nba');
+switchLeague('all');
 document.getElementById('w-dt-on').checked=true;
 updateStates();
 </script>
