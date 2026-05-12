@@ -900,12 +900,12 @@ function assignTierButtons(){
   var lgLabels={nba:'NBA',wnba:'WNBA',nfl:'NFL'};
   document.getElementById('tier-logo-a').src=L.logo;
   document.getElementById('tier-name-a').textContent=L.name;
-  var recA=window.recordCache&&window.recordCache[L.abbr]?window.recordCache[L.abbr]:'';
+  var recA=window.recordCache&&window.recordCache['all_'+L.abbr]||window.recordCache[L.league+'_'+L.abbr]||'';
   document.getElementById('tier-sport-a').textContent=(lgLabels[L.league]||'')+(recA?' · '+recA:'');
   document.getElementById('tier-sport-a').textContent=lgLabels[L.league]||'';
   document.getElementById('tier-logo-b').src=R.logo;
   document.getElementById('tier-name-b').textContent=R.name;
-  var recB=window.recordCache&&window.recordCache[R.abbr]?window.recordCache[R.abbr]:'';
+  var recB=window.recordCache&&window.recordCache['all_'+R.abbr]||window.recordCache[R.league+'_'+R.abbr]||'';
   document.getElementById('tier-sport-b').textContent=(lgLabels[R.league]||'')+(recB?' · '+recB:'');
   document.getElementById('tier-sport-b').textContent=lgLabels[R.league]||'';
   (function(l,r){
@@ -965,7 +965,7 @@ function renderTierRankings(){
       html+='<hr class="tier-divider '+lineClass+'"/>';
     }
     lastTier=tier;
-    var rec=(function(){var k=currentLeague+'_'+t.abbr;var r=window.recordCache&&(window.recordCache[k]||window.recordCache[t.abbr]);return r&&r!=='0-0'?r:'';})() ;
+    var rec=(function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+t.abbr];return r&&r!=='0-0'?r:'';})() ;
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
@@ -1067,10 +1067,10 @@ function assignButtons(){
   var L=LC.teams[flip?p[1]:p[0]],R=LC.teams[flip?p[0]:p[1]];
   document.getElementById('logo-a').src=LC.logo(L.espn);
   var nameEl_a=document.getElementById('name-a');
-  if(nameEl_a){nameEl_a.innerHTML=L.name+((function(){var k=currentLeague+'_'+L.abbr;var r=window.recordCache&&(window.recordCache[k]||window.recordCache[L.abbr]);return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
+  if(nameEl_a){nameEl_a.innerHTML=L.name+((function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+L.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
   document.getElementById('logo-b').src=LC.logo(R.espn);
   var nameEl_b=document.getElementById('name-b');
-  if(nameEl_b){nameEl_b.innerHTML=R.name+((function(){var k=currentLeague+'_'+R.abbr;var r=window.recordCache&&(window.recordCache[k]||window.recordCache[R.abbr]);return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
+  if(nameEl_b){nameEl_b.innerHTML=R.name+((function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+R.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
   (function(l,r){
     document.getElementById('btn-a').onclick=function(){updateElo(l.abbr,r.abbr);current++;saveRoundState();render();};
     document.getElementById('btn-b').onclick=function(){updateElo(r.abbr,l.abbr);current++;saveRoundState();render();};
@@ -1129,7 +1129,6 @@ function rankByRecord(){
           if(abbr&&wins+losses>0){
             entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});
             if(!window.recordCache)window.recordCache={};
-            window.recordCache[abbr]=wins+'-'+losses;
             window.recordCache[currentLeague+'_'+abbr]=wins+'-'+losses;
           }
         });
@@ -1137,7 +1136,7 @@ function rankByRecord(){
       if(!entries.length){document.getElementById('saved-note').textContent='could not parse standings';return;}
       entries.sort(function(a,b){return b.pct!==a.pct?b.pct-a.pct:b.wins-a.wins;});
       if(!window.recordCache)window.recordCache={};
-      entries.forEach(function(e){window.recordCache[e.abbr]=e.wins+'-'+e.losses;});
+      entries.forEach(function(e){window.recordCache[currentLeague+'_'+e.abbr]=e.wins+'-'+e.losses;});
       var n=entries.length, lo=900, hi=1500;
       entries.forEach(function(e,idx){
         var t=null;for(var j=0;j<LC.teams.length;j++){if(LC.teams[j].abbr===e.abbr){t=LC.teams[j];break;}}
@@ -2103,8 +2102,8 @@ function loadGames(callback){
         g.dotColor=getDotColor(i);
         // Update recordCache from live game data
         if(!window.recordCache)window.recordCache={};
-        if(g.awayRec&&g.awayRec!=='0-0'){window.recordCache[g.awayAbbr]=g.awayRec;window.recordCache[currentLeague+'_'+g.awayAbbr]=g.awayRec;}
-        if(g.homeRec&&g.homeRec!=='0-0'){window.recordCache[g.homeAbbr]=g.homeRec;window.recordCache[currentLeague+'_'+g.homeAbbr]=g.homeRec;}
+        if(g.awayRec&&g.awayRec!=='0-0'){window.recordCache[currentLeague+'_'+g.awayAbbr]=g.awayRec;}
+        if(g.homeRec&&g.homeRec!=='0-0'){window.recordCache[currentLeague+'_'+g.homeAbbr]=g.homeRec;}
       });
       lastGames=games;renderCards(games);
       document.getElementById('games-note').textContent=games.length+' game'+(games.length!==1?'s':'')+' · ranked by elo';
@@ -2476,7 +2475,9 @@ initTierElo();
 window.recordCache={};
 // Pre-populate with 0-0 placeholders
 ['nba','wnba','nfl'].forEach(function(lg){
-  if(LEAGUE_CONFIGS[lg])LEAGUE_CONFIGS[lg].teams.forEach(function(t){window.recordCache[t.abbr]='0-0';});
+  if(LEAGUE_CONFIGS[lg])LEAGUE_CONFIGS[lg].teams.forEach(function(t){
+    window.recordCache[lg+'_'+t.abbr]='0-0';
+  });
 });
 // Fetch real standings for all sports on boot
 (function fetchAllStandings(){
@@ -2500,7 +2501,7 @@ window.recordCache={};
           var wins=0,losses=0;
           (e.stats||[]).forEach(function(s){if(s.name==='wins')wins=+s.value;if(s.name==='losses')losses=+s.value;});
           if(abbr&&(wins+losses>0)){
-            window.recordCache[abbr]=wins+'-'+losses;
+            window.recordCache[currentLeague+'_'+abbr]=wins+'-'+losses;
             entries.push({abbr:abbr,wins:wins,losses:losses});
           }
         });
