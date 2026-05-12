@@ -199,7 +199,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <header class="site-header">
   <div>
     <div class="site-title" id="site-title">GAME RANKER</div>
-    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.4 <span style="color:var(--text-3);margin-left:6px">2026-05-12</span></div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:.3px">v2.5 <span style="color:var(--text-3);margin-left:6px">2026-05-12</span></div>
     <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px;letter-spacing:.3px" id="site-version">nba.v4.7</div>
   </div>
   <div class="league-switcher">
@@ -574,7 +574,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v5.6', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v5.7', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -627,7 +627,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.1', vdate: '2026-05-12',
+    title: 'WNBA', version: 'wnba.v2.2', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -665,7 +665,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v1.4', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v1.5', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -682,7 +682,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   nfl: {
-    title: 'NFL', version: 'nfl.v2.4', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v2.5', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -965,7 +965,7 @@ function renderTierRankings(){
       html+='<hr class="tier-divider '+lineClass+'"/>';
     }
     lastTier=tier;
-    var rec=window.recordCache&&window.recordCache[t.abbr]&&window.recordCache[t.abbr]!=='0-0'?window.recordCache[t.abbr]:'';
+    var rec=(function(){var k=currentLeague+'_'+t.abbr;var r=window.recordCache&&(window.recordCache[k]||window.recordCache[t.abbr]);return r&&r!=='0-0'?r:'';})() ;
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
@@ -1067,10 +1067,10 @@ function assignButtons(){
   var L=LC.teams[flip?p[1]:p[0]],R=LC.teams[flip?p[0]:p[1]];
   document.getElementById('logo-a').src=LC.logo(L.espn);
   var nameEl_a=document.getElementById('name-a');
-  if(nameEl_a){nameEl_a.innerHTML=L.name+(window.recordCache&&window.recordCache[L.abbr]?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+window.recordCache[L.abbr]+'</div>':'');}
+  if(nameEl_a){nameEl_a.innerHTML=L.name+((function(){var k=currentLeague+'_'+L.abbr;var r=window.recordCache&&(window.recordCache[k]||window.recordCache[L.abbr]);return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
   document.getElementById('logo-b').src=LC.logo(R.espn);
   var nameEl_b=document.getElementById('name-b');
-  if(nameEl_b){nameEl_b.innerHTML=R.name+(window.recordCache&&window.recordCache[R.abbr]?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+window.recordCache[R.abbr]+'</div>':'');}
+  if(nameEl_b){nameEl_b.innerHTML=R.name+((function(){var k=currentLeague+'_'+R.abbr;var r=window.recordCache&&(window.recordCache[k]||window.recordCache[R.abbr]);return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
   (function(l,r){
     document.getElementById('btn-a').onclick=function(){updateElo(l.abbr,r.abbr);current++;saveRoundState();render();};
     document.getElementById('btn-b').onclick=function(){updateElo(r.abbr,l.abbr);current++;saveRoundState();render();};
@@ -1130,6 +1130,7 @@ function rankByRecord(){
             entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});
             if(!window.recordCache)window.recordCache={};
             window.recordCache[abbr]=wins+'-'+losses;
+            window.recordCache[currentLeague+'_'+abbr]=wins+'-'+losses;
           }
         });
       });
@@ -1399,9 +1400,16 @@ function onWeekChange(){
 
 // ── QUINTILES ──
 function getEloRange(){
-  var vals=(LC.teams&&LC.teams.length)?LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;}): [1200];
+  var vals;
+  if(currentLeague==='all'&&lastGames.length){
+    // Use actual elo values from loaded games
+    vals=[];
+    lastGames.forEach(function(g){vals.push(g.awayElo||1200);vals.push(g.homeElo||1200);});
+  } else {
+    vals=(LC.teams&&LC.teams.length)?LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;}):[1200];
+  }
   var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
-  // Pad slightly so teams at exact min/max still get quintile 1/5
+  if(mn===mx){mn=mn-200;mx=mx+200;} // prevent zero-range when all same
   return{min:mn-1, max:mx+1};
 }
 function getCombinedRange(){
@@ -2095,8 +2103,8 @@ function loadGames(callback){
         g.dotColor=getDotColor(i);
         // Update recordCache from live game data
         if(!window.recordCache)window.recordCache={};
-        if(g.awayRec&&g.awayRec!=='0-0')window.recordCache[g.awayAbbr]=g.awayRec;
-        if(g.homeRec&&g.homeRec!=='0-0')window.recordCache[g.homeAbbr]=g.homeRec;
+        if(g.awayRec&&g.awayRec!=='0-0'){window.recordCache[g.awayAbbr]=g.awayRec;window.recordCache[currentLeague+'_'+g.awayAbbr]=g.awayRec;}
+        if(g.homeRec&&g.homeRec!=='0-0'){window.recordCache[g.homeAbbr]=g.homeRec;window.recordCache[currentLeague+'_'+g.homeAbbr]=g.homeRec;}
       });
       lastGames=games;renderCards(games);
       document.getElementById('games-note').textContent=games.length+' game'+(games.length!==1?'s':'')+' · ranked by elo';
@@ -2152,7 +2160,14 @@ function buildMapChart(){
   if(!lastGames.length)return;
   var cvs=document.getElementById('map-canvas');
   var eloR=getEloRange();
-  var AMIN=eloR.min, CHART_MAX=eloR.max, MED=(AMIN+CHART_MAX)/2;
+  var AMIN,CHART_MAX;
+  if(currentLeague==='all'){
+    AMIN=eloR.min; CHART_MAX=eloR.max;
+  } else {
+    AMIN=Math.min(eloR.min, LC.chartMin||800);
+    CHART_MAX=Math.max(eloR.max, LC.chartMax||1700);
+  }
+  var MED=(AMIN+CHART_MAX)/2;
   var combR=getCombinedRange();
   var RMIN=combR.min, RMAX=combR.max, RR=RMAX-RMIN;
   var qb=[RMIN+RR*0.2,RMIN+RR*0.4,RMIN+RR*0.6,RMIN+RR*0.8];
@@ -2404,7 +2419,7 @@ function switchLeague(lg){
   switchTab(currentTab);
 
   // repopulate team dropdowns
-  includeTeams=[];excludeTeams=[];
+  if(lg!=='all'){includeTeams=[];excludeTeams=[];}
   populateTeamDropdowns();
   renderTeamBubbles();
 
