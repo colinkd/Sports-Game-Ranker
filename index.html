@@ -729,7 +729,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v2.4', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v2.7', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -1476,6 +1476,7 @@ function fmtDateShort(d){return DOW[d.getDay()]+', '+MONTHS_FULL[d.getMonth()]+'
 // ── NFL WEEK SELECTOR ──
 var nflWeeks=[], nflWeekIdx=0, nflWeekMode='week', nflWeeksSeason=0;
 var eplWeeks=[], eplWeekIdx=0, eplWeeksSeason=0;
+var eplFixtures=null; // cached full season fixtures from football-data.org
 
 // ── SEASON SELECTOR ──────────────────────────────────────
 var currentSeason = null; // year integer — for NFL/WNBA = the season year; NBA = end year (e.g. 2025 = 2024-25)
@@ -1593,14 +1594,12 @@ function jumpToSeasonStart(){
 
 function buildEplWeeksForYear(yr){
   yr=yr||new Date().getFullYear();
+  var season=yr-1; // e.g. 2025 for 2025-26
   eplWeeks=[];eplWeeksSeason=yr;
-  var season=yr-1;
-  var label=function(w){return 'Matchweek '+w+' · '+season+'-'+String(yr).slice(2);};
+  var label=function(w){return 'Matchweek '+w+' \u00b7 '+season+'-'+String(yr).slice(2);};
 
   // Build 38 placeholder weeks
-  for(var w=1;w<=38;w++){
-    eplWeeks.push({label:label(w),start:null,end:null,gw:w});
-  }
+  for(var w=1;w<=38;w++) eplWeeks.push({label:label(w),start:null,end:null,gw:w});
   var sel=document.getElementById('week-select');
   if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
 
@@ -1610,55 +1609,64 @@ function buildEplWeeksForYear(yr){
     loadGames();
   }
 
-  function fallback(){
-    // Estimate by date
-    var now=new Date();
-    var start=new Date(yr-1,7,16),end=new Date(yr,4,25);
-    var spacing=(end-start)/(37*24*60*60*1000);
+  function buildFromMatches(matches, currentMatchday){
+    // Group by matchday, find min/max date
+    var mwDates={};
+    matches.forEach(function(m){
+      var md=m.matchday; if(!md)return;
+      var dt=m.utcDate?m.utcDate.slice(0,10):null; if(!dt)return;
+      if(!mwDates[md]){mwDates[md]={min:dt,max:dt};}
+      else{if(dt<mwDates[md].min)mwDates[md].min=dt;if(dt>mwDates[md].max)mwDates[md].max=dt;}
+    });
+    // Update eplWeeks with real dates
     for(var w=1;w<=38;w++){
-      var s=new Date(start.getTime()+Math.round((w-1)*spacing)*24*60*60*1000);
-      var e=new Date(s);e.setDate(s.getDate()+9);
-      eplWeeks[w-1]={label:label(w),start:s,end:e,gw:w};
+      if(mwDates[w]){
+        var s=new Date(mwDates[w].min+'T00:00:00');
+        var e=new Date(mwDates[w].max+'T23:59:59');
+        eplWeeks[w-1]={label:label(w),start:s,end:e,gw:w};
+      }
     }
     if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
-    var now2=new Date(),idx=0;
-    for(var i=0;i<eplWeeks.length;i++){if(now2<=eplWeeks[i].end){idx=i;break;}idx=i;}
+    // Use currentMatchday from season data, fallback to date search
+    var idx=0;
+    if(currentMatchday&&currentMatchday>=1&&currentMatchday<=38){
+      idx=currentMatchday-1;
+    } else {
+      var now=new Date();
+      for(var i=0;i<eplWeeks.length;i++){
+        if(eplWeeks[i].end&&now<=eplWeeks[i].end){idx=i;break;}
+        idx=i;
+      }
+    }
     setEplWeek(idx);
   }
 
-  // Fetch all fixtures for this season via proxy
+  // Fetch all fixtures from proxy
   fetch('https://purple-boat-fd2e.c-kentdaggett.workers.dev?season='+season)
     .then(function(r){return r.json();})
     .then(function(data){
       var matches=data.matches||[];
-      if(!matches.length){fallback();return;}
-      // Group by matchday, find min/max date
-      var mwDates={};
-      matches.forEach(function(m){
-        var md=m.matchday;
-        var dt=new Date(m.utcDate);
-        if(!mwDates[md]){mwDates[md]={min:dt,max:dt};}
-        else{if(dt<mwDates[md].min)mwDates[md].min=dt;if(dt>mwDates[md].max)mwDates[md].max=dt;}
-      });
-      // Update eplWeeks with real dates
+      if(!matches.length){setEplWeek(36);return;}
+      // Get currentMatchday from season info on first match
+      var currentMD=(matches[0]&&matches[0].season&&matches[0].season.currentMatchday)||null;
+      eplFixtures=matches; // cache for direct use in loadGames
+    buildFromMatches(matches, currentMD);
+    })
+    .catch(function(){
+      // Fallback: estimate
+      var now=new Date(),start=new Date(yr-1,7,16),end=new Date(yr,4,25);
+      var sp=(end-start)/(37*24*60*60*1000);
       for(var w=1;w<=38;w++){
-        if(mwDates[w]){
-          var s=new Date(mwDates[w].min);s.setHours(0,0,0,0);
-          var e=new Date(mwDates[w].max);e.setHours(23,59,59,0);
-          eplWeeks[w-1]={label:label(w),start:s,end:e,gw:w};
-        }
+        var s=new Date(start.getTime()+Math.round((w-1)*sp)*24*60*60*1000);
+        var e=new Date(s);e.setDate(s.getDate()+9);
+        eplWeeks[w-1]={label:label(w),start:s,end:e,gw:w};
       }
       if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
-      // Find current matchweek
-      var now=new Date(),idx=eplWeeks.length-1;
-      for(var i=0;i<eplWeeks.length;i++){
-        if(eplWeeks[i].end&&now<=eplWeeks[i].end){idx=i;break;}
-      }
+      var now2=new Date(),idx=0;
+      for(var i=0;i<eplWeeks.length;i++){if(now2<=eplWeeks[i].end){idx=i;break;}idx=i;}
       setEplWeek(idx);
-    })
-    .catch(fallback);
+    });
 }
-
 
 function buildNflWeeksForYear(yr){nflWeeksSeason=yr;
   yr=yr||new Date().getFullYear();
@@ -1713,18 +1721,29 @@ function goNflToday(){
   loadGames();
 }
 function goNflWeekToday(){
-  // Snap week selector to the current week
   var now=new Date();
-  var idx=nflWeeks.findIndex(function(w){return now>=w.start&&now<=w.end;});
-  if(idx<0)idx=0;
-  nflWeekIdx=idx;
   var sel=document.getElementById('week-select');
-  if(sel)sel.value=idx;
+  if(currentLeague==='epl'){
+    var idx=eplWeeks.findIndex(function(w){return w.end&&now<=w.end;});
+    if(idx<0)idx=eplWeeks.length-1;
+    eplWeekIdx=idx;
+    if(sel)sel.value=idx;
+  } else {
+    var idx=nflWeeks.findIndex(function(w){return now>=w.start&&now<=w.end;});
+    if(idx<0)idx=0;
+    nflWeekIdx=idx;
+    if(sel)sel.value=idx;
+  }
   loadGames();
 }
 function stepWeek(d){
-  nflWeekIdx=Math.max(0,Math.min(nflWeeks.length-1,nflWeekIdx+d));
-  document.getElementById('week-select').value=nflWeekIdx;
+  if(currentLeague==='epl'){
+    eplWeekIdx=Math.max(0,Math.min(eplWeeks.length-1,eplWeekIdx+d));
+    document.getElementById('week-select').value=eplWeekIdx;
+  } else {
+    nflWeekIdx=Math.max(0,Math.min(nflWeeks.length-1,nflWeekIdx+d));
+    document.getElementById('week-select').value=nflWeekIdx;
+  }
   loadGames();
 }
 var _weekChangeLock=false;
@@ -2534,6 +2553,58 @@ function loadGames(callback){
     if(nflWeekMode==='week'&&nflWeeks.length){
       var wk=nflWeeks[nflWeekIdx];
       if(currentLeague==='epl'){
+        // Use cached football-data.org fixtures — filter by matchday directly, no ESPN needed
+        if(eplFixtures&&eplFixtures.length){
+          var gw=eplWeekIdx+1;
+          var mwMatches=eplFixtures.filter(function(m){return m.matchday===gw;});
+          var games=mwMatches.map(function(m){
+            var home=(m.homeTeam&&m.homeTeam.tla)||'';
+            var away=(m.awayTeam&&m.awayTeam.tla)||'';
+            // Match tla to our abbr config
+            var hTeam=LC.teams.find(function(t){return t.abbr===home;})||null;
+            var aTeam=LC.teams.find(function(t){return t.abbr===away;})||null;
+            var dt=m.utcDate?new Date(m.utcDate):null;
+            return {
+              id:String(m.id),
+              awayAbbr:away,awayName:(m.awayTeam&&m.awayTeam.shortName)||away,
+              homeAbbr:home,homeName:(m.homeTeam&&m.homeTeam.shortName)||home,
+              awayScore:m.score&&m.score.fullTime?m.score.fullTime.away:null,
+              homeScore:m.score&&m.score.fullTime?m.score.fullTime.home:null,
+              status:m.status||'',
+              date:dt,dateStr:dt?dt.toLocaleDateString('en-US',{month:'short',day:'numeric'}):'',
+              watch:'NBC',isNat:true,watchTBD:false,isCup:false,
+              lev:0,tvBonus:0,levLbl:'',
+              awayRec:'',homeRec:'',
+              seriesWins:0,seriesLosses:0,seriesGame:0,seriesMax:1,
+              isPlayoff:false,isIST:false,isSweep:false,
+              _league:'epl'
+            };
+          });
+          // Score games using LC
+          var allElos=LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;});
+          var mn=Math.min.apply(null,allElos)-1,mx=Math.max.apply(null,allElos)+1;
+          var combMin=(mn*2)-1,combMax=(mx*2)+1;
+          games=games.map(function(g){
+            var ae=ratings[g.awayAbbr]||LC.defaultElo,he=ratings[g.homeAbbr]||LC.defaultElo;
+            var ap=(ae-mn)/(mx-mn),hp=(he-mn)/(mx-mn);
+            g.awayDots=ap>=0.8?5:ap>=0.6?4:ap>=0.4?3:ap>=0.2?2:1;
+            g.homeDots=hp>=0.8?5:hp>=0.6?4:hp>=0.4?3:hp>=0.2?2:1;
+            var cp=((ae+he)-combMin)/(combMax-combMin);
+            g.totalStars=cp>=0.9?5:cp>=0.7?4:cp>=0.5?3:cp>=0.3?2:1;
+            g.flame=cp>=0.95;
+            g.score=(ae+he)+(g.lev||0);
+            g.awayElo=ae;g.homeElo=he;
+            g.dotColor=getDotColor(0);
+            return g;
+          });
+          games.sort(function(a,b){return b.score-a.score;});
+          games=applyFilters(games);
+          lastGames=games;
+          renderCards(games);
+          if(currentTab==='map')buildMapChart();
+          return; // skip ESPN fetch
+        }
+        // Fallback to ESPN date range if no fixtures cached
         var ew=eplWeeks[eplWeekIdx]||{};
         var gwStart=ew.start||new Date();
         var gwEnd=ew.end||new Date(gwStart.getTime()+9*24*60*60*1000);
