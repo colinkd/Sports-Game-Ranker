@@ -126,7 +126,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .g-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px}
 .badge-lp{background:var(--bg);color:var(--text-3);border:.5px solid var(--border)}
 .badge-tv{background:var(--blue-light);color:var(--blue)}
-.badge-stream{background:#0d2b1a;color:#4ade80;border:.5px solid #166534}
+.badge-stream{background:#dcfce7;color:#166534;border:.5px solid #86efac}
 .badge-cup{background:#FFF3E0;color:#E65100;border:.5px solid #FFB74D}
 .g-stars{font-size:11px;margin-top:3px}
 .g-combined{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--amber);margin-top:3px}
@@ -205,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v3.6</div>
+      <div>v3.9</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -729,7 +729,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v2.0', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v2.4', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -778,7 +778,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.5', vdate: '2026-05-12',
+    title: 'MLB', version: 'mlb.v1.6', vdate: '2026-05-12',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -911,7 +911,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.2', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v3.3', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1594,41 +1594,72 @@ function jumpToSeasonStart(){
 function buildEplWeeksForYear(yr){
   yr=yr||new Date().getFullYear();
   eplWeeks=[];eplWeeksSeason=yr;
-  // Build 38 placeholder weeks for the selector (will be overridden by live data)
+  var season=yr-1;
+  var label=function(w){return 'Matchweek '+w+' · '+season+'-'+String(yr).slice(2);};
+
+  // Build 38 placeholder weeks
   for(var w=1;w<=38;w++){
-    eplWeeks.push({label:'Matchweek '+w+' · '+(yr-1)+'-'+String(yr).slice(2),start:null,end:null,gw:w});
+    eplWeeks.push({label:label(w),start:null,end:null,gw:w});
   }
   var sel=document.getElementById('week-select');
   if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
 
   function setEplWeek(idx){
-    eplWeekIdx=idx;
+    eplWeekIdx=Math.max(0,Math.min(37,idx));
     if(sel)sel.value=eplWeekIdx;
     loadGames();
   }
+
   function fallback(){
-    // Estimate current gameweek by date
-    var now=new Date(), yr2=yr;
-    var start=new Date(yr2-1,7,16);
-    var end=new Date(yr2,4,25);
-    var total=(end-start)/(1000*60*60*24*7);
-    var elapsed=(now-start)/(1000*60*60*24*7);
-    var gw=Math.max(0,Math.min(37,Math.floor(elapsed/total*37)));
-    setEplWeek(gw);
+    // Estimate by date
+    var now=new Date();
+    var start=new Date(yr-1,7,16),end=new Date(yr,4,25);
+    var spacing=(end-start)/(37*24*60*60*1000);
+    for(var w=1;w<=38;w++){
+      var s=new Date(start.getTime()+Math.round((w-1)*spacing)*24*60*60*1000);
+      var e=new Date(s);e.setDate(s.getDate()+9);
+      eplWeeks[w-1]={label:label(w),start:s,end:e,gw:w};
+    }
+    if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+    var now2=new Date(),idx=0;
+    for(var i=0;i<eplWeeks.length;i++){if(now2<=eplWeeks[i].end){idx=i;break;}idx=i;}
+    setEplWeek(idx);
   }
-  // Fetch current gameweek from Premier League Pulse API
-  var season=yr-1; // e.g. 2025 for 2025-26
-  fetch('https://footballapi.pulselive.com/football/fixtures?comps=1&compSeasons=578&pageSize=1&sort=asc&statuses=L,U',{
-    headers:{'Origin':'https://www.premierleague.com'}
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var gw=(data.content&&data.content[0]&&data.content[0].gameweek&&data.content[0].gameweek.gameweek)||null;
-    if(gw&&gw>=1&&gw<=38)setEplWeek(gw-1);
-    else fallback();
-  })
-  .catch(fallback);
+
+  // Fetch all fixtures for this season via proxy
+  fetch('https://purple-boat-fd2e.c-kentdaggett.workers.dev?season='+season)
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var matches=data.matches||[];
+      if(!matches.length){fallback();return;}
+      // Group by matchday, find min/max date
+      var mwDates={};
+      matches.forEach(function(m){
+        var md=m.matchday;
+        var dt=new Date(m.utcDate);
+        if(!mwDates[md]){mwDates[md]={min:dt,max:dt};}
+        else{if(dt<mwDates[md].min)mwDates[md].min=dt;if(dt>mwDates[md].max)mwDates[md].max=dt;}
+      });
+      // Update eplWeeks with real dates
+      for(var w=1;w<=38;w++){
+        if(mwDates[w]){
+          var s=new Date(mwDates[w].min);s.setHours(0,0,0,0);
+          var e=new Date(mwDates[w].max);e.setHours(23,59,59,0);
+          eplWeeks[w-1]={label:label(w),start:s,end:e,gw:w};
+        }
+      }
+      if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+      // Find current matchweek
+      var now=new Date(),idx=eplWeeks.length-1;
+      for(var i=0;i<eplWeeks.length;i++){
+        if(eplWeeks[i].end&&now<=eplWeeks[i].end){idx=i;break;}
+      }
+      setEplWeek(idx);
+    })
+    .catch(fallback);
 }
+
+
 function buildNflWeeksForYear(yr){nflWeeksSeason=yr;
   yr=yr||new Date().getFullYear();
   var sep1=new Date(yr,8,1);
@@ -2503,9 +2534,9 @@ function loadGames(callback){
     if(nflWeekMode==='week'&&nflWeeks.length){
       var wk=nflWeeks[nflWeekIdx];
       if(currentLeague==='epl'){
-        // Estimate date range for this gameweek
-        var gwStart=new Date(new Date(eplWeeksSeason-1,7,16).getTime()+Math.round(eplWeekIdx*(new Date(eplWeeksSeason,4,25)-new Date(eplWeeksSeason-1,7,16))/(37*24*60*60*1000))*24*60*60*1000);
-        var gwEnd=new Date(gwStart);gwEnd.setDate(gwStart.getDate()+9);
+        var ew=eplWeeks[eplWeekIdx]||{};
+        var gwStart=ew.start||new Date();
+        var gwEnd=ew.end||new Date(gwStart.getTime()+9*24*60*60*1000);
         url='https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates='+dstr(gwStart)+'-'+dstr(gwEnd)+'&limit=20';
       }
     else url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=50';
