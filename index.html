@@ -215,7 +215,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <button class="league-btn" id="lgbtn-all" onclick="switchLeague('all')">🏆 All</button>
     <button class="league-btn" id="lgbtn-nba" onclick="switchLeague('nba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NBA</button>
     <button class="league-btn" id="lgbtn-wnba" onclick="switchLeague('wnba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> WNBA</button>
-    <button class="league-btn" id="lgbtn-epl" onclick="switchLeague('epl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/eng.1.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> EPL</button>
+    <button class="league-btn" id="lgbtn-epl" onclick="switchLeague('epl')"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/eng.1.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> EPL</button>
     <button class="league-btn" id="lgbtn-mlb" onclick="switchLeague('mlb')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> MLB</button>
     <button class="league-btn" id="lgbtn-nfl" onclick="switchLeague('nfl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NFL</button>
     <button class="league-btn" id="lgbtn-nhl" onclick="switchLeague('nhl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NHL</button>
@@ -753,7 +753,7 @@ var LEAGUE_CONFIGS = {
       {name:"Crystal Palace",abbr:"CRY",tierAbbr:"epl_CRY",espn:"384",div:"EPL"},
       {name:"Everton",abbr:"EVE",tierAbbr:"epl_EVE",espn:"368",div:"EPL"},
       {name:"Fulham",abbr:"FUL",tierAbbr:"epl_FUL",espn:"370",div:"EPL"},
-      {name:"Ipswich",abbr:"IPS",tierAbbr:"epl_IPS",espn:"327",div:"EPL"},
+      {name:"Ipswich",abbr:"IPS",tierAbbr:"epl_IPS",espn:"300",div:"EPL"},
       {name:"Leicester City",abbr:"LEI",tierAbbr:"epl_LEI",espn:"375",div:"EPL"},
       {name:"Liverpool",abbr:"LIV",tierAbbr:"epl_LIV",espn:"364",div:"EPL"},
       {name:"Manchester City",abbr:"MCI",tierAbbr:"epl_MCI",espn:"382",div:"EPL"},
@@ -844,7 +844,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.4', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.5', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -1475,6 +1475,7 @@ function fmtDateShort(d){return DOW[d.getDay()]+', '+MONTHS_FULL[d.getMonth()]+'
 
 // ── NFL WEEK SELECTOR ──
 var nflWeeks=[], nflWeekIdx=0, nflWeekMode='week', nflWeeksSeason=0;
+var eplWeeks=[], eplWeekIdx=0, eplWeeksSeason=0;
 
 // ── SEASON SELECTOR ──────────────────────────────────────
 var currentSeason = null; // year integer — for NFL/WNBA = the season year; NBA = end year (e.g. 2025 = 2024-25)
@@ -1544,7 +1545,7 @@ function onSeasonChange(){
     nflWeeks=[];
     buildNflWeeksForYear(currentSeason);
   } else if(currentLeague==='epl'){
-    nflWeeks=[];
+    eplWeeks=[];
     buildEplWeeksForYear(currentSeason);
   } else {
     jumpToSeasonStart();
@@ -1592,26 +1593,24 @@ function jumpToSeasonStart(){
 
 function buildEplWeeksForYear(yr){
   yr=yr||new Date().getFullYear();
-  // EPL: 38 matchweeks, roughly 7 days each starting early August of prior year
   var start=new Date(yr-1,7,9); // ~Aug 9
-  nflWeeks=[];nflWeeksSeason=yr;
+  eplWeeks=[];eplWeeksSeason=yr;
   for(var w=1;w<=38;w++){
     var s=new Date(start);s.setDate(start.getDate()+(w-1)*7);
     var e=new Date(s);e.setDate(s.getDate()+6);
-    nflWeeks.push({label:'Matchweek '+w+' · '+(yr-1)+'-'+String(yr).slice(2),start:s,end:e});
+    eplWeeks.push({label:'Matchweek '+w+' · '+(yr-1)+'-'+String(yr).slice(2),start:s,end:e});
   }
   var sel=document.getElementById('week-select');
-  if(sel)sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+  if(sel)sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
   var now=new Date();
-  // Find current or next upcoming matchweek (not just past ones)
-  nflWeekIdx=0;
-  for(var i=0;i<nflWeeks.length;i++){
-    if(now<=nflWeeks[i].end){nflWeekIdx=i;break;}
-    nflWeekIdx=i; // fallback to last week if season over
+  eplWeekIdx=0;
+  for(var i=0;i<eplWeeks.length;i++){
+    if(now<=eplWeeks[i].end){eplWeekIdx=i;break;}
+    eplWeekIdx=i;
   }
-  if(sel)sel.value=nflWeekIdx;
+  if(sel)sel.value=eplWeekIdx;
   var nflSingle=document.getElementById('nfl-single-date');
-  if(nflSingle&&nflWeeks.length)nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
+  if(nflSingle&&eplWeeks.length)nflSingle.value=ival(eplWeeks[eplWeekIdx].start);
   loadGames();
 }
 function buildNflWeeksForYear(yr){nflWeeksSeason=yr;
@@ -2483,8 +2482,10 @@ function loadGames(callback){
   var url;
 
   if(LC.showWeekBar){
-    if(nflWeekMode==='week'&&nflWeeks.length){
-      var wk=nflWeeks[nflWeekIdx];
+    var activeWeeks=currentLeague==='epl'?eplWeeks:nflWeeks;
+    var activeWeekIdx=currentLeague==='epl'?eplWeekIdx:nflWeekIdx;
+    if(nflWeekMode==='week'&&activeWeeks.length){
+      var wk=activeWeeks[activeWeekIdx];
       if(currentLeague==='epl')url='https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=20';
     else url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=50';
     } else if(nflWeekMode==='single'){
@@ -2914,17 +2915,27 @@ function switchLeague(lg){
   // build week selector for NFL and EPL
   if(lg==='nfl'||lg==='epl'){
     var targetYear=currentSeason||new Date().getFullYear();
-    var buildFn=lg==='epl'?buildEplWeeksForYear:buildNflWeeksForYear;
-    if(!nflWeeks.length||nflWeeksSeason!==targetYear)buildFn(targetYear);
-    else{
-      // Restore existing week selection without rebuilding
-      var sel=document.getElementById('week-select');
-      if(sel&&nflWeeks.length){
-        sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
-        sel.value=nflWeekIdx;
-        // Sync nfl-single-date too
-        var nflSingle=document.getElementById('nfl-single-date');
-        if(nflSingle&&nflWeeks[nflWeekIdx])nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
+    if(lg==='epl'){
+      if(!eplWeeks.length||eplWeeksSeason!==targetYear)buildEplWeeksForYear(targetYear);
+      else{
+        var sel=document.getElementById('week-select');
+        if(sel&&eplWeeks.length){
+          sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+          sel.value=eplWeekIdx;
+          var nflSingle=document.getElementById('nfl-single-date');
+          if(nflSingle&&eplWeeks[eplWeekIdx])nflSingle.value=ival(eplWeeks[eplWeekIdx].start);
+        }
+      }
+    } else {
+      if(!nflWeeks.length||nflWeeksSeason!==targetYear)buildNflWeeksForYear(targetYear);
+      else{
+        var sel=document.getElementById('week-select');
+        if(sel&&nflWeeks.length){
+          sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+          sel.value=nflWeekIdx;
+          var nflSingle=document.getElementById('nfl-single-date');
+          if(nflSingle&&nflWeeks[nflWeekIdx])nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
+        }
       }
     }
   }
