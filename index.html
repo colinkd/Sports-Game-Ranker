@@ -126,6 +126,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .g-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px}
 .badge-lp{background:var(--bg);color:var(--text-3);border:.5px solid var(--border)}
 .badge-tv{background:var(--blue-light);color:var(--blue)}
+.badge-stream{background:#0d2b1a;color:#4ade80;border:.5px solid #166534}
 .badge-cup{background:#FFF3E0;color:#E65100;border:.5px solid #FFB74D}
 .g-stars{font-size:11px;margin-top:3px}
 .g-combined{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--amber);margin-top:3px}
@@ -165,8 +166,8 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 .nest{margin-top:6px;padding-left:10px;border-left:2px solid var(--border-light);transition:max-height .2s ease,opacity .2s;overflow:visible;max-height:600px}
 .nest.off{opacity:.35;pointer-events:none}
 .team-bubble{font-family:var(--mono);font-size:10px;padding:3px 8px;border:.5px solid var(--blue);border-radius:20px;cursor:pointer;color:var(--blue);background:var(--blue-light);display:flex;align-items:center;gap:4px}
-.sport-pill{font-family:var(--mono);font-size:10px;padding:4px 8px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-3);background:var(--bg);transition:all .12s}
-.sport-pill.on{background:var(--surface);color:var(--text);border-color:var(--amber)}
+.sport-pill{font-family:var(--mono);font-size:10px;padding:4px 8px;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-3);background:var(--bg);transition:all .12s;opacity:.5}
+.sport-pill.on{background:var(--amber);color:var(--bg);border-color:var(--amber);opacity:1;font-weight:600}
 .team-bubble:hover{opacity:.8}
 .net-pill{font-family:var(--mono);font-size:10px;padding:3px 7px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-2);background:var(--bg);transition:all .12s}
 .net-pill.on{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -204,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v3.0 &nbsp;<span style="color:var(--text-3)">2026-05-12 17:42</span></div>
+      <div>v3.1 &nbsp;<span style="color:var(--text-3)">2026-05-12 17:42</span></div>
       <div id="site-version">nba.v4.7 &nbsp;<span style="color:var(--text-3)">2026-05-12 17:15</span></div>
     </div>
   </div>
@@ -440,7 +441,17 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- SPORT FILTER (All tab only) -->
       <div class="fs" id="sport-filter-card" style="display:none">
         <div class="fs-head"><div class="fs-title">sport filter</div></div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;padding:4px 0" id="sport-pill-wrap">
+        <div class="fw" style="margin-bottom:6px">
+          <div class="fw-lbl">show</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <div class="pill on" data-sportval="all" onclick="setSportFilter('all')">all</div>
+            <div class="pill" data-sportval="big4" onclick="setSportFilter('big4')">big 4</div>
+            <div class="pill" data-sportval="basketball" onclick="setSportFilter('basketball')">basketball</div>
+            <div class="pill" data-sportval="soccer" onclick="setSportFilter('soccer')">soccer</div>
+            <div class="pill" data-sportval="custom" onclick="setSportFilter('custom')">custom</div>
+          </div>
+        </div>
+        <div id="sport-pill-wrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:2px 0">
           <div class="sport-pill on" data-sport="nba" onclick="toggleSport('nba',this)">🏀 NBA</div>
           <div class="sport-pill on" data-sport="wnba" onclick="toggleSport('wnba',this)">🏀 WNBA</div>
           <div class="sport-pill on" data-sport="mlb" onclick="toggleSport('mlb',this)">⚾ MLB</div>
@@ -609,7 +620,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v5.9', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.0', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -662,7 +673,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.4', vdate: '2026-05-12',
+    title: 'WNBA', version: 'wnba.v2.5', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -700,14 +711,14 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.0', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.1', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
     showSweep: false, showIST: false,
     networks: ['ESPN','ABC','NBC','TNT','TBS','Prime Video','Peacock','League Pass',
                'CBS','Fox','NFL Network','ESPN2','ION','NBA TV','Max','ESPN+','NHL.TV',
-               'FS1','Apple TV+','MLB.TV'],
+               'FS1','Apple TV+','MLB.TV','USA Network'],
     logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/nba/500/'+espn+'.png'; },
     teams: [], // populated dynamically from all leagues
     defaultElo: 1200, quintileDividers: [],
@@ -718,7 +729,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v1.0', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v1.1', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -767,7 +778,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.0', vdate: '2026-05-12',
+    title: 'MLB', version: 'mlb.v1.1', vdate: '2026-05-12',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -833,7 +844,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.1', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.2', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -900,7 +911,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v2.7', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v2.8', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1278,7 +1289,13 @@ function initRound(){
 function expected(ra,rb){return 1/(1+Math.pow(10,(rb-ra)/400));}
 function updateElo(wa,la){
   var ra=ratings[wa]||LC.defaultElo,rb=ratings[la]||LC.defaultElo,ea=expected(ra,rb);
-  ratings[wa]=Math.round(ra+K*(1-ea));ratings[la]=Math.round(rb+K*(0-(1-ea)));saveRatings();
+  ratings[wa]=Math.round(ra+K*(1-ea));ratings[la]=Math.round(rb+K*(0-(1-ea)));
+  saveRatings();
+  // If All tab is open on games, refresh it so dots/stars update
+  if(currentLeague==='all'){
+    var gv=document.getElementById('view-games');
+    if(gv&&gv.style.display!=='none')loadAllGames();
+  }
 }
 function assignButtons(){
   if(current>=matchups.length)return;
@@ -1356,17 +1373,19 @@ function rankByRecord(){
       var confs=data.children||[data];
       confs.forEach(function(conf){
         ((conf.standings||conf||{}).entries||[]).forEach(function(e){
-          var wins=0,losses=0;
+          var wins=0,losses=0,draws=0;
           var raw=(e.team||{}).abbreviation||'';
           var abbr=normMap[raw]||normalizeAbbr(raw)||raw;
           (e.stats||[]).forEach(function(s){
             if(s.name==='wins')wins=+s.value||0;
             if(s.name==='losses')losses=+s.value||0;
+            if(s.name==='ties'||s.name==='draws')draws=+s.value||0;
           });
           if(abbr&&wins+losses>0){
             entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});
             if(!window.recordCache)window.recordCache={};
-            window.recordCache[currentLeague+'_'+abbr]=wins+'-'+losses;
+            var rkRec=currentLeague==='epl'?(wins+'-'+draws+'-'+losses):(currentLeague==='nhl'&&draws>0?wins+'-'+losses+'-'+draws:wins+'-'+losses);
+            window.recordCache[currentLeague+'_'+abbr]=rkRec;
           }
         });
       });
@@ -1475,28 +1494,28 @@ function buildSeasonSelector(){
     // NBA seasons: 2015-16 through current (end year 2016..current)
     // Current NBA season end year: if before Aug it's this year, else next year
     var curEnd=now.getMonth()<8?now.getFullYear():now.getFullYear()+1;
-    for(var y=curEnd;y>=2016;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
+    for(var y=curEnd;y>=2020;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
   } else if(currentLeague==='wnba'){
     // WNBA seasons: 2015 through current (single calendar year, runs May-Oct)
     var curY=now.getMonth()>=4?now.getFullYear():now.getFullYear()-1; // if before May, current = last year
-    for(var y=curY;y>=2015;y--)seasons.push({value:y,label:String(y)});
+    for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
   } else if(currentLeague==='epl'){
     // EPL: Aug-May, end year = spring year
     var curEnd=now.getMonth()>=7?now.getFullYear()+1:now.getFullYear();
-    for(var y=curEnd;y>=2016;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
+    for(var y=curEnd;y>=2020;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
   } else if(currentLeague==='mlb'){
     // MLB: April-Oct, plain year
     var curY=now.getMonth()>=3?now.getFullYear():now.getFullYear()-1;
-    for(var y=curY;y>=2015;y--)seasons.push({value:y,label:String(y)});
+    for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
   } else if(currentLeague==='nhl'){
     // NHL: Oct-Jun season, end year = spring year (2024-25 = 2025)
     var curEnd=now.getMonth()>=9?now.getFullYear()+1:now.getFullYear();
-    for(var y=curEnd;y>=2016;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
+    for(var y=curEnd;y>=2020;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
   } else if(currentLeague==='nfl'){
     // NFL seasons: 2015 through current (single year, runs Sep-Feb)
     // Current NFL season: if before Mar it's last year's season, else this year
     var curY=now.getMonth()<3?now.getFullYear()-1:now.getFullYear();
-    for(var y=curY;y>=2015;y--)seasons.push({value:y,label:String(y)});
+    for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
   }
 
   sel.innerHTML=seasons.map(function(s){
@@ -1860,7 +1879,7 @@ function resetFilters(){
   setStarPicker('stars-min-picker',1);setStarPicker('stars-max-picker',5);
   setDotPicker('dots-min-picker',1);setDotPicker('dots-max-picker',5);
   includeTeams=[];excludeTeams=[];renderTeamBubbles();
-  includeSports=['nba','wnba','mlb','nhl','nfl','epl'];renderSportPills();
+  setSportFilter('all');
   setBcast('all');setDay('all');
   Object.keys(enabledNets).forEach(function(k){enabledNets[k]=true;});
   document.querySelectorAll('#network-pills .net-pill').forEach(function(el){el.classList.add('on');});
@@ -2236,10 +2255,13 @@ function renderCards(games){
     var rank=i+1;
     var rc=rank===1?'#BA7517':rank===2?'#888780':rank===3?'#854F0B':'var(--text-3)';
     var badge='';
+    var STREAM_NETS=['Prime Video','Peacock','ESPN+','Max','Apple TV+'];
+    var LP_NETS_B=['League Pass','NHL.TV','NFL Network','MLB.TV'];
     if(g.watchTBD)badge='<span class="g-badge badge-lp">TBD</span>';
     else if(g.isCup)badge='<span class="g-badge badge-cup">Cup Game</span>';
-    else if(g.isNat)badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
-    else badge='<span class="g-badge badge-lp">'+( LC.showLeaguePass?'League Pass':'Local')+'</span>';
+    else if(STREAM_NETS.indexOf(g.watch)>=0)badge='<span class="g-badge badge-stream">'+g.watch+'</span>';
+    else if(LP_NETS_B.indexOf(g.watch)>=0||!g.isNat)badge='<span class="g-badge badge-lp">'+(g.watch&&g.watch!=='League Pass'?g.watch:LC.showLeaguePass?'League Pass':'Local')+'</span>';
+    else badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
     var bonuses='';
     if(g.lev!==0)bonuses+='<div class="g-bonuses">'+(g.lev>0?'+':'')+g.lev+' '+g.levLbl+'</div>';
     if(g.tvBonus>0)bonuses+='<div class="g-bonuses">+'+g.tvBonus+' natl tv</div>';
@@ -2305,7 +2327,7 @@ function loadAllGames(callback){
     {sport:'basketball',league:'nba',cfg:LEAGUE_CONFIGS.nba},
     {sport:'basketball',league:'wnba',cfg:LEAGUE_CONFIGS.wnba},
     {sport:'baseball',league:'mlb',cfg:LEAGUE_CONFIGS.mlb},
-    {sport:'soccer',league:'epl',cfg:LEAGUE_CONFIGS.epl},
+    {sport:'soccer',league:'eng.1',cfg:LEAGUE_CONFIGS.epl},
     {sport:'hockey',league:'nhl',cfg:LEAGUE_CONFIGS.nhl},
     {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl},
   ];
@@ -2341,21 +2363,52 @@ function loadAllGames(callback){
 
 function finishAllLoad(games,callback){
   var origLC=LC;
-  // Score each game using its sport's own config + that sport's saved ratings
-  // processEvent already computed g.score (combined elo + bonuses)
-  // Just use it directly — no need to re-score
-  games=games.map(function(g){g.watchScore=g.score||g.total||0;return g;});
+  // Recompute dots and stars using each game's own sport ratings for accuracy
+  games=games.map(function(g){
+    var sportCfg=LEAGUE_CONFIGS[g._league];
+    if(!sportCfg)return g;
+    // Load this sport's ratings
+    var sportRatings=ratingsStore[sportCfg.storageKey]||null;
+    if(!sportRatings){try{var s=localStorage.getItem(sportCfg.storageKey+'_elo_ratings');sportRatings=s?JSON.parse(s):null;}catch(e){}}
+    // Build elo map for this sport
+    var eloMap={};
+    sportCfg.teams.forEach(function(t){eloMap[t.abbr]=(sportRatings&&sportRatings[t.abbr])||sportCfg.defaultElo;});
+    // Per-sport range for dots and stars
+    var allElos=sportCfg.teams.map(function(t){return eloMap[t.abbr];});
+    var mn=Math.min.apply(null,allElos)-1, mx=Math.max.apply(null,allElos)+1;
+    if(mn===mx){mn-=200;mx+=200;}
+    var awayElo=eloMap[g.awayAbbr]||sportCfg.defaultElo;
+    var homeElo=eloMap[g.homeAbbr]||sportCfg.defaultElo;
+    // Dots: within-sport quintile
+    var awayP=(awayElo-mn)/(mx-mn), homeP=(homeElo-mn)/(mx-mn);
+    var awayDots=awayP>=0.8?5:awayP>=0.6?4:awayP>=0.4?3:awayP>=0.2?2:1;
+    var homeDots=homeP>=0.8?5:homeP>=0.6?4:homeP>=0.4?3:homeP>=0.2?2:1;
+    // Stars: combined elo percentile within sport
+    var combined=awayElo+homeElo;
+    var combMin=(mn*2)-1, combMax=(mx*2)+1;
+    var combP=(combined-combMin)/(combMax-combMin);
+    var stars=combP>=0.9?5:combP>=0.7?4:combP>=0.5?3:combP>=0.3?2:1;
+    var flame=combP>=0.95;
+    // Score: combined elo + bonuses
+    var score=combined+(g.lev||0)+(g.tvBonus||0);
+    return Object.assign({},g,{awayElo:awayElo,homeElo:homeElo,awayDots:awayDots,homeDots:homeDots,totalStars:stars,flame:flame,score:score,watchScore:score});
+  });
   var maxScore=Math.max.apply(null,games.map(function(g){return g.watchScore;}));
   maxScore=maxScore||1;
   games=games.map(function(g){return Object.assign({},g,{watchPct:Math.round(g.watchScore/maxScore*100)});});
-  LC=LEAGUE_CONFIGS['all']||origLC; // ensure all-tab filters apply
+  LC=LEAGUE_CONFIGS['all']||origLC;
   // Sport filter for all tab
   if(currentLeague==='all'&&includeSports.length<6){
     games=games.filter(function(g){return includeSports.indexOf(g._league)>=0;});
   }
   games=applyFilters(games);
   LC=origLC;
-  games.sort(function(a,b){return b.watchScore-a.watchScore;});
+  games.sort(function(a,b){
+    // Primary: stars (within-sport percentile) — comparable across sports
+    if(b.totalStars!==a.totalStars)return b.totalStars-a.totalStars;
+    // Tiebreaker: raw watchScore
+    return b.watchScore-a.watchScore;
+  });
   games.forEach(function(g,i){g.dotColor=getDotColor(i);});
   lastGames=games;
   var el=document.getElementById('games-content');
@@ -2432,16 +2485,19 @@ function loadGames(callback){
   if(currentLeague==='nfl'){
     if(nflWeekMode==='week'&&nflWeeks.length){
       var wk=nflWeeks[nflWeekIdx];
-      url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=50';
+      if(currentLeague==='epl')url='https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=20';
+    else url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=50';
     } else if(nflWeekMode==='single'){
       var sd=document.getElementById('nfl-single-date').value.replace(/-/g,'');
       if(!sd){el.innerHTML='<div class="no-games">select a date</div>';return;}
-      url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+sd+'&limit=20';
+      if(currentLeague==='epl')url='https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates='+sd+'&limit=20';
+      else url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+sd+'&limit=20';
     } else {
       var f=document.getElementById('nfl-from').value.replace(/-/g,'');
       var t=document.getElementById('nfl-to').value.replace(/-/g,'');
       if(!f||!t){el.innerHTML='<div class="no-games">select a date range</div>';return;}
-      url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+f+'-'+t+'&limit=50';
+      if(currentLeague==='epl')url='https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard?dates='+f+'-'+t+'&limit=20';
+      else url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+f+'-'+t+'&limit=50';
     }
   } else {
     url='https://site.api.espn.com/apis/site/v2/sports/'+LC.sport+'/'+LC.league+'/scoreboard?dates='+dstr(currentDate);
@@ -2655,15 +2711,33 @@ function removeTeam(mode,abbr){
   else excludeTeams=excludeTeams.filter(function(a){return a!==abbr;});
   renderTeamBubbles();
 }
+function setSportFilter(val){
+  var ALL_SPORTS=['nba','wnba','mlb','nhl','nfl','epl'];
+  var BIG4=['nba','nfl','mlb','nhl'];
+  var BBALL=['nba','wnba'];
+  var SOCCER=['epl'];
+  if(val==='all')includeSports=ALL_SPORTS.slice();
+  else if(val==='big4')includeSports=BIG4.slice();
+  else if(val==='basketball')includeSports=BBALL.slice();
+  else if(val==='soccer')includeSports=SOCCER.slice();
+  // custom: don't change includeSports, let user toggle manually
+  // Update preset pills
+  document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(el){
+    el.classList.toggle('on',el.dataset.sportval===val);
+  });
+  renderSportPills();
+  if(val!=='custom')loadAllGames();
+}
 function toggleSport(sport, el){
   var idx=includeSports.indexOf(sport);
-  if(idx>=0){
-    includeSports.splice(idx,1);
-    el.classList.remove('on');
-  } else {
-    includeSports.push(sport);
-    el.classList.add('on');
-  }
+  if(idx>=0){includeSports.splice(idx,1);}
+  else{includeSports.push(sport);}
+  // Switch preset to 'custom'
+  document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(el){
+    el.classList.toggle('on',el.dataset.sportval==='custom');
+  });
+  renderSportPills();
+  loadAllGames();
 }
 function renderSportPills(){
   document.querySelectorAll('#sport-pill-wrap .sport-pill').forEach(function(el){
@@ -2898,7 +2972,7 @@ window.recordCache={};
   };
   var NORM_EPL={}; // ESPN uses numeric IDs for EPL, no abbr normalization needed
   var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL};
-  [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'baseball',league:'mlb'},{sport:'hockey',league:'nhl'},{sport:'football',league:'nfl'},{sport:'soccer',league:'eng.1'}]
+  [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'baseball',league:'mlb'},{sport:'hockey',league:'nhl'},{sport:'football',league:'nfl'},{sport:'soccer',league:'eng.1',storageKey:'epl'}]
   .forEach(function(sp){
     var norm=NORMS[sp.league]||{};
     fetch('https://site.api.espn.com/apis/v2/sports/'+sp.sport+'/'+sp.league+'/standings')
@@ -2913,18 +2987,22 @@ window.recordCache={};
           (e.stats||[]).forEach(function(s){if(s.name==='wins')wins=+s.value;if(s.name==='losses')losses=+s.value;});
           if(abbr&&(wins+losses>0)){
             var rec=sp.league==='nhl'&&otl>0?wins+'-'+losses+'-'+otl:wins+'-'+losses;
-            window.recordCache[sp.league+'_'+abbr]=rec;
+            window.recordCache[(sp.storageKey||sp.league)+'_'+abbr]=rec;
             entries.push({abbr:abbr,wins:wins,losses:losses});
           }
         });
       });
       return entries;
     }).then(function(){
-      if(currentLeague==='all'&&document.getElementById('view-tier-ranker')&&
-         document.getElementById('view-tier-ranker').style.display!=='none'){
-        renderTierRankings();
+      if(currentLeague==='all'){
+        if(document.getElementById('view-tier-ranker')&&
+           document.getElementById('view-tier-ranker').style.display!=='none')renderTierRankings();
+      } else {
+        renderRankings();
+        // Also re-render games if on games tab to show updated records
+        var gv=document.getElementById('view-games');
+        if(gv&&gv.style.display!=='none'&&lastGames.length)renderCards(lastGames);
       }
-      if(currentLeague!=='all'){renderRankings();}
     }).catch(function(){});
   });
 })();
