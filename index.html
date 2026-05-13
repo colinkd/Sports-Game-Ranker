@@ -205,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v3.2</div>
+      <div>v3.3</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -215,7 +215,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <button class="league-btn" id="lgbtn-all" onclick="switchLeague('all')">🏆 All</button>
     <button class="league-btn" id="lgbtn-nba" onclick="switchLeague('nba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NBA</button>
     <button class="league-btn" id="lgbtn-wnba" onclick="switchLeague('wnba')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> WNBA</button>
-    <button class="league-btn" id="lgbtn-epl" onclick="switchLeague('epl')"><img src="https://a.espncdn.com/i/teamlogos/soccer/500/eng.1.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> EPL</button>
+    <button class="league-btn" id="lgbtn-epl" onclick="switchLeague('epl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/eng.1.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> EPL</button>
     <button class="league-btn" id="lgbtn-mlb" onclick="switchLeague('mlb')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> MLB</button>
     <button class="league-btn" id="lgbtn-nfl" onclick="switchLeague('nfl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NFL</button>
     <button class="league-btn" id="lgbtn-nhl" onclick="switchLeague('nhl')"><img src="https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png" style="width:14px;height:14px;object-fit:contain;vertical-align:middle;margin-right:4px;border-radius:2px"/> NHL</button>
@@ -620,7 +620,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.1', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.2', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -673,7 +673,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.6', vdate: '2026-05-12',
+    title: 'WNBA', version: 'wnba.v2.7', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -711,7 +711,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.2', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.3', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -729,7 +729,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v1.2', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v1.3', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -778,7 +778,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.2', vdate: '2026-05-12',
+    title: 'MLB', version: 'mlb.v1.3', vdate: '2026-05-12',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -844,7 +844,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.3', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.4', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -911,7 +911,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v2.9', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v3.0', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1346,7 +1346,7 @@ function rankByRecord(){
       var entries=[];
       // Per-sport normalization maps
       var NORM_NBA={'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS'};
-      var NORM_WNBA={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
+      var NORM_WNBA=RECORD_NORM.wnba; var _unused_={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
         'IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG',
         'PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'};
       var NORM_MLB={'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
@@ -1376,7 +1376,7 @@ function rankByRecord(){
             if(s.name==='losses')losses=+s.value||0;
             if(s.name==='ties'||s.name==='draws')draws=+s.value||0;
           });
-          if(abbr&&wins+losses>0){
+          if(abbr&&(wins+losses+draws)>0){
             entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});
             if(!window.recordCache)window.recordCache={};
             var rkRec=currentLeague==='epl'?(wins+'-'+draws+'-'+losses):(currentLeague==='nhl'&&draws>0?wins+'-'+losses+'-'+draws:wins+'-'+losses);
@@ -1592,20 +1592,23 @@ function jumpToSeasonStart(){
 
 function buildEplWeeksForYear(yr){
   yr=yr||new Date().getFullYear();
-  // EPL season starts ~Aug 9-10 of the prior year (yr-1)
-  var aug=new Date(yr-1,7,10); // Aug 10
-  while(aug.getDay()!==5)aug.setDate(aug.getDate()+1); // snap to Saturday
+  // EPL: 38 matchweeks, roughly 7 days each starting early August of prior year
+  var start=new Date(yr-1,7,9); // ~Aug 9
   nflWeeks=[];nflWeeksSeason=yr;
   for(var w=1;w<=38;w++){
-    var s=new Date(aug);s.setDate(aug.getDate()+(w-1)*7-2); // Fri-Mon window
-    var e=new Date(s);e.setDate(s.getDate()+3);
+    var s=new Date(start);s.setDate(start.getDate()+(w-1)*7);
+    var e=new Date(s);e.setDate(s.getDate()+6);
     nflWeeks.push({label:'Matchweek '+w+' · '+(yr-1)+'-'+String(yr).slice(2),start:s,end:e});
   }
   var sel=document.getElementById('week-select');
   if(sel)sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
   var now=new Date();
-  nflWeekIdx=nflWeeks.findIndex(function(w){return now>=w.start&&now<=w.end;});
-  if(nflWeekIdx<0)nflWeekIdx=0;
+  // Find current or next upcoming matchweek (not just past ones)
+  nflWeekIdx=0;
+  for(var i=0;i<nflWeeks.length;i++){
+    if(now<=nflWeeks[i].end){nflWeekIdx=i;break;}
+    nflWeekIdx=i; // fallback to last week if season over
+  }
   if(sel)sel.value=nflWeekIdx;
   var nflSingle=document.getElementById('nfl-single-date');
   if(nflSingle&&nflWeeks.length)nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
@@ -2384,8 +2387,10 @@ function finishAllLoad(games,callback){
     var combP=(combined-combMin)/(combMax-combMin);
     var stars=combP>=0.9?5:combP>=0.7?4:combP>=0.5?3:combP>=0.3?2:1;
     var flame=combP>=0.95;
-    // Score: combined elo + bonuses
     var score=combined+(g.lev||0)+(g.tvBonus||0);
+    // Recalculate stars with bonuses included (so playoff games rank correctly)
+    var scoredP=(score-combMin)/(combMax-combMin);
+    if(scoredP>combP){stars=scoredP>=0.9?5:scoredP>=0.7?4:scoredP>=0.5?3:scoredP>=0.3?2:1;if(scoredP>=0.95)flame=true;}
     return Object.assign({},g,{awayElo:awayElo,homeElo:homeElo,awayDots:awayDots,homeDots:homeDots,totalStars:stars,flame:flame,score:score,watchScore:score});
   });
   var maxScore=Math.max.apply(null,games.map(function(g){return g.watchScore;}));
@@ -2519,6 +2524,10 @@ function loadGames(callback){
         var cp=((ae+he)-combMin)/(combMax-combMin);
         g.totalStars=cp>=0.9?5:cp>=0.7?4:cp>=0.5?3:cp>=0.3?2:1;
         g.flame=cp>=0.95;
+        // Include bonuses in scored percentile
+        var scoredScore=(g.awayElo||0)+(g.homeElo||0)+(g.lev||0)+(g.tvBonus||0);
+        var scp=(scoredScore-combMin)/(combMax-combMin);
+        if(scp>cp){g.totalStars=scp>=0.9?5:scp>=0.7?4:scp>=0.5?3:scp>=0.3?2:1;if(scp>=0.95)g.flame=true;}
         g.dotColor=getDotColor(i);
         // Update recordCache from live game data
         if(!window.recordCache)window.recordCache={};
@@ -2816,7 +2825,7 @@ function switchLeague(lg){
   var themes={
     nba:  {amber:'#C8102E', amberDark:'#9a0c23', blue:'#185FA5', blueLight:'#E6F1FB'},
     wnba: {amber:'#FF8C00', amberDark:'#CC6F00', blue:'#185FA5', blueLight:'#E6F1FB'},
-    epl:  {amber:'#38003c', amberDark:'#25002b', blue:'#185FA5', blueLight:'#E6F1FB'},
+    epl:  {amber:'#7c3aed', amberDark:'#5b21b6', blue:'#185FA5', blueLight:'#E6F1FB'},
     mlb:  {amber:'#1a7a2e', amberDark:'#155a22', blue:'#185FA5', blueLight:'#E6F1FB'},
     nhl:  {amber:'#6b7280', amberDark:'#4b5563', blue:'#185FA5', blueLight:'#E6F1FB'},
     nfl:  {amber:'#185FA5', amberDark:'#0D4070', blue:'#185FA5', blueLight:'#E6F1FB'},
@@ -2831,7 +2840,7 @@ function switchLeague(lg){
   document.querySelectorAll('.league-btn').forEach(function(b){b.classList.toggle('active',b.id==='lgbtn-'+lg);});
   document.getElementById('site-title').textContent='GAME RANKER';
   var sv=document.getElementById('site-version');
-  if(sv)sv.innerHTML=(LC.version||'')+' <span style="color:var(--text-3);margin-left:6px">2026-05-12 17:42</span>';
+  if(sv)sv.innerHTML=(LC.version||'');
 
   // show/hide NFL-specific sections
   $sty('week-bar','display',LC.showWeekBar?'block':'none');
@@ -2954,8 +2963,23 @@ window.recordCache={};
 });
 // Fetch real standings for all sports on boot
 (function fetchAllStandings(){
-  var NORM_NBA={'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS','PHX':'PHX'};
-  var NORM_WNBA={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
+// ── Master record normalization — single source of truth ──
+var RECORD_NORM={
+  nba:{'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS','BKN':'BKN','CHA':'CHA','MEM':'MEM','OKC':'OKC','PHX':'PHX','PHI':'PHI','NOP':'NOP'},
+  wnba:{'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL','IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG','PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'},
+  mlb:{'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
+  nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS'},
+  nfl:{'JAC':'JAX','LA':'LAR','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','LAC':'LAC','DAL':'DAL','NYG':'NYG','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA'},
+  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','IPS':'IPS','LEI':'LEI','LIV':'LIV','MCI':'MCI','MUN':'MUN','NEW':'NEW','NFO':'NFO','SOU':'SOU','TOT':'TOT','WHU':'WHU','WOL':'WOL'},
+};
+
+function normalizeRecordAbbr(sport,raw){
+  var m=RECORD_NORM[sport]||{};
+  return m[raw]||raw;
+}
+  // Boot fetch uses master RECORD_NORM
+  var NORM_NBA=RECORD_NORM.nba;
+  var NORM_WNBA=RECORD_NORM.wnba; var _unused_={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
     'IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG',
     'PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'};
   var NORM_NFL={
@@ -2972,13 +2996,9 @@ window.recordCache={};
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
     'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK'
   };
-  var NORM_EPL={
-    'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA',
-    'CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','IPS':'IPS',
-    'LEI':'LEI','LIV':'LIV','MCI':'MCI','MUN':'MUN','NEW':'NEW',
-    'NFO':'NFO','SOU':'SOU','TOT':'TOT','WHU':'WHU','WOL':'WOL'
-  };
-  var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL};
+  var NORM_EPL=RECORD_NORM.epl;
+  var NORM_NFL=RECORD_NORM.nfl;
+  var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL,epl:NORM_EPL};
   [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'baseball',league:'mlb'},{sport:'hockey',league:'nhl'},{sport:'football',league:'nfl'},{sport:'soccer',league:'eng.1',storageKey:'epl'}]
   .forEach(function(sp){
     var norm=NORMS[sp.league]||{};
