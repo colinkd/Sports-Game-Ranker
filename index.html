@@ -205,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v4.6</div>
+      <div>v4.7</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -3155,9 +3155,26 @@ function normalizeRecordAbbr(sport,raw){
         });
       });
       return entries;
-    }).then(function(){
-      // Re-render to show records
+    }).then(function(entries){
       var spKey=sp.storageKey||sp.league;
+      // Auto-rank by record if no saved ratings exist for this sport yet
+      var hasSaved=false;
+      try{hasSaved=!!localStorage.getItem(spKey+'_elo_ratings');}catch(e){}
+      if(!hasSaved&&entries&&entries.length){
+        var sportCfg=LEAGUE_CONFIGS[spKey];
+        var N=entries.length;
+        entries.sort(function(a,b){return b.wins-a.wins;});
+        var savedR={};
+        entries.forEach(function(e,i){
+          var target=((sportCfg&&sportCfg.defaultElo)||1200)+((N/2-(i+1))*(600/N));
+          savedR[e.abbr]=Math.round(Math.max(900,Math.min(1500,target)));
+        });
+        if(sportCfg&&sportCfg.teams)sportCfg.teams.forEach(function(t){if(!savedR[t.abbr])savedR[t.abbr]=(sportCfg.defaultElo||1200);});
+        try{localStorage.setItem(spKey+'_elo_ratings',JSON.stringify(savedR));}catch(e){}
+        if(ratingsStore)ratingsStore[spKey]=savedR;
+        if(currentLeague===spKey){ratings=savedR;}
+      }
+      // Re-render to show records
       if(currentLeague==='all'){
         if(document.getElementById('view-tier-ranker')&&
            document.getElementById('view-tier-ranker').style.display!=='none')renderTierRankings();
