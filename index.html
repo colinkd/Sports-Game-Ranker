@@ -621,7 +621,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.9', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.10', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -674,7 +674,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.9', vdate: '2026-05-12',
+    title: 'WNBA', version: 'wnba.v2.10', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.12', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.13', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.6', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.7', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -2060,8 +2060,9 @@ function processEvent(ev,tz){
   var lev=0,levLbl='';
   var gameNum=null,awaySerWins=null,homeSerWins=null;
   var isCup=false,isPrimetime=false,isDivisional=false,isIST=false;
+  var gameLeague=currentLeague==='all'?(LC.storageKey||LC.league||currentLeague):currentLeague;
 
-  if(currentLeague==='epl'){
+  if(gameLeague==='epl'){
     var eplOn=document.getElementById('w-epl-bon-on')?document.getElementById('w-epl-bon-on').checked:false;
     if(eplOn){
       // Get standings-based positions for bonus calculation
@@ -2078,7 +2079,7 @@ function processEvent(ev,tz){
       if((ae<=bot5thresh||he<=bot5thresh)&&relVal){lev+=relVal;levLbl=levLbl?levLbl+' + relegation':'relegation';}
     }
   }
-  if(currentLeague==='mlb'){
+  if(gameLeague==='mlb'){
     // MLB: divisional matchup bonus
     var mlbBonOn=document.getElementById('w-nfl-bon-on')?document.getElementById('w-nfl-bon-on').checked:false;
     if(mlbBonOn){
@@ -2093,7 +2094,7 @@ function processEvent(ev,tz){
       }
     }
   }
-  if(currentLeague==='nfl'){
+  if(gameLeague==='nfl'){
     // NFL per-game bonuses
     var nflBonOn=document.getElementById('w-nfl-bon-on')?document.getElementById('w-nfl-bon-on').checked:true;
     var snfVal=nflBonOn?(+document.getElementById('w-snf-val')?.value||0):0;
@@ -2426,7 +2427,7 @@ function finishAllLoad(games,callback){
     if(combMin===combMax){combMin-=1;combMax+=1;}
     var combP=(combined-combMin)/(combMax-combMin);
     var stars=combP>=0.8?5:combP>=0.6?4:combP>=0.4?3:combP>=0.2?2:1;
-    var flame=combP>=0.95;
+    var flame=combP>=0.95||g.flame;
     var score=combined+(g.lev||0)+(g.tvBonus||0);
     return Object.assign({},g,{awayElo:awayElo,homeElo:homeElo,awayDots:awayDots,homeDots:homeDots,totalStars:stars,flame:flame,score:score,watchScore:score});
   });
@@ -2547,9 +2548,13 @@ function loadGames(callback){
       games.sort(function(a,b){return b.score-a.score;});
       // Recompute dots/stars using current ratings for accuracy
       var allElos=LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;});
-      var mn=Math.min.apply(null,allElos)-1,mx=Math.max.apply(null,allElos)+1;
+      var mn=Math.min.apply(null,allElos),mx=Math.max.apply(null,allElos);
       if(mn===mx){mn-=200;mx+=200;}
-      var combMin=(mn*2)-1,combMax=(mx*2)+1;
+      var sortedE=allElos.slice().sort(function(a,b){return a-b;});
+      var sn=sortedE.length;
+      var combMin=sn>=2?sortedE[0]+sortedE[1]:sortedE[0]*2;
+      var combMax=sn>=2?sortedE[sn-1]+sortedE[sn-2]:sortedE[0]*2;
+      if(combMin===combMax){combMin-=1;combMax+=1;}
       games.forEach(function(g,i){
         var ae=ratings[g.awayAbbr]||LC.defaultElo, he=ratings[g.homeAbbr]||LC.defaultElo;
         var ap=(ae-mn)/(mx-mn), hp=(he-mn)/(mx-mn);
@@ -2557,7 +2562,7 @@ function loadGames(callback){
         g.homeDots=hp>=0.8?5:hp>=0.6?4:hp>=0.4?3:hp>=0.2?2:1;
         var cp=((ae+he)-combMin)/(combMax-combMin);
         g.totalStars=cp>=0.8?5:cp>=0.6?4:cp>=0.4?3:cp>=0.2?2:1;
-        g.flame=cp>=0.95;
+        g.flame=cp>=0.95||g.flame; // preserve processEvent flame if already set
         g.dotColor=getDotColor(i);
         // Update recordCache from live game data
         if(!window.recordCache)window.recordCache={};
