@@ -621,7 +621,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.7', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.9', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.10', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.12', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.5', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.6', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -2204,7 +2204,7 @@ function processEvent(ev,tz){
     homeRec:home.records&&home.records[0]?home.records[0].summary:'',
     homeElo:hd.elo,awayElo:ad.elo,combined:combined,
     homeDots:teamQ(hd.elo),awayDots:teamQ(ad.elo),
-    totalStars:gameStars(total),flame:gameStars(total)===5&&(total-getCombinedRange().min)/(getCombinedRange().max-getCombinedRange().min)>=0.95,
+    totalStars:gameStars(total),flame:(function(){var r=getCombinedRange();return(total-r.min)/(r.max-r.min)>=0.95;}()),
     time:fmtTime(utc,tz),hr:gameHr(utc,tz),dow:utc.getDay(),
     dateLabel:fmtDateShort(utc),utcMs:utc.getTime(),
     watch:watch,isNat:isNat,watchTBD:watchTBD,
@@ -2315,14 +2315,14 @@ function renderCards(games){
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
-        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-elo">'+(g.awayElo||'')+'</div>'+'<div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
+        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.awayDots)+'</div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div></div>'+
         '<div class="g-mid">'+
           dateTimeLine+badge+seriesBlock+
           '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
           '<div class="g-combined">'+g.total+'</div>'+
           bonuses+
         '</div>'+
-        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-elo">'+(g.homeElo||'')+'</div>'+'<div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
+        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.homeDots)+'</div>'+'<div class="g-elo">'+(g.homeElo||'')+'</div></div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -2369,7 +2369,7 @@ function loadAllGames(callback){
     var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+'&limit=20';
     // Per-fetch timeout so one slow sport can't block the rest
     var done=false;
-    var timer=setTimeout(function(){if(!done){done=true;onDone();}},8000);
+    var timer=setTimeout(function(){if(!done){done=true;onDone();}},12000);
     fetch(url).then(function(r){return r.json();})
       .then(function(data){
         var origLC=LC;
@@ -2383,7 +2383,7 @@ function loadAllGames(callback){
         var tz=getTz();
         var events=(data.events||[]).map(function(ev){
           var g=processEvent(ev,tz);
-          if(g)g._league=sp.league;
+          if(g)g._league=sp.key;
           return g;
         }).filter(Boolean);
         LC=origLC;
@@ -2417,9 +2417,13 @@ function finishAllLoad(games,callback){
     var awayP=(awayElo-mn)/(mx-mn), homeP=(homeElo-mn)/(mx-mn);
     var awayDots=awayP>=0.8?5:awayP>=0.6?4:awayP>=0.4?3:awayP>=0.2?2:1;
     var homeDots=homeP>=0.8?5:homeP>=0.6?4:homeP>=0.4?3:homeP>=0.2?2:1;
-    // Stars: combined elo percentile within sport
+    // Stars: combined elo percentile using true best/worst combos
     var combined=awayElo+homeElo;
-    var combMin=(mn*2)-1, combMax=(mx*2)+1;
+    var sortedElos=allElos.slice().sort(function(a,b){return a-b;});
+    var sn=sortedElos.length;
+    var combMin=sn>=2?sortedElos[0]+sortedElos[1]:sortedElos[0]*2;
+    var combMax=sn>=2?sortedElos[sn-1]+sortedElos[sn-2]:sortedElos[0]*2;
+    if(combMin===combMax){combMin-=1;combMax+=1;}
     var combP=(combined-combMin)/(combMax-combMin);
     var stars=combP>=0.8?5:combP>=0.6?4:combP>=0.4?3:combP>=0.2?2:1;
     var flame=combP>=0.95;
@@ -2494,15 +2498,15 @@ function renderAllCard(g,i){
       (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn">📅 add to gcal</a>':'')+
     '</div>'+
     '<div class="game-teams">'+
-      '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div>'+
+      '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
         '<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
-        '<div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
+        '<div class="g-dots">'+dotsHtml(g.awayDots)+'</div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div></div>'+
       '<div class="g-mid">'+dateTimeLine+badge+seriesBlock+
         '<div class="g-stars">'+starsHtmlAll(g.totalStars,g.flame)+'</div>'+
         '<div class="g-combined">'+g.total+'</div>'+bonuses+'</div>'+
       '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||'')+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
         '<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
-        '<div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
+        '<div class="g-dots">'+dotsHtml(g.homeDots)+'</div>'+'<div class="g-elo">'+(g.homeElo||'')+'</div></div>'+
     '</div>'+
   '</div>';
 }
