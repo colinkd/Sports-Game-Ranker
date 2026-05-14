@@ -621,7 +621,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.12', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.13', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -674,7 +674,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.10', vdate: '2026-05-12',
+    title: 'WNBA', version: 'wnba.v2.11', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.17', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.20', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.11', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.12', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -779,7 +779,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.6', vdate: '2026-05-12',
+    title: 'MLB', version: 'mlb.v1.8', vdate: '2026-05-12',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -845,7 +845,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.9', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.10', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -911,7 +911,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.5', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v3.6', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -2044,7 +2044,7 @@ function processEvent(ev,tz){
         watch=n;
         // isNat=true only for genuinely national broadcast networks
         // streaming (ESPN+, Prime Video, Peacock, Max) and LP (NHL.TV, League Pass) are not "national TV"
-        var NOT_NAT=['ESPN+','Prime Video','Peacock','Max','NHL.TV','League Pass','NFL Network'];
+        var NOT_NAT=['ESPN+','Prime Video','Peacock','Max','NHL.TV','MLB.TV','League Pass','NFL Network'];
         isNat=NOT_NAT.indexOf(n)<0;
         break;
       }
@@ -2242,7 +2242,7 @@ function applyFilters(games){
     }
     else if(bcastVal==='lp')games=games.filter(function(g){return LP_NET.indexOf(g.watch)>=0;});
     else if(bcastVal==='nflnet')games=games.filter(function(g){return g.watch==='NFL Network';});
-    else if(bcastVal==='streaming')games=games.filter(function(g){return STREAMING.indexOf(g.watch)>=0;});
+    else if(bcastVal==='streaming')games=games.filter(function(g){var STREAM_ONLY=['Prime Video','Peacock','ESPN+','Max','Apple TV+'];return STREAM_ONLY.indexOf(g.watch)>=0;});
     else{// bcastVal==='all' or 'custom': apply individual network pill filter
       games=games.filter(function(g){
         if(!g.isNat){
@@ -3006,8 +3006,6 @@ window.recordCache={};
     window.recordCache[lg+'_'+t.abbr]='0-0';
   });
 });
-// Fetch real standings for all sports on boot
-(function fetchAllStandings(){
 // ── Master record normalization — single source of truth ──
 var RECORD_NORM={
   nba:{'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS','BKN':'BKN','CHA':'CHA','MEM':'MEM','OKC':'OKC','PHX':'PHX','PHI':'PHI','NOP':'NOP'},
@@ -3022,6 +3020,8 @@ function normalizeRecordAbbr(sport,raw){
   var m=RECORD_NORM[sport]||{};
   return m[raw]||raw;
 }
+// Fetch real standings for all sports on boot
+(function fetchAllStandings(){
   // Boot fetch uses master RECORD_NORM
   var NORM_NBA=RECORD_NORM.nba;
   var NORM_WNBA=RECORD_NORM.wnba; var _unused_={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
