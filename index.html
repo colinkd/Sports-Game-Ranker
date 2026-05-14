@@ -621,7 +621,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.5', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.7', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.9', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.10', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -1721,18 +1721,17 @@ function getEloRange(){
   }
   var mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals);
   if(mn===mx){mn=mn-200;mx=mx+200;}
-  // Expand range to account for bonus values so map points don't cluster at center
-  if(lastGames.length){
-    var maxBonus=0;
-    lastGames.forEach(function(g){var b=Math.abs(g.lev||0)+(g.tvBonus||0);if(b>maxBonus)maxBonus=b;});
-    mx=mx+(maxBonus*0.6); // add partial bonus to upper end
-  }
   return{min:mn-1, max:mx+1};
 }
 function getCombinedRange(){
-  var r=getEloRange();
-  // Combined elo range is 2x the team range (two teams summed)
-  return{min:(r.min*2)-1, max:(r.max*2)+1};
+  // True range: best possible combo (top+top) to worst (bottom+bottom)
+  var vals=(LC.teams&&LC.teams.length)?LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;}):[1200];
+  var sorted=vals.slice().sort(function(a,b){return a-b;});
+  var n=sorted.length;
+  var combMin=sorted[0]+sorted[1];           // two worst teams
+  var combMax=sorted[n-1]+sorted[n-2];       // two best teams
+  if(combMin===combMax){combMin-=1;combMax+=1;}
+  return{min:combMin-1, max:combMax+1};
 }
 function teamQ(elo){
   var r=getEloRange();
@@ -2205,7 +2204,7 @@ function processEvent(ev,tz){
     homeRec:home.records&&home.records[0]?home.records[0].summary:'',
     homeElo:hd.elo,awayElo:ad.elo,combined:combined,
     homeDots:teamQ(hd.elo),awayDots:teamQ(ad.elo),
-    totalStars:gameStars(total),flame:total>getCombinedRange().max*0.95,
+    totalStars:gameStars(total),flame:gameStars(total)===5&&(total-getCombinedRange().min)/(getCombinedRange().max-getCombinedRange().min)>=0.95,
     time:fmtTime(utc,tz),hr:gameHr(utc,tz),dow:utc.getDay(),
     dateLabel:fmtDateShort(utc),utcMs:utc.getTime(),
     watch:watch,isNat:isNat,watchTBD:watchTBD,
@@ -2316,14 +2315,14 @@ function renderCards(games){
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
-        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
+        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-elo">'+(g.awayElo||'')+'</div>'+'<div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
         '<div class="g-mid">'+
           dateTimeLine+badge+seriesBlock+
           '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
           '<div class="g-combined">'+g.total+'</div>'+
           bonuses+
         '</div>'+
-        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
+        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-elo">'+(g.homeElo||'')+'</div>'+'<div class="g-dots">'+dotsHtml(g.homeDots)+'</div></div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -2495,7 +2494,7 @@ function renderAllCard(g,i){
       (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn">📅 add to gcal</a>':'')+
     '</div>'+
     '<div class="game-teams">'+
-      '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
+      '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div>'+
         '<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
         '<div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
       '<div class="g-mid">'+dateTimeLine+badge+seriesBlock+
