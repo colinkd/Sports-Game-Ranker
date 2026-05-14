@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.16', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.17', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.10', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.11', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -1377,7 +1377,7 @@ function rankByRecord(){
         'Wolves':'WOL',
         'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA',
         'CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','SUN':'SUN',
-        'LIV':'LIV','MCI':'MCI','MUN':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW',
+        'LIV':'LIV','MCI':'MCI','MUN':'MUN','MANU':'MUN','MAN UTD':'MUN','MAN':'MUN','NEW':'NEW',
         'NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL'
       };
       var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:NORM_NBA;
@@ -1562,9 +1562,6 @@ function buildSeasonSelector(){
   } else if(currentLeague==='nfl'){
     var curY=now.getMonth()<3?now.getFullYear()-1:now.getFullYear();
     for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
-  } else if(currentLeague==='all'){
-    var curY=now.getFullYear();
-    for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
   }
 
   sel.innerHTML=seasons.map(function(s){
@@ -1597,13 +1594,6 @@ function onSeasonChange(){
   if(currentLeague==='nfl'){
     nflWeeks=[];
     buildNflWeeksForYear(currentSeason);
-  } else if(currentLeague==='all'){
-    applySeasonToUI();
-    var now=new Date();
-    var d=currentSeason===now.getFullYear()?now:new Date(currentSeason,0,1);
-    currentDate=d;
-    document.getElementById('date-picker').value=ival(d);
-    loadGames();
   } else {
     jumpToSeasonStart();
   }
@@ -1617,9 +1607,6 @@ function applySeasonToUI(){
   } else if(currentLeague==='wnba'){
     document.getElementById('date-picker').min=currentSeason+'-05-01';
     document.getElementById('date-picker').max=currentSeason+'-10-31';
-  } else if(currentLeague==='all'){
-    document.getElementById('date-picker').min=currentSeason+'-01-01';
-    document.getElementById('date-picker').max=currentSeason+'-12-31';
   }
 }
 
@@ -2915,6 +2902,8 @@ function switchLeague(lg){
   $sty('epl-bonuses-section','display',lg==='epl'?'block':'none');
   $sty('team-filter-card','display',isAll?'none':'');
   $sty('sport-filter-card','display',isAll?'block':'none');
+  // Hide season selector on All tab — each sport has its own season
+  document.querySelectorAll('#season-select').forEach(function(el){el.style.display=isAll?'none':'';});
   var sweepRow=document.getElementById('sweep-row');if(sweepRow)sweepRow.style.display=(LC.showSweep?'':'none');
   $sty('ist-section','display',LC.showIST?'block':'none');
   // Broadcast card: swap natl-tv-row <-> primetime-row
@@ -3026,7 +3015,7 @@ var RECORD_NORM={
   mlb:{'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
   nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'},
   nfl:{'JAC':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','DAL':'DAL','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA','JAX':'JAX'},
-  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','LDS':'LEE','SUN':'SUN','SND':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL','BRN':'BUR','SU':'SUN'},
+  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','LDS':'LEE','SUN':'SUN','SND':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','MANU':'MUN','MAN UTD':'MUN','MAN':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL','BRN':'BUR','SU':'SUN'},
 };
 
 function normalizeRecordAbbr(sport,raw){
