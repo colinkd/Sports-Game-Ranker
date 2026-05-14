@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.8', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.9', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.4', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.5', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -2352,18 +2352,25 @@ function loadAllGames(callback){
   var dp=document.getElementById('date-picker').value;
   if(dp){var p=dp.split('-');currentDate=new Date(+p[0],+p[1]-1,+p[2]);}
   var ds=dstr(currentDate);
-  var sports=[
-    {sport:'basketball',league:'nba',cfg:LEAGUE_CONFIGS.nba},
-    {sport:'basketball',league:'wnba',cfg:LEAGUE_CONFIGS.wnba},
-    {sport:'baseball',league:'mlb',cfg:LEAGUE_CONFIGS.mlb},
-    {sport:'soccer',league:'eng.1',cfg:LEAGUE_CONFIGS.epl},
-    {sport:'hockey',league:'nhl',cfg:LEAGUE_CONFIGS.nhl},
-    {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl},
+  var allSports=[
+    {sport:'basketball',league:'nba',cfg:LEAGUE_CONFIGS.nba,key:'nba'},
+    {sport:'basketball',league:'wnba',cfg:LEAGUE_CONFIGS.wnba,key:'wnba'},
+    {sport:'baseball',league:'mlb',cfg:LEAGUE_CONFIGS.mlb,key:'mlb'},
+    {sport:'soccer',league:'eng.1',cfg:LEAGUE_CONFIGS.epl,key:'epl'},
+    {sport:'hockey',league:'nhl',cfg:LEAGUE_CONFIGS.nhl,key:'nhl'},
+    {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl,key:'nfl'},
   ];
+  // Only fetch sports that are currently included
+  var sports=allSports.filter(function(sp){return includeSports.indexOf(sp.key)>=0;});
+  if(!sports.length){if(el)el.innerHTML='<div class="no-games">no sports selected</div>';return;}
   var allEvents=[];
   var pending=sports.length;
+  function onDone(){pending--;if(pending===0)finishAllLoad(allEvents,callback);}
   sports.forEach(function(sp){
     var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+'&limit=20';
+    // Per-fetch timeout so one slow sport can't block the rest
+    var done=false;
+    var timer=setTimeout(function(){if(!done){done=true;onDone();}},8000);
     fetch(url).then(function(r){return r.json();})
       .then(function(data){
         var origLC=LC;
@@ -2383,10 +2390,9 @@ function loadAllGames(callback){
         LC=origLC;
         ratings=origRatings;
         allEvents=allEvents.concat(events);
-        pending--;
-        if(pending===0)finishAllLoad(allEvents,callback);
+        if(!done){done=true;clearTimeout(timer);onDone();}
       })
-      .catch(function(){pending--;if(pending===0)finishAllLoad(allEvents,callback);});
+      .catch(function(){if(!done){done=true;clearTimeout(timer);onDone();}});
   });
 }
 
