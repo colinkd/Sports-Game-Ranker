@@ -124,8 +124,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .g-at{font-size:10px;color:var(--text-3);font-family:var(--mono);letter-spacing:.5px}
 .g-time{font-size:12px;font-weight:500;color:var(--text);margin:3px 0}
 .g-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px}
-.badge-lp{background:var(--bg);color:var(--text-3);border:.5px solid var(--border)}
-.badge-tv{background:var(--blue-light);color:var(--blue)}
+.badge-lp{background:#fce7f3;color:#9f1239;border:.5px solid #f9a8d4}
+.badge-tv{background:var(--blue-light);color:var(--blue);border:.5px solid #93c5fd}
 .badge-stream{background:#dcfce7;color:#166534;border:.5px solid #86efac}
 .badge-cup{background:#FFF3E0;color:#E65100;border:.5px solid #FFB74D}
 .g-stars{font-size:11px;margin-top:3px}
@@ -158,6 +158,9 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 .pills{display:flex;gap:4px;flex-wrap:wrap}
 .pill{font-family:var(--mono);font-size:10px;padding:4px 6px 3px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-2);background:var(--bg);transition:all .12s;display:flex;align-items:center;line-height:1;white-space:nowrap}
 .pill.on{background:var(--amber);color:#fff;border-color:var(--amber)}
+.pill[data-cat="national"].on{background:var(--blue-light);color:var(--blue);border-color:var(--blue)}
+.pill[data-cat="streaming"].on{background:#dcfce7;color:#166534;border-color:#86efac}
+.pill[data-cat="lp"].on{background:#fce7f3;color:#9f1239;border-color:#f9a8d4}
 .date-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
 .date-lbl{font-family:var(--mono);font-size:10px;color:var(--text-3)}
 .date-in{font-family:var(--mono);font-size:10px;color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:3px 5px}
@@ -167,7 +170,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 .nest.off{opacity:.35;pointer-events:none}
 .team-bubble{font-family:var(--mono);font-size:10px;padding:3px 8px;border:.5px solid var(--blue);border-radius:20px;cursor:pointer;color:var(--blue);background:var(--blue-light);display:flex;align-items:center;gap:4px}
 .sport-pill{font-family:var(--mono);font-size:10px;padding:4px 8px;border:1px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-3);background:var(--bg);transition:all .12s;opacity:.5}
-.sport-pill.on{background:var(--amber);color:var(--bg);border-color:var(--amber);opacity:1;font-weight:600}
+.sport-pill.on{background:var(--blue);color:#fff;border-color:var(--blue);opacity:1;font-weight:600}
 .team-bubble:hover{opacity:.8}
 .net-pill{font-family:var(--mono);font-size:10px;padding:3px 7px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-2);background:var(--bg);transition:all .12s}
 .net-pill.on{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -205,7 +208,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v4.7</div>
+      <div>v4.27</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -230,10 +233,31 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <!-- ══ RANKER ══ -->
 <!-- ══ ALL-TAB RANKER (tier rounds) ══ -->
 <div id="view-tier-ranker" style="display:none;max-width:640px;margin:0 auto">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem" id="tier-rankings-header">
-    <div class="section-label">all sports · elo ratings</div>
-    <button class="btn btn-sm btn-outline" onclick="seedTierFromPercentile();renderTierRankings()">refresh from sport ratings</button>
+  <!-- Filter bar -->
+  <div style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem">
+    <div style="display:flex;align-items:stretch;gap:10px">
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <div class="pill on" data-tcat="all" onclick="setTierCat('all')">all</div>
+          <div class="pill" data-tcat="big4" onclick="setTierCat('big4')">big 4</div>
+          <div class="pill" data-tcat="basketball" onclick="setTierCat('basketball')">basketball</div>
+          <div class="pill" data-tcat="soccer" onclick="setTierCat('soccer')">soccer</div>
+          <div class="pill" data-tcat="custom" id="tier-custom-pill">custom</div>
+        </div>
+        <hr style="border:none;border-top:.5px solid var(--border);margin:0"/>
+        <div style="display:flex;flex-wrap:wrap;gap:4px" id="tier-sport-filter">
+          <div class="sport-pill on" data-ts="nba" onclick="toggleTierSport('nba',this)">🏀 NBA</div>
+          <div class="sport-pill on" data-ts="wnba" onclick="toggleTierSport('wnba',this)">🏀 WNBA</div>
+          <div class="sport-pill on" data-ts="mlb" onclick="toggleTierSport('mlb',this)">⚾ MLB</div>
+          <div class="sport-pill on" data-ts="nhl" onclick="toggleTierSport('nhl',this)">🏒 NHL</div>
+          <div class="sport-pill on" data-ts="nfl" onclick="toggleTierSport('nfl',this)">🏈 NFL</div>
+          <div class="sport-pill on" data-ts="epl" onclick="toggleTierSport('epl',this)">⚽ EPL</div>
+        </div>
+      </div>
+      <button class="btn btn-outline" style="font-size:11px;writing-mode:horizontal-tb;align-self:stretch;white-space:nowrap;padding:0 12px" onclick="seedTierFromPercentile();renderTierRankings()">refresh ratings</button>
+    </div>
   </div>
+  <div id="tier-rankings-header" style="display:none"></div>
   <div class="rank-list" id="tier-rankings"></div>
   <div class="saved-note" id="tier-saved-note"></div>
 </div>
@@ -277,7 +301,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:8px">
           <div style="display:flex;align-items:center;gap:8px">
             <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
-            <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+            <span id="date-bar-divider" style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
             <div class="pills">
               <div class="pill on" id="mode-single" onclick="setDateMode('single')">single date</div>
               <div class="pill" id="mode-range" onclick="setDateMode('range')">date range</div>
@@ -290,13 +314,18 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         </div>
         <div id="single-date-row" style="display:flex;align-items:center;gap:8px">
           <button class="btn btn-sm" onclick="shiftDate(-1)">←</button>
-          <input type="date" class="date-in" id="date-picker" style="flex:1"/>
+          <span id="date-dow-label" style="font-family:var(--mono);font-size:10px;color:var(--text);white-space:nowrap;font-weight:600;margin-right:-4px"></span>
+          <input type="date" class="date-in" id="date-picker" style="flex:1" onchange="updateDowLabel()"/>
           <button class="btn btn-sm" onclick="shiftDate(1)">→</button>
           <button class="btn btn-sm" onclick="goToday()">today</button>
         </div>
         <div id="range-date-row" style="display:none;align-items:center;gap:5px" class="date-row">
-          <div class="date-lbl">from</div><input type="date" class="date-in" id="w-from" style="flex:1"/>
-          <div class="date-lbl">to</div><input type="date" class="date-in" id="w-to" style="flex:1"/>
+          <div class="date-lbl">from</div>
+          <span id="range-from-dow" style="font-family:var(--mono);font-size:10px;color:var(--text);font-weight:600;white-space:nowrap;margin-right:-4px"></span>
+          <input type="date" class="date-in" id="w-from" style="flex:1" onchange="updateRangeDow()"/>
+          <div class="date-lbl">to</div>
+          <span id="range-to-dow" style="font-family:var(--mono);font-size:10px;color:var(--text);font-weight:600;white-space:nowrap;margin-right:-4px"></span>
+          <input type="date" class="date-in" id="w-to" style="flex:1" onchange="updateRangeDow()"/>
         </div>
       </div>
 
@@ -353,16 +382,14 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- SPORT FILTER (All tab only) -->
       <div class="fs" id="sport-filter-card" style="display:none">
         <div class="fs-head"><div class="fs-title">sport filter</div></div>
-        <div class="fw" style="margin-bottom:6px">
-          <div class="fw-lbl">show</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">
-            <div class="pill on" data-sportval="all" onclick="setSportFilter('all')">all</div>
-            <div class="pill" data-sportval="big4" onclick="setSportFilter('big4')">big 4</div>
-            <div class="pill" data-sportval="basketball" onclick="setSportFilter('basketball')">basketball</div>
-            <div class="pill" data-sportval="soccer" onclick="setSportFilter('soccer')">soccer</div>
-            <div class="pill" data-sportval="custom" onclick="setSportFilter('custom')">custom</div>
-          </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+          <div class="pill on" data-sportval="all" onclick="setSportFilter('all')">all</div>
+          <div class="pill" data-sportval="big4" onclick="setSportFilter('big4')">big 4</div>
+          <div class="pill" data-sportval="basketball" onclick="setSportFilter('basketball')">basketball</div>
+          <div class="pill" data-sportval="soccer" onclick="setSportFilter('soccer')">soccer</div>
+          <div class="pill" data-sportval="custom" onclick="setSportFilter('custom')">custom</div>
         </div>
+        <hr style="border:none;border-top:.5px solid var(--border);margin:0 0 8px"/>
         <div id="sport-pill-wrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:2px 0">
           <div class="sport-pill on" data-sport="nba" onclick="toggleSport('nba',this)">🏀 NBA</div>
           <div class="sport-pill on" data-sport="wnba" onclick="toggleSport('wnba',this)">🏀 WNBA</div>
@@ -376,20 +403,19 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- DAY & TIME -->
       <div class="fs">
         <div class="fs-head">
-          <div class="fs-title">day &amp; time</div>
+          <div class="fs-title">day &amp; time filter</div>
           <label class="tog"><input type="checkbox" id="w-dt-on" onchange="updateStates()"/><span class="tog-track"></span></label>
         </div>
         <div class="fs-body" id="dt-body">
           <div class="fw" style="margin-top:0">
-            <div class="fw-lbl">Day of week</div>
             <div class="pills" id="day-filter">
               <div class="pill on" data-val="all" onclick="setDay('all')">all</div>
               <div class="pill" data-val="weekday" onclick="setDay('weekday')">weeknights</div>
               <div class="pill" data-val="weekend" onclick="setDay('weekend')">weekends</div>
             </div>
           </div>
+          <hr style="border:none;border-top:.5px solid var(--border);margin:6px 0"/>
           <div class="fw" style="flex-wrap:wrap;gap:4px">
-            <div class="fw-lbl" style="width:100%;margin-bottom:2px">Days</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px" id="dow-pills">
               <span class="net-pill on" data-dow="0" onclick="toggleDow(this)">Sun</span>
               <span class="net-pill on" data-dow="1" onclick="toggleDow(this)">Mon</span>
@@ -400,19 +426,23 @@ input:checked+.tog-track::after{transform:translateX(14px)}
               <span class="net-pill on" data-dow="6" onclick="toggleDow(this)">Sat</span>
             </div>
           </div>
-          <div class="fw" style="margin-top:4px">
-            <div class="fw-lbl">Tip-off time</div>
-            <label class="tog"><input type="checkbox" id="w-time-on" onchange="updateStates()"/><span class="tog-track"></span></label>
-          </div>
-          <div class="nest off" id="time-nest">
-            <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="margin-top:16px">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">tip-off time</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px" id="time-presets">
+              <div class="pill on" data-tp="all" onclick="setTimePreset('all')">all</div>
+              <div class="pill" data-tp="morning" onclick="setTimePreset('morning')">before 1pm</div>
+              <div class="pill" data-tp="afternoon" onclick="setTimePreset('afternoon')">1–5pm</div>
+              <div class="pill" data-tp="evening" onclick="setTimePreset('evening')">5–9pm</div>
+              <div class="pill" data-tp="late" onclick="setTimePreset('late')">after 9pm</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px" id="time-inputs" style="display:none">
               <div style="display:flex;align-items:center;gap:6px">
                 <span style="font-family:var(--mono);font-size:10px;color:var(--text-3);width:36px">after</span>
-                <input type="time" class="time-in" id="w-min-time" value="00:00"/>
+                <input type="time" class="time-in" id="w-min-time" value="00:00" onchange="setTimePreset('custom')"/>
               </div>
               <div style="display:flex;align-items:center;gap:6px">
                 <span style="font-family:var(--mono);font-size:10px;color:var(--text-3);width:36px">before</span>
-                <input type="time" class="time-in" id="w-max-time" value="23:59"/>
+                <input type="time" class="time-in" id="w-max-time" value="23:59" onchange="setTimePreset('custom')"/>
               </div>
             </div>
           </div>
@@ -422,29 +452,23 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- BROADCAST -->
       <div class="fs">
         <div class="fs-head">
-          <div class="fs-title">broadcast</div>
+          <div class="fs-title">broadcast filter</div>
           <label class="tog"><input type="checkbox" id="w-bcast-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
         </div>
         <div class="fs-body" id="bcast-body">
           <div class="fw" id="bcast-show-row">
-            <div class="fw-lbl">Show</div>
             <div class="pills" id="bcast-filter">
-              <div class="pill on" data-val="all" onclick="setBcast('all')">all</div>
-              <!-- NBA/WNBA pills -->
-              <div class="pill nba-wnba-pill" data-val="national" onclick="setBcast('national')">nat. tv</div>
-              <div class="pill nba-wnba-pill" data-val="lp" onclick="setBcast('lp')">league pass</div>
-              <div class="pill nba-wnba-pill" data-val="streaming" onclick="setBcast('streaming')">streaming</div>
-              <!-- NFL pills -->
-              <div class="pill nfl-pill" data-val="national" onclick="setBcast('national')" style="display:none">nat. tv</div>
-              <div class="pill nfl-pill" data-val="nflnet" onclick="setBcast('nflnet')" style="display:none">league pass</div>
-              <div class="pill nfl-pill" data-val="streaming" onclick="setBcast('streaming')" style="display:none">streaming</div>
-              <!-- custom (always visible, auto-selected when network pills edited) -->
-              <div class="pill" data-val="custom" onclick="setBcast('custom')" id="bcast-custom-pill">custom</div>
+              <div class="pill on" data-val="all" onclick="setBcastAll()">all</div>
+              <div class="pill on" data-cat="national" onclick="toggleBcastCat('national')">nat. tv</div>
+              <div class="pill on" data-cat="streaming" onclick="toggleBcastCat('streaming')">streaming</div>
+              <div class="pill on" data-cat="lp" onclick="toggleBcastCat('lp')">league pass</div>
+              <div class="pill" data-val="custom" id="bcast-custom-pill">custom</div>
             </div>
           </div>
+          <hr style="border:none;border-top:.5px solid var(--border);margin:6px 0"/>
           <div class="fw" style="flex-wrap:wrap;gap:4px">
-            <div class="fw-lbl" style="width:100%;margin-bottom:2px">Networks</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px" id="network-pills"></div>
+            <div id="network-pills-shared" style="display:flex;flex-wrap:wrap;gap:4px;width:100%"></div>
+            <div id="network-pills-sport" style="display:flex;flex-wrap:wrap;gap:4px;width:100%;margin-top:4px"></div>
           </div>
           <!-- NBA/WNBA: national TV bonus -->
           <div class="fw" id="natl-tv-row">
@@ -477,7 +501,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- MATCHUP QUALITY -->
       <div class="fs">
         <div class="fs-head">
-          <div class="fs-title">matchup quality</div>
+          <div class="fs-title">matchup quality filter</div>
           <label class="tog"><input type="checkbox" id="w-stars-on" checked onchange="updateStates()"/><span class="tog-track"></span></label>
         </div>
         <div class="nest" id="stars-nest">
@@ -621,7 +645,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.13', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.14', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -712,7 +736,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.24', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.27', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -1181,15 +1205,58 @@ function renderTierRanker(){
   if(!done)assignTierButtons();
 }
 
+var tierSports={nba:true,wnba:true,mlb:true,nhl:true,nfl:true,epl:true};
+function syncTierSportPills(){
+  document.querySelectorAll('#tier-sport-filter .sport-pill').forEach(function(el){
+    el.classList.toggle('on',tierSports[el.dataset.ts]!==false);
+  });
+}
+function setTierCat(cat){
+  var presets={
+    all:{nba:true,wnba:true,mlb:true,nhl:true,nfl:true,epl:true},
+    big4:{nba:true,wnba:false,mlb:true,nhl:true,nfl:true,epl:false},
+    basketball:{nba:true,wnba:true,mlb:false,nhl:false,nfl:false,epl:false},
+    soccer:{nba:false,wnba:false,mlb:false,nhl:false,nfl:false,epl:true},
+  };
+  if(presets[cat]){
+    tierSports=Object.assign({},presets[cat]);
+    syncTierSportPills();
+    document.querySelectorAll('#tier-sport-filter').length;
+  }
+  document.querySelectorAll('[data-tcat]').forEach(function(el){
+    el.classList.toggle('on',el.dataset.tcat===cat);
+  });
+  var cp=document.getElementById('tier-custom-pill');
+  if(cp)cp.classList.toggle('on',cat==='custom');
+  renderTierRankings();
+}
+function toggleTierSport(sport,el){
+  tierSports[sport]=!tierSports[sport];
+  el.classList.toggle('on',tierSports[sport]);
+  // Mark custom if doesn't match any preset
+  document.querySelectorAll('[data-tcat]').forEach(function(p){p.classList.remove('on');});
+  var cp=document.getElementById('tier-custom-pill');if(cp)cp.classList.add('on');
+  renderTierRankings();
+}
+// Legacy shim
+function setTierSportFilter(sport){setTierCat(sport==='all'?'all':sport);}
 function renderTierRankings(){
   var all=getAllTeamTierRankings();
   if(!all.length)return;
+  // Apply sport filter — show only selected sports
+  var filtered=all.filter(function(t){return tierSports[t.league]!==false;});
+  // Re-rank within filtered set for tier display
   var lgIcons={nba:'🏀',wnba:'🏀',mlb:'⚾',nfl:'🏈',nhl:'🏒',epl:'⚽'};
   var html='';
   var lastTier='';
-  all.forEach(function(t,i){
+  filtered.forEach(function(t,i){
+    // Recompute tier within filtered set if single sport
     var tier=t.tier||'F';
-    // Divider AFTER previous row when tier changes
+    var activeSports=Object.keys(tierSports).filter(function(s){return tierSports[s];});
+    if(activeSports.length===1){
+      var n=filtered.length,pct=i/n;
+      tier=pct<0.05?'S':pct<0.20?'A':pct<0.40?'B':pct<0.60?'C':pct<0.80?'D':'F';
+    }
     if(lastTier&&tier!==lastTier){
       var lineClass={S:'tier-S-line',A:'tier-A-line',B:'tier-B-line',C:'tier-C-line',D:'tier-D-line',F:'tier-F-line'}[tier]||'';
       html+='<hr class="tier-divider '+lineClass+'"/>';
@@ -1199,7 +1266,7 @@ function renderTierRankings(){
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
-      '<span style="font-size:10px;margin-right:4px">'+(lgIcons[t.league]||'')+'</span>'+
+      (activeSports.length===6?'<span style="font-size:10px;margin-right:4px">'+(lgIcons[t.league]||'')+'</span>':'')+
       '<div class="rank-name">'+t.name+(rec?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+rec+'</span>':'')+'</div>'+
       '<div class="rank-elo" style="margin-right:4px">'+t.elo+'</div>'+
       '<span class="tier-badge tier-'+tier+'">'+tier+'</span>'+
@@ -1513,9 +1580,30 @@ var currentDate=new Date();
 function pad(n){return String(n).padStart(2,'0');}
 function dstr(d){return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate());}
 function ival(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
-function shiftDate(delta){currentDate.setDate(currentDate.getDate()+delta);document.getElementById('date-picker').value=ival(currentDate);
+var DOW_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function updateDowLabel(){
+  var dp=document.getElementById('date-picker');
+  var lbl=document.getElementById('date-dow-label');
+  if(!dp||!lbl||!dp.value)return;
+  var p=dp.value.split('-');
+  var d=new Date(+p[0],+p[1]-1,+p[2]);
+  lbl.textContent=DOW_SHORT[d.getDay()];
+}
+function updateRangeDow(){
+  var parseDow=function(id){
+    var el=document.getElementById(id);
+    if(!el||!el.value)return'';
+    var p=el.value.split('-');
+    return DOW_SHORT[new Date(+p[0],+p[1]-1,+p[2]).getDay()];
+  };
+  var fl=document.getElementById('range-from-dow');
+  var tl=document.getElementById('range-to-dow');
+  if(fl)fl.textContent=parseDow('w-from');
+  if(tl)tl.textContent=parseDow('w-to');
+}
+function shiftDate(delta){currentDate.setDate(currentDate.getDate()+delta);document.getElementById('date-picker').value=ival(currentDate);updateDowLabel();updateRangeDow();
 document.getElementById('nfl-single-date').value=ival(currentDate);loadSingle();}
-function goToday(){currentDate=new Date();document.getElementById('date-picker').value=ival(currentDate);
+function goToday(){currentDate=new Date();document.getElementById('date-picker').value=ival(currentDate);updateDowLabel();updateRangeDow();
 document.getElementById('nfl-single-date').value=ival(currentDate);loadSingle();}
 function tzOff(tz){var d=new Date(),dst=d.getMonth()>=2&&d.getMonth()<=10;return({ET:-5,CT:-6,MT:-7,PT:-8}[tz]||-5)+(dst?1:0);}
 function fmtTime(utc,tz){
@@ -1757,17 +1845,91 @@ function starsHtmlAll(n,flame){
 function toHr(t){var p=(t||'00:00').split(':');return+p[0]+(+p[1]/60);}
 
 // ── FILTER STATE ──
-var bcastVal='all',dayVal='all',dateMode='single';
+var bcastVal='categories',dayVal='all',dateMode='single';
+var bcastCats={national:true,streaming:true,lp:true};
 var enabledNets={},enabledDows={0:true,1:true,2:true,3:true,4:true,5:true,6:true};
 
+// Shared networks across all sports
+var SHARED_NETS=['ABC','CBS','NBC','Fox','FS1','ESPN','ESPN+','TNT','TBS','Prime Video','Peacock','Max','Apple TV+','USA Network'];
+var STREAM_CATS=['ESPN+','Prime Video','Peacock','Max','Apple TV+'];
+var LP_CATS_MAP={
+  nba:['League Pass'],wnba:['League Pass'],mlb:['MLB.TV'],nhl:['NHL.TV'],
+  nfl:['NFL Network'],epl:[],all:['League Pass','NHL.TV','NFL Network','MLB.TV']
+};
+var NAT_CATS_MAP={
+  nba:['ESPN','ABC','NBC','TNT','TBS'],wnba:['ESPN','ABC','ION'],
+  mlb:['ESPN','Fox','FS1','TBS','ABC'],nhl:['ESPN','ABC','TNT','TBS'],
+  nfl:['CBS','Fox','NBC','ESPN','ABC'],epl:['NBC','USA Network'],
+  all:['ESPN','ABC','NBC','CBS','Fox','TNT','TBS','FS1','USA Network']
+};
+// Which categories are currently on
+var bcastCats={national:true,streaming:true,lp:true};
+
+// Sport-specific networks (non-shared) grouped by sport
+var SPORT_SPECIFIC_NETS={
+  nba:['NBA TV','League Pass'],
+  wnba:['ION','League Pass'],
+  mlb:['MLB.TV'],
+  nhl:['NHL.TV','USA Network'],
+  nfl:['NFL Network'],
+  epl:['USA Network','Peacock','NBC'],
+};
+function makePill(n,cat,on){
+  var el=document.createElement('span');
+  el.className='net-pill'+(on?' on':'');
+  el.dataset.net=n;el.dataset.cat=cat;el.textContent=n;
+  el.onclick=function(){toggleNet(el);};
+  enabledNets[n]=on;
+  return el;
+}
+function makeSportLabel(icon,name){
+  var lbl=document.createElement('div');
+  lbl.style.cssText='width:100%;font-size:10px;font-family:var(--mono);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin:6px 0 2px';
+  lbl.textContent=icon+' '+name;
+  return lbl;
+}
 function buildNetworkPills(){
-  var wrap=document.getElementById('network-pills');
-  LC.networks.forEach(function(n){
-    enabledNets[n]=true;
-    var el=document.createElement('span');
-    el.className='net-pill on';el.dataset.net=n;el.textContent=n;
-    el.onclick=function(){toggleNet(el);};
-    wrap.appendChild(el);
+  var sharedWrap=document.getElementById('network-pills-shared');
+  var sportWrap=document.getElementById('network-pills-sport');
+  sharedWrap.innerHTML=''; sportWrap.innerHTML='';
+  enabledNets={};
+  var lk=currentLeague==='all'?'all':currentLeague;
+  var lpNets=LP_CATS_MAP[lk]||[];
+  // Shared networks — rendered in SHARED_NETS order
+  SHARED_NETS.forEach(function(n){
+    if(LC.networks.indexOf(n)<0)return; // only if sport uses it
+    var isStream=STREAM_CATS.indexOf(n)>=0;
+    var isLP=lpNets.indexOf(n)>=0;
+    var cat=isStream?'streaming':isLP?'lp':'national';
+    sharedWrap.appendChild(makePill(n,cat,bcastCats[cat]!==false));
+  });
+  // Sport-specific: group by sport with label
+  var sportGroups=lk==='all'?
+    [{key:'nba',icon:'🏀',label:'NBA'},{key:'wnba',icon:'🏀',label:'WNBA'},
+     {key:'mlb',icon:'⚾',label:'MLB'},{key:'nhl',icon:'🏒',label:'NHL'},
+     {key:'nfl',icon:'🏈',label:'NFL'},{key:'epl',icon:'⚽',label:'EPL'}]:
+    [{key:lk,icon:'',label:''}];
+  sportGroups.forEach(function(sg){
+    var nets=SPORT_SPECIFIC_NETS[sg.key]||[];
+    var validNets=nets.filter(function(n){return LC.networks.indexOf(n)>=0&&SHARED_NETS.indexOf(n)<0;});
+    if(!validNets.length)return;
+    // Row: label + pills on same line
+    var row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:4px;width:100%;flex-wrap:wrap;margin-top:4px;';
+    if(sg.label){
+      var lbl=document.createElement('span');
+      lbl.style.cssText='font-size:10px;font-family:var(--mono);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;margin-right:2px;';
+      lbl.textContent=sg.icon+' '+sg.label;
+      row.appendChild(lbl);
+    }
+    validNets.forEach(function(n){
+      var lpNetsLocal=LP_CATS_MAP[sg.key]||[];
+      var isStream=STREAM_CATS.indexOf(n)>=0;
+      var isLP=lpNetsLocal.indexOf(n)>=0;
+      var cat=isStream?'streaming':isLP?'lp':'national';
+      row.appendChild(makePill(n,cat,bcastCats[cat]!==false));
+    });
+    sportWrap.appendChild(row);
   });
 }
 
@@ -1778,48 +1940,67 @@ function setDateMode(mode){
   $sty('single-date-row','display',mode==='single'?'flex':'none');
   $sty('range-date-row','display',mode==='range'?'flex':'none');
 }
-function setBcast(v){
-  bcastVal=v;
-  // Update pill active states (skip hidden pills, skip custom — it auto-shows)
-  document.querySelectorAll('#bcast-filter .pill').forEach(function(el){
-    if(el.dataset.val==='custom')return; // handled separately
-    if(el.style.display==='none')return;
-    el.classList.toggle('on',el.dataset.val===v);
+function syncBcastPills(){
+  // Reflect bcastCats state onto category pills and network pills
+  var allOn=bcastCats.national&&bcastCats.streaming&&bcastCats.lp;
+  var anyCustom=false;
+  document.querySelectorAll('#bcast-filter .pill[data-cat]').forEach(function(el){
+    el.classList.toggle('on',bcastCats[el.dataset.cat]!==false);
   });
-  // custom pill: always visible, just toggle active state
+  document.querySelectorAll('#bcast-filter .pill[data-val="all"]').forEach(function(el){
+    el.classList.toggle('on',allOn);
+  });
+  // Update network pills to match categories
+  document.querySelectorAll('.net-pill[data-cat]').forEach(function(el){
+    var on=bcastCats[el.dataset.cat]!==false;
+    enabledNets[el.dataset.net]=on;
+    el.classList.toggle('on',on);
+  });
   var custPill=document.getElementById('bcast-custom-pill');
-  if(custPill)custPill.classList.toggle('on',v==='custom');
-  // Network pills: always interactive (never dim)
-  var netWrap=document.getElementById('network-pills');
-  if(netWrap){netWrap.style.opacity='';netWrap.style.pointerEvents='';}
-  if(v==='custom')return; // custom: leave network pills as-is
-  var streaming=currentLeague==='nhl'?['ESPN+','Max']:currentLeague==='mlb'?['Apple TV+','Peacock']:currentLeague==='epl'?['Peacock']:currentLeague==='all'?['Prime Video','Peacock','ESPN+','Max','Apple TV+']:['Prime Video','Peacock'];
-  var lpNets=currentLeague==='nhl'?['NHL.TV']:currentLeague==='mlb'?['MLB.TV']:currentLeague==='epl'?[]:currentLeague==='all'?['League Pass','NHL.TV','NFL Network','MLB.TV']:['League Pass'];
-  var nhlNat=['ESPN','ABC','TNT','TBS'];
-  var mlbNat=['ESPN','Fox','FS1','TBS','ABC'];
-  if(currentLeague!=='nfl'){
-    document.querySelectorAll('#network-pills .net-pill').forEach(function(el){
-      var n=el.dataset.net;
-      var on;
-      if(v==='streaming') on=streaming.indexOf(n)>=0;
-      else if(v==='national') on=currentLeague==='nhl'?nhlNat.indexOf(n)>=0:currentLeague==='mlb'?mlbNat.indexOf(n)>=0:lpNets.indexOf(n)<0&&streaming.indexOf(n)<0;
-      else if(v==='lp') on=lpNets.indexOf(n)>=0;
-      else on=true;
-      enabledNets[n]=on; el.classList.toggle('on',on);
-    });
+  if(custPill)custPill.classList.toggle('on',false);
+}
+function toggleBcastCat(cat){
+  bcastCats[cat]=!bcastCats[cat];
+  bcastVal='categories';
+  syncBcastPills();
+  loadGames();
+}
+function setBcastAll(){
+  bcastCats={national:true,streaming:true,lp:true};
+  bcastVal='categories';
+  syncBcastPills();
+  loadGames();
+}
+function setBcast(v){
+  // Legacy shim — map old values to new category system
+  if(v==='all'){setBcastAll();return;}
+  if(v==='national'){bcastCats={national:true,streaming:false,lp:false};bcastVal='categories';syncBcastPills();loadGames();return;}
+  if(v==='streaming'){bcastCats={national:false,streaming:true,lp:false};bcastVal='categories';syncBcastPills();loadGames();return;}
+  if(v==='lp'){bcastCats={national:false,streaming:false,lp:true};bcastVal='categories';syncBcastPills();loadGames();return;}
+  bcastVal=v;
+}
+function setTimePreset(v){
+  var presets={
+    all:      {min:'00:00',max:'23:59'},
+    morning:  {min:'00:00',max:'13:00'},
+    afternoon:{min:'13:00',max:'17:00'},
+    evening:  {min:'17:00',max:'21:00'},
+    late:     {min:'21:00',max:'23:59'},
+  };
+  if(presets[v]){
+    document.getElementById('w-min-time').value=presets[v].min;
+    document.getElementById('w-max-time').value=presets[v].max;
+    // Enable time filter for non-all presets
+    var wto=document.getElementById('w-time-on');
+    if(wto){wto.checked=(v!=='all');updateStates();}
   }
-  if(currentLeague==='nfl'){
-    var nflNat=['CBS','Fox','NBC','ESPN','ESPN2','ABC'];
-    document.querySelectorAll('#network-pills .net-pill').forEach(function(el){
-      var n=el.dataset.net;
-      var on;
-      if(v==='national') on=nflNat.indexOf(n)>=0;
-      else if(v==='nflnet') on=n==='NFL Network';
-      else if(v==='streaming') on=streaming.indexOf(n)>=0;
-      else on=true;
-      enabledNets[n]=on; el.classList.toggle('on',on);
-    });
-  }
+  var showInputs=(v==='custom');
+  var ti=document.getElementById('time-inputs');
+  if(ti)ti.style.display=showInputs?'flex':'none';
+  document.querySelectorAll('#time-presets .pill').forEach(function(el){
+    el.classList.toggle('on',el.dataset.tp===v);
+  });
+  if(v!=='custom')loadGames();
 }
 function setDay(v){
   dayVal=v;
@@ -1833,8 +2014,12 @@ function toggleNet(el){
   var n=el.dataset.net;
   enabledNets[n]=!enabledNets[n];
   el.classList.toggle('on',enabledNets[n]);
-  // Switch broadcast mode to 'custom' since user manually changed network selection
+  // Mark as custom since user deviated from category presets
   bcastVal='custom';
+  document.querySelectorAll('#bcast-filter .pill[data-cat]').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('#bcast-filter .pill[data-val="all"]').forEach(function(p){p.classList.remove('on');});
+  var custPill=document.getElementById('bcast-custom-pill');
+  if(custPill)custPill.classList.add('on');
   document.querySelectorAll('#bcast-filter .pill').forEach(function(p){
     if(p.dataset.val==='custom')return;
     if(p.style.display==='none')return;
@@ -1860,7 +2045,7 @@ function chk(id){var el=document.getElementById(id);return el?el.checked:false;}
 function updateStates(){
   _weekChangeLock=true;
   collapseBody('dt-body',chk('w-dt-on'));
-  tog('time-nest',!chk('w-time-on'));
+  // time-nest removed — time presets always visible
   collapseBody('bcast-body',chk('w-bcast-on'));
   tog('tv-nest',!chk('w-tv-on'));
   if(LC&&LC.showPlayoff) collapseBody('lev-nest',chk('w-lev-on'));
@@ -1959,7 +2144,8 @@ function applyFilterState(s){
   includeTeams=s.includeTeams||[];excludeTeams=s.excludeTeams||[];renderTeamBubbles();
   enabledNets=Object.assign({},s.enabledNets||enabledNets);
   enabledDows=Object.assign({},s.enabledDows||enabledDows);
-  setBcast(s.bcastVal||'all');
+  try{if(s.bcastCats)bcastCats=JSON.parse(s.bcastCats);}catch(e){}
+  if(s.bcastVal==='custom'){bcastVal='custom';var cp=document.getElementById('bcast-custom-pill');if(cp)cp.classList.add('on');}else{bcastVal='categories';syncBcastPills();}
   document.querySelectorAll('#dow-pills .net-pill').forEach(function(el){el.classList.toggle('on',enabledDows[+el.dataset.dow]!==false);});
   document.querySelectorAll('#network-pills .net-pill').forEach(function(el){el.classList.toggle('on',enabledNets[el.dataset.net]!==false);});
   dayVal=s.dayVal||'all';
@@ -2241,27 +2427,23 @@ function applyFilters(games){
   if(excludeTeams.length>0)games=games.filter(function(g){return excludeTeams.indexOf(g.homeAbbr)<0&&excludeTeams.indexOf(g.awayAbbr)<0;});
   var bcastOn=document.getElementById('w-bcast-on').checked;
   if(bcastOn){
-    var STREAMING=currentLeague==='nhl'?['ESPN+','Max']:currentLeague==='mlb'?['Apple TV+','Peacock']:currentLeague==='epl'?['Peacock']:currentLeague==='all'?['Prime Video','Peacock','ESPN+','Max','Apple TV+']:['Prime Video','Peacock'];
-    var LP_NET=currentLeague==='nhl'?['NHL.TV']:currentLeague==='mlb'?['MLB.TV']:currentLeague==='all'?['League Pass','NHL.TV','NFL Network','MLB.TV']:currentLeague==='nfl'?['NFL Network']:['League Pass'];
-    var NHL_NAT=['ESPN','ABC','TNT','TBS'];
-    var NBA_NAT=['ESPN','ABC','NBC','TNT','TBS'];
-    if(bcastVal==='national'){
-      if(currentLeague==='nhl')
-        games=games.filter(function(g){return NHL_NAT.indexOf(g.watch)>=0;});
-      else if(currentLeague==='nfl')
-        games=games.filter(function(g){return g.isNat&&LP_NET.indexOf(g.watch)<0&&STREAMING.indexOf(g.watch)<0;});
-      else
-        games=games.filter(function(g){return g.isNat&&LP_NET.indexOf(g.watch)<0&&STREAMING.indexOf(g.watch)<0;});
-    }
-    else if(bcastVal==='lp')games=games.filter(function(g){return LP_NET.indexOf(g.watch)>=0;});
-    else if(bcastVal==='nflnet')games=games.filter(function(g){return g.watch==='NFL Network';});
-    else if(bcastVal==='streaming')games=games.filter(function(g){var STREAM_ONLY=['Prime Video','Peacock','ESPN+','Max','Apple TV+'];return STREAM_ONLY.indexOf(g.watch)>=0;});
-    else{// bcastVal==='all' or 'custom': apply individual network pill filter
+    if(bcastVal==='categories'){
+      // Category-based filter using bcastCats
+      var lk=currentLeague==='all'?'all':currentLeague;
+      var lpNets=LP_CATS_MAP[lk]||[];
+      var streamNets=STREAM_CATS;
       games=games.filter(function(g){
-        if(!g.isNat){
-          var lpKey=currentLeague==='nhl'?'NHL.TV':'League Pass';
-          return enabledNets[lpKey]!==false;
-        }
+        var isStream=streamNets.indexOf(g.watch)>=0;
+        var isLP=lpNets.indexOf(g.watch)>=0||(!g.isNat&&!isStream);
+        var isNat=g.isNat&&!isStream&&!isLP;
+        if(isStream)return bcastCats.streaming!==false;
+        if(isLP)return bcastCats.lp!==false;
+        return bcastCats.national!==false;
+      });
+    } else {
+      // Custom: use individual enabledNets
+      games=games.filter(function(g){
+        if(g.watchTBD)return true;
         return enabledNets[g.watch]!==false;
       });
     }
@@ -2971,8 +3153,10 @@ function switchLeague(lg){
   $sty('epl-bonuses-section','display',lg==='epl'?'block':'none');
   $sty('team-filter-card','display',isAll?'none':'');
   $sty('sport-filter-card','display',isAll?'block':'none');
-  // Hide season selector on All tab — each sport has its own season
+  // Hide season selector and divider on All tab — each sport has its own season
   document.querySelectorAll('#season-select').forEach(function(el){el.style.display=isAll?'none':'';});
+  var dbDiv=document.getElementById('date-bar-divider');
+  if(dbDiv)dbDiv.style.display=isAll?'none':'';
   var sweepRow=document.getElementById('sweep-row');if(sweepRow)sweepRow.style.display=(LC.showSweep?'':'none');
   $sty('ist-section','display',LC.showIST?'block':'none');
   // Broadcast card: swap natl-tv-row <-> primetime-row
@@ -2981,7 +3165,7 @@ function switchLeague(lg){
   $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   $sty('epl-bonuses-section','display',lg==='epl'?'block':'none');
   // Broadcast pills: swap NBA/WNBA <-> NFL options
-  setBcast('all'); // reset to all on league switch
+  setBcastAll(); // reset to all on league switch
   // Standalone bonus cards
 
   $sty('cup-section','display',lg==='wnba'?'block':'none');
@@ -2991,16 +3175,11 @@ function switchLeague(lg){
   $sty('game5-row','display',LC.seriesMax===5?'flex':'none');
   $sty('cup-row','display',lg==='wnba'?'flex':'none');
 
-  // show/hide bcast filter pills per league
-  document.querySelectorAll('.nba-wnba-pill').forEach(function(el){
-    var hide=lg==='nfl'||(lg==='epl'&&el.dataset&&el.dataset.val==='lp');
-    el.style.display=hide?'none':'';
-  });
-  document.querySelectorAll('.nfl-pill').forEach(function(el){el.style.display=lg==='nfl'?'':'none';});
-  // NHL broadcast: uses nba-wnba-pill (national/lp/streaming) same as NBA/WNBA
+  // Rebuild network pills for new league
+  // NHL broadcast: uses same category system
 
   // rebuild network pills
-  document.getElementById('network-pills').innerHTML='';
+  document.getElementById('network-pills-shared').innerHTML='';
   enabledNets={};
   buildNetworkPills();
 
@@ -3057,7 +3236,7 @@ initPicker('dots-max-picker','data-d',setDotPicker);
 setStarPicker('stars-min-picker',1);setStarPicker('stars-max-picker',5);
 setDotPicker('dots-min-picker',1);setDotPicker('dots-max-picker',5);
 
-document.getElementById('date-picker').value=ival(currentDate);
+document.getElementById('date-picker').value=ival(currentDate);updateDowLabel();updateRangeDow();
 document.getElementById('nfl-single-date').value=ival(currentDate);
 (function(){
   var t=new Date(),n=new Date();n.setDate(t.getDate()+6);
