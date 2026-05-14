@@ -621,7 +621,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.10', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.12', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.13', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.15', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.7', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.9', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -845,7 +845,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.7', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.8', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -912,7 +912,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.4', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v3.5', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1354,14 +1354,15 @@ function rankByRecord(){
       var NORM_MLB={'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
   var NORM_NHL={
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
-    'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK'
+    'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK',
+    'UTA':'UTA','UTAH':'UTA'
   };
       var NORM_NFL={
-        'JAC':'JAX','LA':'LAR','WSH':'WSH','LV':'LV',
+        'JAC':'JAX','JAX':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV',
         'NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO',
-        'BUF':'BUF','MIA':'MIA','NYJ':'NYJ','BAL':'BAL','CIN':'CIN',
+        'BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN',
         'CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN',
-        'DEN':'DEN','LAC':'LAC','DAL':'DAL','NYG':'NYG','PHI':'PHI',
+        'DEN':'DEN','DAL':'DAL','PHI':'PHI',
         'CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR',
         'ARI':'ARI','SEA':'SEA'
       };
@@ -1447,6 +1448,9 @@ function rankByRecord(){
       saveRatings();
       document.getElementById('saved-note').textContent='sorted by current record ('+entries.length+' teams)';
       renderRankings();
+      // Also refresh game cards so stars/dots reflect new Elo order
+      var gv=document.getElementById('view-games');
+      if(gv&&gv.style.display!=='none')loadGames();
     })
     .catch(function(){document.getElementById('saved-note').textContent='could not load standings';});
 }
@@ -2065,18 +2069,28 @@ function processEvent(ev,tz){
   if(gameLeague==='epl'){
     var eplOn=document.getElementById('w-epl-bon-on')?document.getElementById('w-epl-bon-on').checked:false;
     if(eplOn){
-      // Get standings-based positions for bonus calculation
-      // Use Elo as proxy for table position: top 6 elo = top 4 race, bottom 5 = relegation
-      var allElos=LC.teams.map(function(t){return ratings[t.abbr]||LC.defaultElo;}).sort(function(a,b){return b-a;});
-      var top3thresh=allElos[2]||LC.defaultElo, top6thresh=allElos[5]||LC.defaultElo;
-      var bot5thresh=allElos[allElos.length-5]||LC.defaultElo;
-      var ae=ad.elo, he=hd.elo;
+      // Use actual table points from recordCache (W-D-L), not Elo rank
+      function eplPts(abbr){
+        var rec=(window.recordCache&&window.recordCache['epl_'+abbr])||'';
+        var parts=rec.split('-');
+        if(parts.length===3){return (+parts[0])*3+(+parts[1]);}
+        if(parts.length===2){return (+parts[0])*3;}
+        return -1; // unknown
+      }
+      // Build sorted points table from all 20 teams
+      var ptsList=LC.teams.map(function(t){return eplPts(t.abbr);}).filter(function(p){return p>=0;}).sort(function(a,b){return b-a;});
+      var n=ptsList.length;
+      var awayPts=eplPts(ad.abbr), homePts=eplPts(hd.abbr);
       var titleVal=+(document.getElementById('w-epl-title')?document.getElementById('w-epl-title').value:0)||0;
       var top4Val=+(document.getElementById('w-epl-top4')?document.getElementById('w-epl-top4').value:0)||0;
       var relVal=+(document.getElementById('w-epl-rel')?document.getElementById('w-epl-rel').value:0)||0;
-      if(ae>=top3thresh&&he>=top3thresh&&titleVal){lev+=titleVal;levLbl='title race';}
-      else if(ae>=top6thresh&&he>=top6thresh&&top4Val){lev+=top4Val;levLbl='top 4 race';}
-      if((ae<=bot5thresh||he<=bot5thresh)&&relVal){lev+=relVal;levLbl=levLbl?levLbl+' + relegation':'relegation';}
+      if(n>=4&&awayPts>=0&&homePts>=0){
+        var top3thresh=ptsList[2]||0, top6thresh=ptsList[Math.min(5,n-1)]||0;
+        var bot3thresh=ptsList[n-3]||0;
+        if(awayPts>=top3thresh&&homePts>=top3thresh&&titleVal){lev+=titleVal;levLbl='title race';}
+        else if(awayPts>=top6thresh&&homePts>=top6thresh&&top4Val){lev+=top4Val;levLbl='top 4 race';}
+        if((awayPts<=bot3thresh||homePts<=bot3thresh)&&relVal){lev+=relVal;levLbl=levLbl?levLbl+' + relegation':'relegation';}
+      }
     }
   }
   if(gameLeague==='mlb'){
@@ -2425,7 +2439,8 @@ function finishAllLoad(games,callback){
     var combMin=sn>=2?sortedElos[0]+sortedElos[1]:sortedElos[0]*2;
     var combMax=sn>=2?sortedElos[sn-1]+sortedElos[sn-2]:sortedElos[0]*2;
     if(combMin===combMax){combMin-=1;combMax+=1;}
-    var combP=(combined-combMin)/(combMax-combMin);
+    var bonusScore=combined+(g.lev||0)+(g.tvBonus||0);
+    var combP=(bonusScore-combMin)/(combMax-combMin);
     var stars=combP>=0.8?5:combP>=0.6?4:combP>=0.4?3:combP>=0.2?2:1;
     var flame=combP>=0.95||g.flame;
     var score=combined+(g.lev||0)+(g.tvBonus||0);
@@ -2560,7 +2575,9 @@ function loadGames(callback){
         var ap=(ae-mn)/(mx-mn), hp=(he-mn)/(mx-mn);
         g.awayDots=ap>=0.8?5:ap>=0.6?4:ap>=0.4?3:ap>=0.2?2:1;
         g.homeDots=hp>=0.8?5:hp>=0.6?4:hp>=0.4?3:hp>=0.2?2:1;
-        var cp=((ae+he)-combMin)/(combMax-combMin);
+        var rawCp=((ae+he)-combMin)/(combMax-combMin);
+        var bonusScore=(ae+he)+(g.lev||0)+(g.tvBonus||0);
+        var cp=(bonusScore-combMin)/(combMax-combMin);
         g.totalStars=cp>=0.8?5:cp>=0.6?4:cp>=0.4?3:cp>=0.2?2:1;
         g.flame=cp>=0.95||g.flame; // preserve processEvent flame if already set
         g.dotColor=getDotColor(i);
@@ -3001,9 +3018,9 @@ var RECORD_NORM={
   nba:{'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS','BKN':'BKN','CHA':'CHA','MEM':'MEM','OKC':'OKC','PHX':'PHX','PHI':'PHI','NOP':'NOP'},
   wnba:{'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL','IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG','PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'},
   mlb:{'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
-  nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS'},
-  nfl:{'JAC':'JAX','LA':'LAR','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','LAC':'LAC','DAL':'DAL','NYG':'NYG','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA'},
-  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','SUN':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','NEW':'NEW','NFO':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL'},
+  nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA'},
+  nfl:{'JAC':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','DAL':'DAL','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA','JAX':'JAX'},
+  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','LDS':'LEE','SUN':'SUN','SND':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL','BRN':'BUR','SU':'SUN'},
 };
 
 function normalizeRecordAbbr(sport,raw){
@@ -3027,7 +3044,8 @@ function normalizeRecordAbbr(sport,raw){
   var NORM_MLB={'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
   var NORM_NHL={
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
-    'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK'
+    'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK',
+    'UTA':'UTA','UTAH':'UTA'
   };
   var NORM_EPL=RECORD_NORM.epl;
   var NORM_NFL=RECORD_NORM.nfl;
@@ -3057,6 +3075,7 @@ function normalizeRecordAbbr(sport,raw){
         list.forEach(function(e){
           var raw=(e.team||{}).abbreviation||(e.team||{}).shortDisplayName||'';
           var abbr=norm[raw]||raw;
+          if(sp.sport==='soccer')console.log('[EPL standings] raw='+raw+' -> abbr='+abbr);
           var wins=0,losses=0,otl=0,draws=0;
           (e.stats||[]).forEach(function(s){
             if(s.name==='wins')wins=+s.value;
@@ -3073,12 +3092,13 @@ function normalizeRecordAbbr(sport,raw){
       });
       return entries;
     }).then(function(){
-      // Re-render whichever tab is currently visible
+      // Re-render to show records
+      var spKey=sp.storageKey||sp.league;
       if(currentLeague==='all'){
         if(document.getElementById('view-tier-ranker')&&
            document.getElementById('view-tier-ranker').style.display!=='none')renderTierRankings();
-      } else if(currentLeague===lgKey){
-        // Only re-render if we're still on this sport's tab
+        else{var gv=document.getElementById('view-games');if(gv&&gv.style.display!=='none'&&lastGames.length)renderCards(lastGames);}
+      } else if(currentLeague===spKey){
         renderRankings();
         var gv=document.getElementById('view-games');
         if(gv&&gv.style.display!=='none'&&lastGames.length)renderCards(lastGames);
