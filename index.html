@@ -205,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v3.9</div>
+      <div>v4.0</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -350,6 +350,29 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         <div class="prof-bar" id="fprof-bar" style="margin-bottom:0"></div>
       </div>
 
+      <!-- SPORT FILTER (All tab only) -->
+      <div class="fs" id="sport-filter-card" style="display:none">
+        <div class="fs-head"><div class="fs-title">sport filter</div></div>
+        <div class="fw" style="margin-bottom:6px">
+          <div class="fw-lbl">show</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <div class="pill on" data-sportval="all" onclick="setSportFilter('all')">all</div>
+            <div class="pill" data-sportval="big4" onclick="setSportFilter('big4')">big 4</div>
+            <div class="pill" data-sportval="basketball" onclick="setSportFilter('basketball')">basketball</div>
+            <div class="pill" data-sportval="soccer" onclick="setSportFilter('soccer')">soccer</div>
+            <div class="pill" data-sportval="custom" onclick="setSportFilter('custom')">custom</div>
+          </div>
+        </div>
+        <div id="sport-pill-wrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:2px 0">
+          <div class="sport-pill on" data-sport="nba" onclick="toggleSport('nba',this)">🏀 NBA</div>
+          <div class="sport-pill on" data-sport="wnba" onclick="toggleSport('wnba',this)">🏀 WNBA</div>
+          <div class="sport-pill on" data-sport="mlb" onclick="toggleSport('mlb',this)">⚾ MLB</div>
+          <div class="sport-pill on" data-sport="nhl" onclick="toggleSport('nhl',this)">🏒 NHL</div>
+          <div class="sport-pill on" data-sport="nfl" onclick="toggleSport('nfl',this)">🏈 NFL</div>
+          <div class="sport-pill on" data-sport="epl" onclick="toggleSport('epl',this)">⚽ EPL</div>
+        </div>
+      </div>
+
       <!-- DAY & TIME -->
       <div class="fs">
         <div class="fs-head">
@@ -438,28 +461,6 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
 
       <!-- TEAM FILTER -->
-      <!-- SPORT FILTER (All tab only) -->
-      <div class="fs" id="sport-filter-card" style="display:none">
-        <div class="fs-head"><div class="fs-title">sport filter</div></div>
-        <div class="fw" style="margin-bottom:6px">
-          <div class="fw-lbl">show</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">
-            <div class="pill on" data-sportval="all" onclick="setSportFilter('all')">all</div>
-            <div class="pill" data-sportval="big4" onclick="setSportFilter('big4')">big 4</div>
-            <div class="pill" data-sportval="basketball" onclick="setSportFilter('basketball')">basketball</div>
-            <div class="pill" data-sportval="soccer" onclick="setSportFilter('soccer')">soccer</div>
-            <div class="pill" data-sportval="custom" onclick="setSportFilter('custom')">custom</div>
-          </div>
-        </div>
-        <div id="sport-pill-wrap" style="display:flex;flex-wrap:wrap;gap:5px;padding:2px 0">
-          <div class="sport-pill on" data-sport="nba" onclick="toggleSport('nba',this)">🏀 NBA</div>
-          <div class="sport-pill on" data-sport="wnba" onclick="toggleSport('wnba',this)">🏀 WNBA</div>
-          <div class="sport-pill on" data-sport="mlb" onclick="toggleSport('mlb',this)">⚾ MLB</div>
-          <div class="sport-pill on" data-sport="nhl" onclick="toggleSport('nhl',this)">🏒 NHL</div>
-          <div class="sport-pill on" data-sport="nfl" onclick="toggleSport('nfl',this)">🏈 NFL</div>
-          <div class="sport-pill on" data-sport="epl" onclick="toggleSport('epl',this)">⚽ EPL</div>
-        </div>
-      </div>
 
       <div class="fs" id="team-filter-card">
         <div class="fs-head"><div class="fs-title">team filter</div><label class="tog"><input type="checkbox" id="w-team-on" checked onchange="updateStates()"/><span class="tog-track"></span></label></div>
@@ -620,7 +621,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.4', vdate: '2026-05-12',
+    title: 'NBA', version: 'nba.v6.5', vdate: '2026-05-12',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -711,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.5', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.7', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -729,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v2.8', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.1', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -844,7 +845,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.6', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.7', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -911,7 +912,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.3', vdate: '2026-05-12',
+    title: 'NFL', version: 'nfl.v3.4', vdate: '2026-05-12',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1334,6 +1335,43 @@ function confirmReset(){
 
 function rankByRecord(){
   document.getElementById('saved-note').textContent='fetching standings...';
+  // EPL: compute standings directly from cached fixtures — no ESPN needed
+  if(currentLeague==='epl'&&eplFixtures&&eplFixtures.length){
+    var EPL_TLA={'NOT':'NFO'};
+    var table={};
+    LC.teams.forEach(function(t){table[t.abbr]={w:0,d:0,l:0,pts:0};});
+    eplFixtures.forEach(function(m){
+      if(m.status!=='FINISHED')return;
+      var h=EPL_TLA[m.homeTeam.tla]||m.homeTeam.tla;
+      var a=EPL_TLA[m.awayTeam.tla]||m.awayTeam.tla;
+      var hg=m.score&&m.score.fullTime?m.score.fullTime.home:null;
+      var ag=m.score&&m.score.fullTime?m.score.fullTime.away:null;
+      if(hg===null||ag===null||!table[h]||!table[a])return;
+      if(hg>ag){table[h].w++;table[h].pts+=3;table[a].l++;}
+      else if(ag>hg){table[a].w++;table[a].pts+=3;table[h].l++;}
+      else{table[h].d++;table[h].pts++;table[a].d++;table[a].pts++;}
+    });
+    var entries=Object.keys(table).map(function(abbr){
+      var r=table[abbr];
+      return {abbr:abbr,pts:r.pts,wins:r.w,draws:r.d,losses:r.l};
+    });
+    entries.sort(function(a,b){return b.pts!==a.pts?b.pts-a.pts:b.wins-a.wins;});
+    if(!window.recordCache)window.recordCache={};
+    entries.forEach(function(e){
+      window.recordCache['epl_'+e.abbr]=e.wins+'-'+e.draws+'-'+e.losses;
+    });
+    // Re-rank Elo based on points order
+    var N=entries.length;
+    entries.forEach(function(e,i){
+      var rank=i+1;
+      var target=LC.defaultElo+(N/2-rank)*(800/N);
+      ratings[e.abbr]=Math.round(target);
+    });
+    saveRatings();
+    document.getElementById('saved-note').textContent='ranked by record ('+new Date().toLocaleTimeString()+')';
+    loadGames();
+    return;
+  }
   var ESPN_ABBR_MAP={
     'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA',
     'WSH':'WAS','BKN':'BKN','CHA':'CHA','MEM':'MEM','OKC':'OKC',
@@ -1363,21 +1401,48 @@ function rankByRecord(){
         'CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR',
         'ARI':'ARI','SEA':'SEA'
       };
-      var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?{}:NORM_NBA;
-      // Handle both data.children (NBA/NFL) and flat data.standings (WNBA)
+      var NORM_EPL_NAME={
+        'Arsenal':'ARS','Aston Villa':'AVL','Bournemouth':'BOU','Brentford':'BRE',
+        'Brighton':'BHA','Brighton & Hove Albion':'BHA','Chelsea':'CHE',
+        'Crystal Palace':'CRY','Everton':'EVE','Fulham':'FUL','Ipswich Town':'IPS',
+        'Leicester City':'LEI','Leicester':'LEI','Liverpool':'LIV',
+        'Manchester City':'MCI','Manchester United':'MUN','Newcastle United':'NEW',
+        'Newcastle':'NEW','Nottingham Forest':'NFO','Nottm Forest':'NFO',
+        'Southampton':'SOU','Tottenham Hotspur':'TOT','Tottenham':'TOT',
+        'West Ham United':'WHU','West Ham':'WHU','Wolverhampton Wanderers':'WOL',
+        'Wolves':'WOL',
+        'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA',
+        'CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','IPS':'IPS',
+        'LEI':'LEI','LIV':'LIV','MCI':'MCI','MUN':'MUN','NEW':'NEW',
+        'NFO':'NFO','NOT':'NFO','SOU':'SOU','TOT':'TOT','WHU':'WHU','WOL':'WOL'
+      };
+      var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:NORM_NBA;
+      // Handle nested standings: NBA/NHL = data.children[conf].standings.entries
+      // NFL = data.children[conf].children[div].standings.entries
       var confs=data.children||[data];
+      var allEntryGroups=[];
       confs.forEach(function(conf){
-        ((conf.standings||conf||{}).entries||[]).forEach(function(e){
-          var wins=0,losses=0,draws=0;
+        if(conf.children&&conf.children.length){
+          conf.children.forEach(function(div){
+            allEntryGroups.push((div.standings||div||{}).entries||[]);
+          });
+        } else {
+          allEntryGroups.push((conf.standings||conf||{}).entries||[]);
+        }
+      });
+      allEntryGroups.forEach(function(entryList){
+        entryList.forEach(function(e){
+          var wins=0,losses=0,draws=0,pts=0;
           var raw=(e.team||{}).abbreviation||(e.team||{}).shortDisplayName||'';
           var abbr=normMap[raw]||normalizeAbbr(raw)||raw;
           (e.stats||[]).forEach(function(s){
             if(s.name==='wins')wins=+s.value||0;
             if(s.name==='losses')losses=+s.value||0;
-            if(s.name==='ties'||s.name==='draws')draws=+s.value||0;
+            if(s.name==='ties'||s.name==='draws'||s.name==='otLosses'||s.name==='overtimeLosses')draws=+s.value||0;
+            if(s.name==='points')pts=+s.value||0;
           });
           if(abbr&&(wins+losses+draws)>0){
-            entries.push({abbr:abbr,pct:wins/(wins+losses),wins:wins,losses:losses});
+            entries.push({abbr:abbr,pct:wins/(wins+losses||1),wins:wins,losses:losses,draws:draws,pts:pts});
             if(!window.recordCache)window.recordCache={};
             var rkRec=currentLeague==='epl'?(wins+'-'+draws+'-'+losses):(currentLeague==='nhl'&&draws>0?wins+'-'+losses+'-'+draws:wins+'-'+losses);
             window.recordCache[currentLeague+'_'+abbr]=rkRec;
@@ -1385,9 +1450,22 @@ function rankByRecord(){
         });
       });
       if(!entries.length){document.getElementById('saved-note').textContent='could not parse standings';return;}
-      entries.sort(function(a,b){return b.pct!==a.pct?b.pct-a.pct:b.wins-a.wins;});
+      if(currentLeague==='epl'){
+        entries.forEach(function(e){e.pts=e.wins*3+(e.draws||0);});
+        entries.sort(function(a,b){return b.pts!==a.pts?b.pts-a.pts:b.wins-a.wins;});
+      } else if(currentLeague==='nhl'){
+        // NHL: use ESPN points directly (W=2, OTL=1); fall back to computing if missing
+        entries.forEach(function(e){if(!e.pts)e.pts=e.wins*2+(e.draws||0);});
+        entries.sort(function(a,b){return b.pts!==a.pts?b.pts-a.pts:b.wins-a.wins;});
+      } else {
+        entries.sort(function(a,b){return b.pct!==a.pct?b.pct-a.pct:b.wins-a.wins;});
+      }
       if(!window.recordCache)window.recordCache={};
-      entries.forEach(function(e){window.recordCache[currentLeague+'_'+e.abbr]=e.wins+'-'+e.losses;});
+      entries.forEach(function(e){
+        if(!window.recordCache[currentLeague+'_'+e.abbr]){
+          window.recordCache[currentLeague+'_'+e.abbr]=e.wins+'-'+e.losses;
+        }
+      });
       var n=entries.length, lo=900, hi=1500;
       entries.forEach(function(e,idx){
         var t=null;for(var j=0;j<LC.teams.length;j++){if(LC.teams[j].abbr===e.abbr){t=LC.teams[j];break;}}
@@ -1776,6 +1854,14 @@ function dotsHtml(n){var h='';for(var i=0;i<5;i++)h+='<span style="display:inlin
 function starsHtml(n,flame){
   var f='',e='';for(var i=0;i<Math.min(n,5);i++)f+='★';for(var i=n;i<5;i++)e+='★';
   var s='<span style="color:#BA7517;font-size:11px;">'+f+'</span><span style="color:#D3D1C7;font-size:11px;">'+e+'</span>';
+  return flame?'🔥'+s+'🔥':s;
+}
+function starsHtmlAll(n,flame){
+  // Tier-colored stars for All tab: 5=purple,4=blue,3=green,2=amber,1=red
+  var COLORS=['#E24B4A','#BA7517','#639922','#378ADD','#7F77DD'];
+  var color=COLORS[Math.max(0,Math.min(4,n-1))];
+  var f='',e='';for(var i=0;i<Math.min(n,5);i++)f+='★';for(var i=n;i<5;i++)e+='★';
+  var s='<span style="color:'+color+';font-size:11px;">'+f+'</span><span style="color:#D3D1C7;font-size:11px;">'+e+'</span>';
   return flame?'🔥'+s+'🔥':s;
 }
 function toHr(t){var p=(t||'00:00').split(':');return+p[0]+(+p[1]/60);}
@@ -2382,6 +2468,53 @@ function loadAllGames(callback){
   ];
   var allEvents=[];
   var pending=sports.length;
+  // EPL: use cached fixtures directly — filter by date, no ESPN needed
+  if(includeSports.indexOf('epl')>=0&&eplFixtures&&eplFixtures.length){
+    pending--;
+    var eplCfg=LEAGUE_CONFIGS.epl;
+    var EPL_TLA={'NOT':'NFO'};
+    var savedR=ratingsStore[eplCfg.storageKey]||null;
+    if(!savedR){try{var rs=localStorage.getItem('epl_elo_ratings');savedR=rs?JSON.parse(rs):null;}catch(e){}};
+    var eplRatings=savedR||{};
+    if(!savedR){eplCfg.teams.forEach(function(t){eplRatings[t.abbr]=eplCfg.defaultElo;});}
+    var allElos=eplCfg.teams.map(function(t){return eplRatings[t.abbr]||eplCfg.defaultElo;});
+    var mn=Math.min.apply(null,allElos),mx=Math.max.apply(null,allElos);
+    var combMin=(mn*2),combMax=(mx*2);
+    eplFixtures.forEach(function(m){
+      var mDate=m.utcDate?m.utcDate.slice(0,10).replace(/-/g,''):null;
+      if(mDate!==ds)return;
+      var rawH=(m.homeTeam&&m.homeTeam.tla)||'';
+      var rawA=(m.awayTeam&&m.awayTeam.tla)||'';
+      var home=EPL_TLA[rawH]||rawH, away=EPL_TLA[rawA]||rawA;
+      var hTeam=eplCfg.teams.find(function(t){return t.abbr===home;})||null;
+      var aTeam=eplCfg.teams.find(function(t){return t.abbr===away;})||null;
+      var ae=eplRatings[away]||eplCfg.defaultElo, he=eplRatings[home]||eplCfg.defaultElo;
+      var combined=ae+he;
+      var cp=(combined-combMin)/(combMax-combMin||1);
+      var ap=(ae-mn)/(mx-mn||1), hp=(he-mn)/(mx-mn||1);
+      var g={
+        id:String(m.id),_league:'epl',
+        awayAbbr:away,homeAbbr:home,
+        awayName:(aTeam&&aTeam.name)||(m.awayTeam&&m.awayTeam.shortName)||away,
+        homeName:(hTeam&&hTeam.name)||(m.homeTeam&&m.homeTeam.shortName)||home,
+        awayEspn:(aTeam&&aTeam.espn)||'',homeEspn:(hTeam&&hTeam.espn)||'',
+        awayElo:ae,homeElo:he,
+        awayDots:ap>=0.8?5:ap>=0.6?4:ap>=0.4?3:ap>=0.2?2:1,
+        homeDots:hp>=0.8?5:hp>=0.6?4:hp>=0.4?3:hp>=0.2?2:1,
+        totalStars:cp>=0.8?5:cp>=0.6?4:cp>=0.4?3:cp>=0.2?2:1,
+        flame:cp>=0.95,score:combined,
+        watch:'NBC',isNat:true,watchTBD:false,
+        awayRec:window.recordCache&&window.recordCache['epl_'+away]||'',
+        homeRec:window.recordCache&&window.recordCache['epl_'+home]||'',
+        lev:0,tvBonus:0,isPlayoff:false,isCup:false,
+        date:new Date(m.utcDate),
+        dateStr:new Date(m.utcDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}),
+        dotColor:getDotColor(0)
+      };
+      allEvents.push(g);
+    });
+  }
+  sports=sports.filter(function(sp){return sp.league!=='eng.1';});
   sports.forEach(function(sp){
     var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+'&limit=20';
     fetch(url).then(function(r){return r.json();})
@@ -2436,12 +2569,9 @@ function finishAllLoad(games,callback){
     var combined=awayElo+homeElo;
     var combMin=(mn*2)-1, combMax=(mx*2)+1;
     var combP=(combined-combMin)/(combMax-combMin);
-    var stars=combP>=0.9?5:combP>=0.7?4:combP>=0.5?3:combP>=0.3?2:1;
+    var stars=combP>=0.8?5:combP>=0.6?4:combP>=0.4?3:combP>=0.2?2:1;
     var flame=combP>=0.95;
     var score=combined+(g.lev||0)+(g.tvBonus||0);
-    // Recalculate stars with bonuses included (so playoff games rank correctly)
-    var scoredP=(score-combMin)/(combMax-combMin);
-    if(scoredP>combP){stars=scoredP>=0.9?5:scoredP>=0.7?4:scoredP>=0.5?3:scoredP>=0.3?2:1;if(scoredP>=0.95)flame=true;}
     return Object.assign({},g,{awayElo:awayElo,homeElo:homeElo,awayDots:awayDots,homeDots:homeDots,totalStars:stars,flame:flame,score:score,watchScore:score});
   });
   var maxScore=Math.max.apply(null,games.map(function(g){return g.watchScore;}));
@@ -2516,7 +2646,7 @@ function renderAllCard(g,i){
         '<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
         '<div class="g-dots">'+dotsHtml(g.awayDots)+'</div></div>'+
       '<div class="g-mid">'+dateTimeLine+badge+seriesBlock+
-        '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
+        '<div class="g-stars">'+starsHtmlAll(g.totalStars,g.flame)+'</div>'+
         '<div class="g-combined">'+g.total+'</div>'+bonuses+'</div>'+
       '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||'')+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
         '<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
@@ -2540,18 +2670,21 @@ function loadGames(callback){
         // Use cached football-data.org fixtures — filter by matchday directly, no ESPN needed
         if(eplFixtures&&eplFixtures.length){
           var gw=eplWeekIdx+1;
+          var EPL_TLA_MAP={'NOT':'NFO'}; // football-data tla -> our abbr where different
           var mwMatches=eplFixtures.filter(function(m){return m.matchday===gw;});
           var games=mwMatches.map(function(m){
-            var home=(m.homeTeam&&m.homeTeam.tla)||'';
-            var away=(m.awayTeam&&m.awayTeam.tla)||'';
-            // Match tla to our abbr config
+            var rawHome=(m.homeTeam&&m.homeTeam.tla)||'';
+            var rawAway=(m.awayTeam&&m.awayTeam.tla)||'';
+            var home=EPL_TLA_MAP[rawHome]||rawHome;
+            var away=EPL_TLA_MAP[rawAway]||rawAway;
             var hTeam=LC.teams.find(function(t){return t.abbr===home;})||null;
             var aTeam=LC.teams.find(function(t){return t.abbr===away;})||null;
             var dt=m.utcDate?new Date(m.utcDate):null;
             return {
               id:String(m.id),
-              awayAbbr:away,awayName:(m.awayTeam&&m.awayTeam.shortName)||away,
-              homeAbbr:home,homeName:(m.homeTeam&&m.homeTeam.shortName)||home,
+              awayAbbr:away,awayName:(aTeam&&aTeam.name)||(m.awayTeam&&m.awayTeam.shortName)||away,
+              homeAbbr:home,homeName:(hTeam&&hTeam.name)||(m.homeTeam&&m.homeTeam.shortName)||home,
+              awayEspn:(aTeam&&aTeam.espn)||'',homeEspn:(hTeam&&hTeam.espn)||'',
               awayScore:m.score&&m.score.fullTime?m.score.fullTime.away:null,
               homeScore:m.score&&m.score.fullTime?m.score.fullTime.home:null,
               status:m.status||'',
@@ -2574,7 +2707,7 @@ function loadGames(callback){
             g.awayDots=ap>=0.8?5:ap>=0.6?4:ap>=0.4?3:ap>=0.2?2:1;
             g.homeDots=hp>=0.8?5:hp>=0.6?4:hp>=0.4?3:hp>=0.2?2:1;
             var cp=((ae+he)-combMin)/(combMax-combMin);
-            g.totalStars=cp>=0.9?5:cp>=0.7?4:cp>=0.5?3:cp>=0.3?2:1;
+            g.totalStars=cp>=0.8?5:cp>=0.6?4:cp>=0.4?3:cp>=0.2?2:1;
             g.flame=cp>=0.95;
             g.score=(ae+he)+(g.lev||0);
             g.awayElo=ae;g.homeElo=he;
@@ -2630,12 +2763,8 @@ function loadGames(callback){
         g.awayDots=ap>=0.8?5:ap>=0.6?4:ap>=0.4?3:ap>=0.2?2:1;
         g.homeDots=hp>=0.8?5:hp>=0.6?4:hp>=0.4?3:hp>=0.2?2:1;
         var cp=((ae+he)-combMin)/(combMax-combMin);
-        g.totalStars=cp>=0.9?5:cp>=0.7?4:cp>=0.5?3:cp>=0.3?2:1;
+        g.totalStars=cp>=0.8?5:cp>=0.6?4:cp>=0.4?3:cp>=0.2?2:1;
         g.flame=cp>=0.95;
-        // Include bonuses in scored percentile
-        var scoredScore=(g.awayElo||0)+(g.homeElo||0)+(g.lev||0)+(g.tvBonus||0);
-        var scp=(scoredScore-combMin)/(combMax-combMin);
-        if(scp>cp){g.totalStars=scp>=0.9?5:scp>=0.7?4:scp>=0.5?3:scp>=0.3?2:1;if(scp>=0.95)g.flame=true;}
         g.dotColor=getDotColor(i);
         // Update recordCache from live game data
         if(!window.recordCache)window.recordCache={};
