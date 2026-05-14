@@ -205,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v4.2</div>
+      <div>v4.6</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.22', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.24', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -2613,13 +2613,65 @@ function loadRange(){
   var from=new Date(+fp[0],+fp[1]-1,+fp[2]),to=new Date(+tp[0],+tp[1]-1,+tp[2]);
   if(from>to){alert('From must be before to.');return;}
   var days=Math.round((to-from)/86400000)+1;
-  if(days>30){alert('Max 30 days.');return;}
-  var tz=getTz();
+  if(days>14){alert('Max 14 days for all sports range.');return;}
+  var dates=[];
+  for(var d=new Date(from);d<=to;d.setDate(d.getDate()+1))dates.push(dstr(new Date(d)));
   var el=document.getElementById('games-content');
   el.innerHTML='<div class="loading">fetching '+days+' days...</div>';
   document.getElementById('games-note').textContent='';
-  var all=[],dates=[];
-  for(var d=new Date(from);d<=to;d.setDate(d.getDate()+1))dates.push(dstr(new Date(d)));
+  if(currentLeague==='all'){
+    // All tab: fetch all sports for each date, collect and render together
+    var allEvents=[];
+    var remaining=dates.length;
+    dates.forEach(function(ds,di){
+      var allSports=[
+        {sport:'basketball',league:'nba',cfg:LEAGUE_CONFIGS.nba,key:'nba'},
+        {sport:'basketball',league:'wnba',cfg:LEAGUE_CONFIGS.wnba,key:'wnba'},
+        {sport:'baseball',league:'mlb',cfg:LEAGUE_CONFIGS.mlb,key:'mlb'},
+        {sport:'soccer',league:'eng.1',cfg:LEAGUE_CONFIGS.epl,key:'epl'},
+        {sport:'hockey',league:'nhl',cfg:LEAGUE_CONFIGS.nhl,key:'nhl'},
+        {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl,key:'nfl'},
+      ].filter(function(sp){return includeSports.indexOf(sp.key)>=0;});
+      var sportPending=allSports.length;
+      function onSportDone(){
+        sportPending--;
+        if(sportPending===0){
+          remaining--;
+          el.innerHTML='<div class="loading-sm">loaded '+(dates.length-remaining)+' of '+dates.length+' days...</div>';
+          if(remaining===0){
+            finishAllLoad(allEvents,function(){
+              document.getElementById('games-note').textContent=lastGames.length+' games · '+days+' days · ranked by elo';
+            });
+          }
+        }
+      }
+      allSports.forEach(function(sp){
+        var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+'&limit=20';
+        var done=false;
+        var timer=setTimeout(function(){if(!done){done=true;onSportDone();}},10000);
+        fetch(url).then(function(r){return r.json();})
+          .then(function(data){
+            var origLC=LC,origRatings=ratings;
+            LC=sp.cfg;
+            var savedR=ratingsStore[sp.cfg.storageKey]||null;
+            if(!savedR){try{var rs=localStorage.getItem(sp.cfg.storageKey+'_elo_ratings');savedR=rs?JSON.parse(rs):null;}catch(e){}}
+            ratings=savedR||{};
+            if(!savedR){sp.cfg.teams.forEach(function(t){ratings[t.abbr]=sp.cfg.defaultElo;});}
+            var tz=getTz();
+            (data.events||[]).forEach(function(ev){
+              var g=processEvent(ev,tz);
+              if(g){g._league=sp.key;allEvents.push(g);}
+            });
+            LC=origLC;ratings=origRatings;
+            if(!done){done=true;clearTimeout(timer);onSportDone();}
+          })
+          .catch(function(){if(!done){done=true;clearTimeout(timer);onSportDone();}});
+      });
+    });
+    return;
+  }
+  // Individual sport range
+  var all=[],tz=getTz();
   function next(i){
     if(i>=dates.length){
       var games=applyFilters(all);
@@ -2649,7 +2701,10 @@ function buildMapChart(){
   var eloR=getEloRange();
   var AMIN,CHART_MAX;
   if(currentLeague==='all'){
-    AMIN=eloR.min; CHART_MAX=eloR.max;
+    var maxBonus=0;
+    lastGames.forEach(function(g){var b=Math.abs(g.lev||0)+(g.tvBonus||0);if(b>maxBonus)maxBonus=b;});
+    var pad=Math.max(maxBonus/2+50, 100);
+    AMIN=eloR.min-pad; CHART_MAX=eloR.max+pad;
   } else {
     AMIN=Math.min(eloR.min, LC.chartMin||800);
     CHART_MAX=Math.max(eloR.max, LC.chartMax||1700);
@@ -3131,16 +3186,16 @@ updateStates();
       <div id="welcome-body">
         <p>Game Ranker helps you find the most watchable games across six sports — NBA, WNBA, MLB, NHL, NFL, and EPL.</p>
         <div class="welcome-section">
-          <div class="welcome-section-title">⭐ stars & flames</div>
-          <p>Every game gets 1–5 stars based on the combined Elo strength of both teams, with 🔥 flames for the top 5%. Bonuses for playoff series, elimination games, title races, and relegation battles can push stars higher.</p>
+          <div class="welcome-section-title">📊 elo ratings</div>
+          <p>Game Ranker is built around head-to-head Elo ratings within each sport. Every team has a score — higher means stronger — and games are ranked by how much combined strength is on the court, field, or pitch. Each sport starts ranked by current standings on a 900–1500 scale. You can refine rankings by clicking through matchups in the <strong>elo ratings</strong> tab, or hit <strong>sort by current record</strong> to reset to standings at any time.</p>
         </div>
         <div class="welcome-section">
           <div class="welcome-section-title">🟢 dots</div>
           <p>The green dots under each team show their within-sport rank — 5 dots = top 20% of teams in that league.</p>
         </div>
         <div class="welcome-section">
-          <div class="welcome-section-title">📊 elo ratings</div>
-          <p>Each sport starts with teams ranked by current record, on a 900–1500 Elo scale. You can customize rankings by clicking through head-to-head matchups in the <strong>elo ratings</strong> tab, or hit <strong>sort by current record</strong> to reset to standings at any time.</p>
+          <div class="welcome-section-title">⭐ stars & flames</div>
+          <p>Every game gets 1–5 stars based on the combined Elo strength of both teams, with 🔥 flames for the top 5%. Bonuses for playoff series, elimination games, title races, and relegation battles can push stars higher.</p>
         </div>
         <div class="welcome-section">
           <div class="welcome-section-title">🏆 all games tab</div>
@@ -3148,7 +3203,11 @@ updateStates();
         </div>
         <div class="welcome-section">
           <div class="welcome-section-title">getting started</div>
-          <p>Pick a sport tab → hit <strong>sort by current record</strong> → browse today's games. Or just start clicking matchups to tune the rankings to your taste.</p>
+          <p>Pick a sport tab and browse today's games — teams are already ranked by current standings. Click through matchups in the <strong>elo ratings</strong> tab to tune rankings to your taste. And don't forget to adjust the bonuses in the filter panel: playoff weights, TV bonuses, and league-specific boosts like EPL title races and relegation battles are all tweakable to match how you watch.</p>
+        </div>
+        <div class="welcome-section">
+          <div class="welcome-section-title">starting from scratch</div>
+          <p>Want to reset a sport entirely? In the <strong>elo ratings</strong> tab, use <strong>reset all to 1200</strong> to set every team to the default midpoint — or enter any value you like before resetting. From there you can sort by record or start ranking matchups fresh.</p>
         </div>
       </div>
       <div id="welcome-footer">
