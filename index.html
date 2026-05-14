@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.15', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.16', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.9', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.10', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -845,7 +845,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.8', vdate: '2026-05-12',
+    title: 'NHL', version: 'nhl.v1.9', vdate: '2026-05-12',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -879,7 +879,7 @@ var LEAGUE_CONFIGS = {
       {name:"Pittsburgh Penguins",abbr:"PIT",tierAbbr:"nhl_PIT",espn:"pit",div:"Metropolitan"},
       {name:"Washington Capitals",abbr:"WSC",tierAbbr:"nhl_WSC",espn:"wsh",div:"Metropolitan"},
       // Central Division
-      {name:"Arizona Coyotes",abbr:"ARI",tierAbbr:"nhl_ARI",espn:"ari",div:"Central"},
+      {name:"Utah Mammoth",abbr:"UTA",tierAbbr:"nhl_UTA",espn:"uta",div:"Pacific"},
       {name:"Chicago Blackhawks",abbr:"CHW",tierAbbr:"nhl_CHW",espn:"chi",div:"Central"},
       {name:"Colorado Avalanche",abbr:"COL",tierAbbr:"nhl_COL",espn:"col",div:"Central"},
       {name:"Dallas Stars",abbr:"DLS",tierAbbr:"nhl_DLS",espn:"dal",div:"Central"},
@@ -894,7 +894,6 @@ var LEAGUE_CONFIGS = {
       {name:"Los Angeles Kings",abbr:"LAK",tierAbbr:"nhl_LAK",espn:"la",div:"Pacific"},
       {name:"San Jose Sharks",abbr:"SJS",tierAbbr:"nhl_SJS",espn:"sj",div:"Pacific"},
       {name:"Seattle Kraken",abbr:"SEK",tierAbbr:"nhl_SEK",espn:"sea",div:"Pacific"},
-      {name:"Utah Hockey Club",abbr:"UTA",tierAbbr:"nhl_UTA",espn:"uta",div:"Pacific"},
       {name:"Vancouver Canucks",abbr:"VAN",tierAbbr:"nhl_VAN",espn:"van",div:"Pacific"},
       {name:"Vegas Golden Knights",abbr:"VGK",tierAbbr:"nhl_VGK",espn:"vgk",div:"Pacific"},
     ],
@@ -1355,7 +1354,7 @@ function rankByRecord(){
   var NORM_NHL={
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
     'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK',
-    'UTA':'UTA','UTAH':'UTA'
+    'UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'
   };
       var NORM_NFL={
         'JAC':'JAX','JAX':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV',
@@ -1378,7 +1377,7 @@ function rankByRecord(){
         'Wolves':'WOL',
         'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA',
         'CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','SUN':'SUN',
-        'LIV':'LIV','MCI':'MCI','MUN':'MUN','NEW':'NEW',
+        'LIV':'LIV','MCI':'MCI','MUN':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW',
         'NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL'
       };
       var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:NORM_NBA;
@@ -1561,9 +1560,10 @@ function buildSeasonSelector(){
     var curEnd=now.getMonth()>=9?now.getFullYear()+1:now.getFullYear();
     for(var y=curEnd;y>=2020;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
   } else if(currentLeague==='nfl'){
-    // NFL seasons: 2015 through current (single year, runs Sep-Feb)
-    // Current NFL season: if before Mar it's last year's season, else this year
     var curY=now.getMonth()<3?now.getFullYear()-1:now.getFullYear();
+    for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
+  } else if(currentLeague==='all'){
+    var curY=now.getFullYear();
     for(var y=curY;y>=2020;y--)seasons.push({value:y,label:String(y)});
   }
 
@@ -1597,23 +1597,29 @@ function onSeasonChange(){
   if(currentLeague==='nfl'){
     nflWeeks=[];
     buildNflWeeksForYear(currentSeason);
+  } else if(currentLeague==='all'){
+    applySeasonToUI();
+    var now=new Date();
+    var d=currentSeason===now.getFullYear()?now:new Date(currentSeason,0,1);
+    currentDate=d;
+    document.getElementById('date-picker').value=ival(d);
+    loadGames();
   } else {
     jumpToSeasonStart();
   }
 }
 
 function applySeasonToUI(){
-  // Update date picker bounds for NBA/WNBA
   if(currentLeague==='nba'){
-    var seasonStart=currentSeason+'-10-01'; // Oct of prior year — actually prior year
-    // NBA: 2024-25 season starts Oct 2024, ends Jun 2025
-    // currentSeason = end year, so start year = currentSeason-1
     var startY=currentSeason-1;
     document.getElementById('date-picker').min=startY+'-10-01';
     document.getElementById('date-picker').max=currentSeason+'-06-30';
   } else if(currentLeague==='wnba'){
     document.getElementById('date-picker').min=currentSeason+'-05-01';
     document.getElementById('date-picker').max=currentSeason+'-10-31';
+  } else if(currentLeague==='all'){
+    document.getElementById('date-picker').min=currentSeason+'-01-01';
+    document.getElementById('date-picker').max=currentSeason+'-12-31';
   }
 }
 
@@ -3018,9 +3024,9 @@ var RECORD_NORM={
   nba:{'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS','BKN':'BKN','CHA':'CHA','MEM':'MEM','OKC':'OKC','PHX':'PHX','PHI':'PHI','NOP':'NOP'},
   wnba:{'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL','IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG','PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'},
   mlb:{'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
-  nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA'},
+  nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'},
   nfl:{'JAC':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','DAL':'DAL','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA','JAX':'JAX'},
-  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','LDS':'LEE','SUN':'SUN','SND':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL','BRN':'BUR','SU':'SUN'},
+  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','LDS':'LEE','SUN':'SUN','SND':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL','BRN':'BUR','SU':'SUN'},
 };
 
 function normalizeRecordAbbr(sport,raw){
@@ -3045,7 +3051,7 @@ function normalizeRecordAbbr(sport,raw){
   var NORM_NHL={
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
     'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK',
-    'UTA':'UTA','UTAH':'UTA'
+    'UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'
   };
   var NORM_EPL=RECORD_NORM.epl;
   var NORM_NFL=RECORD_NORM.nfl;
