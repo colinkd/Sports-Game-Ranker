@@ -205,7 +205,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
        style="text-align:right;cursor:pointer;user-select:none">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v4.0</div>
+      <div>v4.2</div>
       <div id="site-version">nba.v4.7</div>
     </div>
   </div>
@@ -559,8 +559,8 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         </div>
         <div class="nest" id="epl-bon-nest">
           <div class="fw"><div class="fw-lbl">Title six-pointer<span class="fw-sub">both teams top 3</span></div><input type="number" class="fw-num" id="w-epl-title" value="300"/></div>
-          <div class="fw"><div class="fw-lbl">Top 4 race<span class="fw-sub">both teams top 6</span></div><input type="number" class="fw-num" id="w-epl-top4" value="150"/></div>
-          <div class="fw"><div class="fw-lbl">Relegation battle<span class="fw-sub">either team bottom 5</span></div><input type="number" class="fw-num" id="w-epl-rel" value="200"/></div>
+          <div class="fw"><div class="fw-lbl">Top 4 race<span class="fw-sub">both teams top 6</span></div><input type="number" class="fw-num" id="w-epl-top4" value="200"/></div>
+          <div class="fw"><div class="fw-lbl">Relegation battle<span class="fw-sub">either team bottom 5</span></div><input type="number" class="fw-num" id="w-epl-rel" value="100"/></div>
         </div>
       </div>
 
@@ -712,7 +712,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.20', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.22', vdate: '2026-05-12',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -730,7 +730,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.12', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.14', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -779,7 +779,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.8', vdate: '2026-05-12',
+    title: 'MLB', version: 'mlb.v1.9', vdate: '2026-05-12',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -1350,7 +1350,7 @@ function rankByRecord(){
       var NORM_WNBA=RECORD_NORM.wnba; var _unused_={'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL',
         'IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG',
         'PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'};
-      var NORM_MLB={'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
+      var NORM_MLB={'WSH':'WSN','CWS':'CWS','CHW':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
   var NORM_NHL={
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
     'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK',
@@ -1377,7 +1377,7 @@ function rankByRecord(){
         'Wolves':'WOL',
         'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA',
         'CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','SUN':'SUN',
-        'LIV':'LIV','MCI':'MCI','MUN':'MUN','MANU':'MUN','MAN UTD':'MUN','MAN':'MUN','NEW':'NEW',
+        'LIV':'LIV','MCI':'MCI','MUN':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW',
         'NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL'
       };
       var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:NORM_NBA;
@@ -1986,11 +1986,24 @@ function renderFilterProfiles(){
 // ── GAME PROCESSING ──
 var lastGames=[];
 function getTeamData(name){
+  // 1. Exact match
   for(var i=0;i<LC.teams.length;i++){
-    var t=LC.teams[i];
-    if(name===t.name||name.includes(t.name.split(' ').pop()))
-      return{elo:ratings[t.abbr]||LC.defaultElo,abbr:t.abbr,espn:t.espn};
+    if(name===LC.teams[i].name){var t=LC.teams[i];return{elo:ratings[t.abbr]||LC.defaultElo,abbr:t.abbr,espn:t.espn};}
   }
+  // 2. display name contains full team name (e.g. "Manchester United" contains "Man United")
+  for(var i=0;i<LC.teams.length;i++){
+    if(name.toLowerCase().indexOf(LC.teams[i].name.toLowerCase())>=0){var t=LC.teams[i];return{elo:ratings[t.abbr]||LC.defaultElo,abbr:t.abbr,espn:t.espn};}
+  }
+  // 3. team name contains display name
+  for(var i=0;i<LC.teams.length;i++){
+    if(LC.teams[i].name.toLowerCase().indexOf(name.toLowerCase())>=0){var t=LC.teams[i];return{elo:ratings[t.abbr]||LC.defaultElo,abbr:t.abbr,espn:t.espn};}
+  }
+  // 4. first word match (e.g. "Manchester" matches "Man City" or "Man United" — skip if ambiguous)
+  var firstWord=name.split(' ')[0].toLowerCase();
+  var firstMatches=LC.teams.filter(function(t){return t.name.toLowerCase().startsWith(firstWord)||t.name.toLowerCase().split(' ')[0]===firstWord;});
+  if(firstMatches.length===1){var t=firstMatches[0];return{elo:ratings[t.abbr]||LC.defaultElo,abbr:t.abbr,espn:t.espn};}
+  // 5. fallback: abbreviate
+  if(currentLeague==='epl'||LC.sport==='soccer')console.warn('[EPL getTeamData] no match for:',name);
   return{elo:LC.defaultElo,abbr:name.substring(0,3).toUpperCase(),espn:''};
 }
 
@@ -2481,9 +2494,10 @@ function renderAllCard(g,i){
   var isMust=g.watchPct>=85,isLP=g.watchPct>=60&&!isMust;
   var badge='';
   if(g.watchTBD)badge='<span class="g-badge badge-lp">TBD</span>';
-  else if(g.isCup)badge='<span class="g-badge badge-cup">Cup</span>';
+  else if(['Prime Video','Peacock','ESPN+','Max','Apple TV+'].indexOf(g.watch)>=0)badge='<span class="g-badge badge-stream">'+g.watch+'</span>';
+  else if(['League Pass','NHL.TV','MLB.TV','NFL Network'].indexOf(g.watch)>=0)badge='<span class="g-badge badge-lp">'+g.watch+'</span>';
   else if(g.isNat)badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
-  else badge='<span class="g-badge badge-lp">'+(LC.showLeaguePass?'League Pass':'Local')+'</span>';
+  else badge='<span class="g-badge badge-lp">Local</span>';
   var lgColors={nba:'#BA7517',wnba:'#E85D04',nfl:'#185FA5'};
   var sportTag='<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:'+(lgColors[g._league]||'#888')+';margin-left:6px">'+(g._league||'').toUpperCase()+'</span>';
   var bonuses='';
@@ -3010,10 +3024,10 @@ window.recordCache={};
 var RECORD_NORM={
   nba:{'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA','WSH':'WAS','BKN':'BKN','CHA':'CHA','MEM':'MEM','OKC':'OKC','PHX':'PHX','PHI':'PHI','NOP':'NOP'},
   wnba:{'CONN':'CON','LV':'LVA','LA':'LAS','NY':'NYL','IND':'FEV','CHI':'SKY','ATL':'DRM','WSH':'MYS','MIN':'LNX','DAL':'WNG','PHX':'PHO','SEA':'SEA','GS':'GSV','POR':'PDX','TOR':'TMP'},
-  mlb:{'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
+  mlb:{'WSH':'WSN','CWS':'CWS','CHW':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
   nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'},
   nfl:{'JAC':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','DAL':'DAL','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA','JAX':'JAX'},
-  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','LDS':'LEE','SUN':'SUN','SND':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','MANU':'MUN','MAN UTD':'MUN','MAN':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL','BRN':'BUR','SU':'SUN'},
+  epl:{'ARS':'ARS','AVL':'AVL','BOU':'BOU','BRE':'BRE','BHA':'BHA','CHE':'CHE','CRY':'CRY','EVE':'EVE','FUL':'FUL','BUR':'BUR','LEE':'LEE','SUN':'SUN','LIV':'LIV','MCI':'MCI','MUN':'MUN','MNC':'MCI','MNU':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW','NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL'},
 };
 
 function normalizeRecordAbbr(sport,raw){
@@ -3036,7 +3050,7 @@ function normalizeRecordAbbr(sport,raw){
     'CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR',
     'ARI':'ARI','SEA':'SEA'
   };
-  var NORM_MLB={'WSH':'WSN','CWS':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
+  var NORM_MLB={'WSH':'WSN','CWS':'CWS','CHW':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB'};
   var NORM_NHL={
     'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS',
     'WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','SEA':'SEK',
@@ -3105,6 +3119,68 @@ try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.
 switchLeague('all');
 document.getElementById('w-dt-on').checked=true;
 updateStates();
+
+// ── WELCOME MODAL ──
+(function(){
+  try{if(localStorage.getItem('ranker_welcome_seen')==='1')return;}catch(e){}
+  var overlay=document.createElement('div');
+  overlay.id='welcome-overlay';
+  overlay.innerHTML=`
+    <div id="welcome-modal">
+      <div id="welcome-title">👋 welcome to game ranker</div>
+      <div id="welcome-body">
+        <p>Game Ranker helps you find the most watchable games across six sports — NBA, WNBA, MLB, NHL, NFL, and EPL.</p>
+        <div class="welcome-section">
+          <div class="welcome-section-title">⭐ stars & flames</div>
+          <p>Every game gets 1–5 stars based on the combined Elo strength of both teams, with 🔥 flames for the top 5%. Bonuses for playoff series, elimination games, title races, and relegation battles can push stars higher.</p>
+        </div>
+        <div class="welcome-section">
+          <div class="welcome-section-title">🟢 dots</div>
+          <p>The green dots under each team show their within-sport rank — 5 dots = top 20% of teams in that league.</p>
+        </div>
+        <div class="welcome-section">
+          <div class="welcome-section-title">📊 elo ratings</div>
+          <p>Each sport starts with teams ranked by current record, on a 900–1500 Elo scale. You can customize rankings by clicking through head-to-head matchups in the <strong>elo ratings</strong> tab, or hit <strong>sort by current record</strong> to reset to standings at any time.</p>
+        </div>
+        <div class="welcome-section">
+          <div class="welcome-section-title">🏆 all games tab</div>
+          <p>The All tab pulls today's games from every sport and ranks them together by stars. Use the sport filter to focus on what you care about.</p>
+        </div>
+        <div class="welcome-section">
+          <div class="welcome-section-title">getting started</div>
+          <p>Pick a sport tab → hit <strong>sort by current record</strong> → browse today's games. Or just start clicking matchups to tune the rankings to your taste.</p>
+        </div>
+      </div>
+      <div id="welcome-footer">
+        <label id="welcome-dsa"><input type="checkbox" id="welcome-dsa-chk"/> don't show again</label>
+        <button id="welcome-btn" onclick="closeWelcome()">let's go →</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  var style=document.createElement('style');
+  style.textContent=`
+    #welcome-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;}
+    #welcome-modal{background:var(--surface);border-radius:16px;max-width:520px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.18);display:flex;flex-direction:column;}
+    #welcome-title{font-size:20px;font-weight:700;color:var(--text);padding:24px 24px 0;letter-spacing:-0.3px;}
+    #welcome-body{padding:16px 24px;flex:1;overflow-y:auto;}
+    #welcome-body p{font-size:13px;color:var(--text-2);line-height:1.6;margin:0 0 12px;}
+    .welcome-section{margin:16px 0 0;}
+    .welcome-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:6px;}
+    #welcome-footer{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid var(--border);gap:12px;}
+    #welcome-dsa{font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
+    #welcome-dsa input{cursor:pointer;}
+    #welcome-btn{background:var(--amber);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+    #welcome-btn:hover{opacity:0.88;}
+  `;
+  document.head.appendChild(style);
+})();
+
+function closeWelcome(){
+  try{if(document.getElementById('welcome-dsa-chk').checked)localStorage.setItem('ranker_welcome_seen','1');}catch(e){}
+  var o=document.getElementById('welcome-overlay');
+  if(o)o.remove();
+}
 </script>
 </body>
 </html>
