@@ -729,15 +729,15 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v2.7', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v2.8', vdate: '2026-05-12',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
     calDurH: 2,
     showLeaguePass: false,
     showPlayoff: false,
-    showWeekBar: true,
-    showDateBar: false,
+    showWeekBar: false,
+    showDateBar: true,
     seriesMax: 1,
     showSweep: false,
     showIST: false,
@@ -1545,9 +1545,6 @@ function onSeasonChange(){
   if(currentLeague==='nfl'){
     nflWeeks=[];
     buildNflWeeksForYear(currentSeason);
-  } else if(currentLeague==='epl'){
-    eplWeeks=[];
-    buildEplWeeksForYear(currentSeason);
   } else {
     jumpToSeasonStart();
   }
@@ -1722,35 +1719,22 @@ function goNflToday(){
 }
 function goNflWeekToday(){
   var now=new Date();
+  var idx=nflWeeks.findIndex(function(w){return now>=w.start&&now<=w.end;});
+  if(idx<0)idx=0;
+  nflWeekIdx=idx;
   var sel=document.getElementById('week-select');
-  if(currentLeague==='epl'){
-    var idx=eplWeeks.findIndex(function(w){return w.end&&now<=w.end;});
-    if(idx<0)idx=eplWeeks.length-1;
-    eplWeekIdx=idx;
-    if(sel)sel.value=idx;
-  } else {
-    var idx=nflWeeks.findIndex(function(w){return now>=w.start&&now<=w.end;});
-    if(idx<0)idx=0;
-    nflWeekIdx=idx;
-    if(sel)sel.value=idx;
-  }
+  if(sel)sel.value=idx;
   loadGames();
 }
 function stepWeek(d){
-  if(currentLeague==='epl'){
-    eplWeekIdx=Math.max(0,Math.min(eplWeeks.length-1,eplWeekIdx+d));
-    document.getElementById('week-select').value=eplWeekIdx;
-  } else {
-    nflWeekIdx=Math.max(0,Math.min(nflWeeks.length-1,nflWeekIdx+d));
-    document.getElementById('week-select').value=nflWeekIdx;
-  }
+  nflWeekIdx=Math.max(0,Math.min(nflWeeks.length-1,nflWeekIdx+d));
+  document.getElementById('week-select').value=nflWeekIdx;
   loadGames();
 }
 var _weekChangeLock=false;
 function onWeekChange(){
   if(_weekChangeLock)return;
-  var idx=+document.getElementById('week-select').value;
-  if(currentLeague==='epl'){eplWeekIdx=idx;}else{nflWeekIdx=idx;}
+  nflWeekIdx=+document.getElementById('week-select').value;
   loadGames();
 }
 
@@ -3036,27 +3020,17 @@ function switchLeague(lg){
   // build season selector
   buildSeasonSelector();
   // build week selector for NFL and EPL
-  if(lg==='nfl'||lg==='epl'){
+  if(lg==='nfl'){
     var targetYear=currentSeason||new Date().getFullYear();
-    if(lg==='epl'){
-      if(!eplWeeks.length||eplWeeksSeason!==targetYear)buildEplWeeksForYear(targetYear);
-      else{
-        var sel=document.getElementById('week-select');
-        if(sel&&eplWeeks.length){
-          sel.innerHTML=eplWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
-          sel.value=eplWeekIdx;
-        }
-      }
+    if(!nflWeeks.length||nflWeeksSeason!==targetYear){
+      buildNflWeeksForYear(targetYear);
     } else {
-      if(!nflWeeks.length||nflWeeksSeason!==targetYear)buildNflWeeksForYear(targetYear);
-      else{
-        var sel=document.getElementById('week-select');
-        if(sel&&nflWeeks.length){
-          sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
-          sel.value=nflWeekIdx;
-          var nflSingle=document.getElementById('nfl-single-date');
-          if(nflSingle&&nflWeeks[nflWeekIdx])nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
-        }
+      var sel=document.getElementById('week-select');
+      if(sel&&nflWeeks.length){
+        sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+        sel.value=nflWeekIdx;
+        var nflSingle=document.getElementById('nfl-single-date');
+        if(nflSingle&&nflWeeks[nflWeekIdx])nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
       }
     }
   }
