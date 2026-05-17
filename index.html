@@ -53,9 +53,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .sport-nav-btn{position:relative;padding:7px 14px;font-size:12px;font-weight:600;font-family:var(--mono);cursor:pointer;color:var(--text-2);background:var(--surface);border:.5px solid var(--border);border-radius:20px;transition:all .15s;white-space:nowrap;letter-spacing:.3px;min-width:var(--snb-w,auto);}
 .sport-nav-btn:hover{color:var(--text);border-color:var(--text-3);}
 .sport-nav-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
-.league-dropdown-popup{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);display:none;flex-direction:column;gap:4px;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);z-index:100;min-width:160px;}
+.league-dropdown-popup{position:absolute;top:calc(100% + 6px);left:0;right:0;display:none;flex-direction:column;gap:4px;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:8px;box-shadow:0 4px 20px rgba(0,0,0,0.12);z-index:100;min-width:unset;}
 .league-dropdown-popup.open{display:flex;}
-.league-nav-btn{display:flex;align-items:center;gap:8px;padding:7px 12px;font-size:12px;font-weight:500;font-family:var(--mono);cursor:pointer;color:var(--text);background:transparent;border:.5px solid var(--border);border-radius:12px;transition:all .15s;white-space:nowrap;width:100%;text-align:left;}
+.league-nav-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:7px 12px;font-size:12px;font-weight:500;font-family:var(--mono);cursor:pointer;color:var(--text);background:transparent;border:.5px solid var(--border);border-radius:12px;transition:all .15s;white-space:nowrap;width:100%;text-align:center;}
 .league-nav-btn:hover{background:var(--bg);}
 .league-nav-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
 .league-nav-btn img{width:18px;height:18px;object-fit:contain;border-radius:2px;flex-shrink:0;}
@@ -65,8 +65,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 
 .site-header{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:.5px solid var(--border)}
 .site-title{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber);letter-spacing:-.5px}
-.tabs{display:flex;gap:1px;margin-bottom:1.5rem;background:var(--border);border-radius:var(--radius-sm);padding:1px;max-width:100%;margin-left:auto;margin-right:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-.tab{flex:1;min-width:fit-content;flex-shrink:0;padding:9px 8px;font-size:12px;font-weight:500;font-family:var(--mono);text-align:center;cursor:pointer;color:var(--text-2);background:transparent;border:none;border-radius:calc(var(--radius-sm) - 1px);transition:all .15s}
+.tabs{display:flex;gap:1px;margin-bottom:1.5rem;background:var(--border);border-radius:var(--radius-sm);padding:1px;max-width:fit-content;margin-left:auto;margin-right:auto;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tab{min-width:fit-content;flex-shrink:0;padding:9px 16px;font-size:12px;font-weight:500;font-family:var(--mono);text-align:center;cursor:pointer;color:var(--text-2);background:transparent;border:none;border-radius:calc(var(--radius-sm) - 1px);transition:all .15s}
 .tab:hover{color:var(--text)}
 .tab.active{background:var(--surface);color:var(--text)}
 
@@ -123,7 +123,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .gcal-btn{margin-left:auto;font-size:11px;font-family:var(--mono);text-decoration:none;opacity:.55;transition:opacity .15s;cursor:pointer;color:var(--text-2);display:flex;align-items:center;gap:3px}
 .gcal-btn:hover{opacity:1}
 .game-rank-num{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1;color:#fff;border-radius:6px;padding:2px 8px;display:inline-block}
-.rank-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.rank-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-sizing:border-box;}
 .game-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;text-align:center}
 .g-team{display:inline-block;text-align:center}
 .g-team .logo-wrap{display:inline-block;position:relative;margin:0 auto 6px}
@@ -219,13 +219,18 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
 <!-- ══ LEAGUE SWITCHER ══ -->
 <header class="site-header">
-  <div class="site-title" id="site-title">GAME RANKER</div>
-  <div onclick="var vp=document.getElementById('version-panel'),st=document.getElementById('subtitle-text');vp.style.display=vp.style.display==='none'?'block':'none';st.style.display=st.style.display==='none'?'block':'none';"
-       style="text-align:right;cursor:pointer;user-select:none">
-    <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.6">find the perfect matchups<br/>powered by your picks</div>
-    <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.8">
-      <div>v4.65</div>
-      <div id="site-version">nba.v4.7</div>
+  <div class="site-title" id="site-title" onclick="selectSportCat('all');switchTab('games');" style="cursor:pointer">GAME RANKER</div>
+  <div onclick="var vp=document.getElementById('version-panel'),st=document.getElementById('subtitle-text');var showing=vp.style.display==='block';vp.style.display=showing?'none':'block';st.style.display=showing?'block':'none';"
+       style="text-align:right;cursor:pointer;user-select:none;flex-shrink:0;height:2.8em;display:flex;align-items:center;justify-content:flex-end">
+    <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">find the perfect matchups<br/>powered by your picks</div>
+    <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
+      <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
+        <div>
+          <div>v4.66</div>
+          <div id="site-version">nba.v4.7</div>
+        </div>
+        <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
+      </div>
     </div>
   </div>
 </header>
@@ -401,7 +406,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
     <!-- FILTERS -->
     <div class="filters-col">
-      <button class="btn btn-amber apply-btn" onclick="applyAndLoad()">apply &amp; see games →</button>
+      <button class="btn btn-amber apply-btn" onclick="applyAndLoad()">← apply &amp; see games</button>
       <button class="btn btn-outline btn-sm" style="width:100%;margin-bottom:4px" onclick="resetFilters()">reset all filters</button>
       <button class="btn btn-outline btn-sm" style="width:100%;margin-bottom:8px" onclick="saveFilterProfile()">save as profile</button>
 
@@ -803,7 +808,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.32', vdate: '2026-05-12',
+    title: 'ALL SPORTS', version: 'all.v2.33', vdate: '2026-05-17',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -870,7 +875,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mls: {
-    title: 'MLS', version: 'mls.v1.2', vdate: '2025-05-16',
+    title: 'MLS', version: 'mls.v1.3', vdate: '2026-05-17',
     icon: '⚽',
     storageKey: 'mls',
     sport: 'soccer', league: 'usa.1',
@@ -888,9 +893,10 @@ var LEAGUE_CONFIGS = {
       {name:"D.C. United",abbr:"DC",tierAbbr:"mls_DC",espn:"207",div:"Eastern"},
       {name:"Inter Miami",abbr:"MIA",tierAbbr:"mls_MIA",espn:"20422",div:"Eastern"},
       {name:"Nashville SC",abbr:"NSH",tierAbbr:"mls_NSH",espn:"20419",div:"Eastern"},
-      {name:"New England",abbr:"NE",tierAbbr:"mls_NE",espn:"228",div:"Eastern"},
+      {name:"Columbus Crew",abbr:"CLB",tierAbbr:"mls_CLB",espn:"183",div:"Eastern"},
+      {name:"New England",abbr:"NE",tierAbbr:"mls_NE",espn:"189",div:"Eastern"},
       {name:"NYCFC",abbr:"NYCFC",tierAbbr:"mls_NYCFC",espn:"20487",div:"Eastern"},
-      {name:"NY Red Bulls",abbr:"NYRB",tierAbbr:"mls_NYRB",espn:"246",div:"Eastern"},
+      {name:"NY Red Bulls",abbr:"NYRB",tierAbbr:"mls_NYRB",espn:"190",div:"Eastern"},
       {name:"Orlando City",abbr:"ORL",tierAbbr:"mls_ORL",espn:"20206",div:"Eastern"},
       {name:"Philadelphia Union",abbr:"PHI",tierAbbr:"mls_PHI",espn:"1809",div:"Eastern"},
       {name:"Toronto FC",abbr:"TOR",tierAbbr:"mls_TOR",espn:"348",div:"Eastern"},
@@ -902,14 +908,13 @@ var LEAGUE_CONFIGS = {
       {name:"LAFC",abbr:"LAFC",tierAbbr:"mls_LAFC",espn:"20433",div:"Western"},
       {name:"Minnesota United",abbr:"MIN",tierAbbr:"mls_MIN",espn:"20351",div:"Western"},
       {name:"Portland Timbers",abbr:"POR",tierAbbr:"mls_POR",espn:"1581",div:"Western"},
-      {name:"Real Salt Lake",abbr:"RSL",tierAbbr:"mls_RSL",espn:"1762",div:"Western"},
+      {name:"Real Salt Lake",abbr:"RSL",tierAbbr:"mls_RSL",espn:"4771",div:"Western"},
       {name:"San Jose Earthquakes",abbr:"SJ",tierAbbr:"mls_SJ",espn:"217",div:"Western"},
       {name:"Seattle Sounders",abbr:"SEA",tierAbbr:"mls_SEA",espn:"1773",div:"Western"},
       {name:"Sporting KC",abbr:"SKC",tierAbbr:"mls_SKC",espn:"212",div:"Western"},
       {name:"St. Louis City",abbr:"STL",tierAbbr:"mls_STL",espn:"20624",div:"Western"},
       {name:"Vancouver Whitecaps",abbr:"VAN",tierAbbr:"mls_VAN",espn:"1708",div:"Western"},
       {name:"San Diego FC",abbr:"SD",tierAbbr:"mls_SD",espn:"20909",div:"Western"},
-      {name:"Utah HC",abbr:"UTA",tierAbbr:"mls_UTA",espn:"20908",div:"Western"},
     ],
     defaultElo: 1200, quintileDividers: [],
     TMIN:900, TMAX:1500, CMIN:1820, CMAX:3000, chartMin:800, chartMax:1700,
@@ -1114,9 +1119,48 @@ var currentLeague = 'all';
 var currentTab = 'games';
 var LC = LEAGUE_CONFIGS.nba; // shorthand, updated on switch
 var DOT_TOP3=["#BA7517","#888780","#854F0B"]; // gold, silver, bronze
-var DOT_COLORS=["#4E9FC4","#5BAF7A","#7B68C8","#C25B8A","#3EAAA0","#6B9E5E","#B05CB0","#5B8FC4","#4E8E8E","#D4855A","#6BAED6","#74C476","#9E9AC8","#F768A1","#41B6C4","#ADDD8E","#FEB24C","#C994C7","#67000D","#2171B5"];
-function getDotColor(i){return i<3?DOT_TOP3[i]:DOT_COLORS[(i-3)%DOT_COLORS.length];}
+var LEAGUE_DOT_COLORS={nba:'#C8102E',wnba:'#E8892A',epl:'#3D7A5C',mlb:'#A0603A',nhl:'#4E8A9E',nfl:'#3A5A8C',mls:'#5E9E72',all:'#BA7517'};
+function getDotColor(i,league){return LEAGUE_DOT_COLORS[league]||LEAGUE_DOT_COLORS.all;}
+function getMedalBorder(rank){if(rank===1)return'3px solid #BA7517';if(rank===2)return'3px solid #9A9A9A';if(rank===3)return'3px solid #7A5230';return'none';}
+function dotsHtml(n,color){var c=color||'#3B6D11';var h='';for(var i=0;i<5;i++)h+='<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 1px;background:'+(i<n?c:'#D3D1C7')+'"></span>';return h;}
 var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+// ── DEMO MODE ──
+var DEMO_MODE=false;
+function espnLogo(sport,id){return sport==='soccer'?'https://a.espncdn.com/i/teamlogos/soccer/500/'+id+'.png':'https://a.espncdn.com/i/teamlogos/'+sport+'/500/'+id+'.png';}
+var DEMO_GAMES=[
+  // NBA
+  {_league:'nba',awayAbbr:'BOS',homeAbbr:'GSW',awayElo:1498,homeElo:1471,awayDots:5,homeDots:5,awayLogo:espnLogo('nba','2'),homeLogo:espnLogo('nba','9'),awayRec:'52-18',homeRec:'49-21',watch:'ABC',isNat:true,watchTBD:false,isCup:false,lev:300,levLbl:'elim',tvBonus:150,time:'7:30 PM',dateLabel:'Today',total:3319,totalStars:5,flame:true,gcalUrl:'#',gameNum:7,awaySerWins:3,homeSerWins:3},
+  {_league:'nba',awayAbbr:'LAL',homeAbbr:'DEN',awayElo:1312,homeElo:1421,awayDots:3,homeDots:5,awayLogo:espnLogo('nba','13'),homeLogo:espnLogo('nba','7'),awayRec:'38-33',homeRec:'48-23',watch:'TNT',isNat:true,watchTBD:false,isCup:false,lev:200,levLbl:'tied',tvBonus:100,time:'9:30 PM',dateLabel:'Today',total:2833,totalStars:4,flame:false,gcalUrl:'#',gameNum:5,awaySerWins:2,homeSerWins:2},
+  // WNBA
+  {_league:'wnba',awayAbbr:'LV',homeAbbr:'NY',awayElo:1445,homeElo:1388,awayDots:5,homeDots:4,awayLogo:espnLogo('wnba','14'),homeLogo:espnLogo('wnba','5'),awayRec:'28-8',homeRec:'24-12',watch:'ESPN',isNat:true,watchTBD:false,isCup:false,lev:300,levLbl:'elim',tvBonus:100,time:'7:00 PM',dateLabel:'Today',total:3133,totalStars:5,flame:true,gcalUrl:'#',gameNum:3,awaySerWins:1,homeSerWins:1},
+  {_league:'wnba',awayAbbr:'SEA',homeAbbr:'CHI',awayElo:1178,homeElo:1055,awayDots:2,homeDots:1,awayLogo:espnLogo('wnba','9'),homeLogo:espnLogo('wnba','3'),awayRec:'14-22',homeRec:'9-27',watch:'League Pass',isNat:false,watchTBD:false,isCup:false,lev:0,levLbl:'',tvBonus:0,time:'8:00 PM',dateLabel:'Today',total:2233,totalStars:1,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  // NFL
+  {_league:'nfl',awayAbbr:'KC',homeAbbr:'PHI',awayElo:1455,homeElo:1388,awayDots:5,homeDots:4,awayLogo:espnLogo('nfl','12'),homeLogo:espnLogo('nfl','21'),awayRec:'14-3',homeRec:'11-6',watch:'Prime Video',isNat:false,watchTBD:false,isCup:false,lev:300,levLbl:'TNF',tvBonus:0,time:'8:15 PM',dateLabel:'Today',total:3143,totalStars:5,flame:true,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  {_league:'nfl',awayAbbr:'DAL',homeAbbr:'NYG',awayElo:1201,homeElo:934,awayDots:2,homeDots:1,awayLogo:espnLogo('nfl','6'),homeLogo:espnLogo('nfl','19'),awayRec:'7-10',homeRec:'3-14',watch:'Local',isNat:false,watchTBD:false,isCup:false,lev:200,levLbl:'divisional',tvBonus:0,time:'1:00 PM',dateLabel:'Today',total:2335,totalStars:1,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  // EPL
+  {_league:'epl',awayAbbr:'ARS',homeAbbr:'LIV',awayElo:1440,homeElo:1465,awayDots:5,homeDots:5,awayLogo:espnLogo('soccer','359'),homeLogo:espnLogo('soccer','364'),awayRec:'22-4-4',homeRec:'24-3-3',watch:'Peacock',isNat:false,watchTBD:false,isCup:false,lev:250,levLbl:'title race',tvBonus:0,time:'12:30 PM',dateLabel:'Today',total:3155,totalStars:5,flame:true,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  {_league:'epl',awayAbbr:'BUR',homeAbbr:'SHU',awayElo:988,homeElo:921,awayDots:1,homeDots:1,awayLogo:espnLogo('soccer','379'),homeLogo:espnLogo('soccer','399'),awayRec:'4-6-20',homeRec:'3-4-23',watch:'NBC',isNat:true,watchTBD:false,isCup:false,lev:150,levLbl:'relegation',tvBonus:0,time:'10:00 AM',dateLabel:'Today',total:2059,totalStars:1,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  // MLB
+  {_league:'mlb',awayAbbr:'NYY',homeAbbr:'LAD',awayElo:1088,homeElo:1445,awayDots:1,homeDots:5,awayLogo:espnLogo('mlb','10'),homeLogo:espnLogo('mlb','19'),awayRec:'61-89',homeRec:'98-56',watch:'Fox',isNat:true,watchTBD:false,isCup:false,lev:0,levLbl:'',tvBonus:100,time:'7:07 PM',dateLabel:'Today',total:2633,totalStars:3,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  {_league:'mlb',awayAbbr:'HOU',homeAbbr:'ATL',awayElo:1344,homeElo:1378,awayDots:3,homeDots:4,awayLogo:espnLogo('mlb','18'),homeLogo:espnLogo('mlb','15'),awayRec:'82-68',homeRec:'88-62',watch:'ESPN+',isNat:false,watchTBD:false,isCup:false,lev:0,levLbl:'',tvBonus:0,time:'7:20 PM',dateLabel:'Today',total:2722,totalStars:3,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  // NHL
+  {_league:'nhl',awayAbbr:'TOR',homeAbbr:'BOS',awayElo:1201,homeElo:1388,awayDots:2,homeDots:4,awayLogo:espnLogo('nhl','28'),homeLogo:espnLogo('nhl','1'),awayRec:'31-35-12',homeRec:'46-24-8',watch:'ESPN',isNat:true,watchTBD:false,isCup:false,lev:0,levLbl:'',tvBonus:100,time:'7:00 PM',dateLabel:'Today',total:2689,totalStars:3,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  {_league:'nhl',awayAbbr:'COL',homeAbbr:'VGK',awayElo:1411,homeElo:1388,awayDots:5,homeDots:4,awayLogo:espnLogo('nhl','21'),homeLogo:espnLogo('nhl','37'),awayRec:'48-22-8',homeRec:'45-26-7',watch:'TBD',isNat:false,watchTBD:true,isCup:false,lev:100,levLbl:'game 1',tvBonus:0,time:'9:00 PM',dateLabel:'Today',total:2899,totalStars:4,flame:false,gcalUrl:'#',gameNum:1,awaySerWins:0,homeSerWins:0},
+  // MLS
+  {_league:'mls',awayAbbr:'MIA',homeAbbr:'VAN',awayElo:1178,homeElo:1243,awayDots:2,homeDots:2,awayLogo:espnLogo('soccer','20422'),homeLogo:espnLogo('soccer','1708'),awayRec:'7-8-5',homeRec:'10-5-5',watch:'MLS Season Pass',isNat:false,watchTBD:false,isCup:false,lev:0,levLbl:'',tvBonus:0,time:'8:00 PM',dateLabel:'Today',total:2421,totalStars:2,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+  {_league:'mls',awayAbbr:'ATL',homeAbbr:'NSH',awayElo:1355,homeElo:1412,awayDots:3,homeDots:5,awayLogo:espnLogo('soccer','1611'),homeLogo:espnLogo('soccer','20419'),awayRec:'14-5-6',homeRec:'17-4-4',watch:'Apple TV+',isNat:false,watchTBD:false,isCup:true,lev:200,levLbl:'supporters shield',tvBonus:0,time:'7:30 PM',dateLabel:'Today',total:2967,totalStars:4,flame:false,gcalUrl:'#',gameNum:null,awaySerWins:null,homeSerWins:null},
+];
+function toggleDemoMode(){
+  DEMO_MODE=!DEMO_MODE;
+  var btn=document.getElementById('demo-toggle-btn');
+  if(btn){
+    btn.style.background=DEMO_MODE?'var(--amber)':'transparent';
+    btn.style.color=DEMO_MODE?'#fff':'var(--text-3)';
+    btn.style.borderColor=DEMO_MODE?'var(--amber)':'var(--border)';
+  }
+  loadGames();
+}
 var MONTHS_FULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 // ── ELO per-league ──
@@ -1339,8 +1383,11 @@ function setTierCat(cat){
   };
   if(presets[cat]){
     tierSports=Object.assign({},presets[cat]);
-    syncTierSportPills();
-    document.querySelectorAll('#tier-sport-filter').length;
+    syncSportFilters();
+    // Sync games-side category pills
+    document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(el){
+      el.classList.toggle('on',el.dataset.sportval===cat);
+    });
   }
   document.querySelectorAll('[data-tcat]').forEach(function(el){
     el.classList.toggle('on',el.dataset.tcat===cat);
@@ -1349,12 +1396,24 @@ function setTierCat(cat){
   if(cp)cp.classList.toggle('on',cat==='custom');
   renderTierRankings();
 }
+function syncSportFilters(){
+  // Sync tierSports → includeSports and vice versa via the shared tierSports state
+  var ALL_SPORTS=['nba','wnba','nfl','nhl','mlb','epl','mls'];
+  includeSports=ALL_SPORTS.filter(function(s){return tierSports[s]!==false;});
+  // Update games tab pills
+  document.querySelectorAll('#sport-pill-wrap .sport-pill').forEach(function(el){
+    el.classList.toggle('on',includeSports.indexOf(el.dataset.sport)>=0);
+  });
+  // Update elo tab pills
+  document.querySelectorAll('#tier-sport-filter .sport-pill').forEach(function(el){
+    el.classList.toggle('on',tierSports[el.dataset.ts]!==false);
+  });
+}
 function toggleTierSport(sport,el){
   tierSports[sport]=!tierSports[sport];
-  el.classList.toggle('on',tierSports[sport]);
-  // Mark custom if doesn't match any preset
   document.querySelectorAll('[data-tcat]').forEach(function(p){p.classList.remove('on');});
   var cp=document.getElementById('tier-custom-pill');if(cp)cp.classList.add('on');
+  syncSportFilters();
   renderTierRankings();
 }
 // Legacy shim
@@ -1953,7 +2012,7 @@ function gameStars(s){
   var p=(s-r.min)/(r.max-r.min);
   return p>=0.8?5:p>=0.6?4:p>=0.4?3:p>=0.2?2:1;
 }
-function dotsHtml(n){var h='';for(var i=0;i<5;i++)h+='<span style="display:inline-block;width:6px;height:6px;border-radius:50%;margin:0 1px;background:'+(i<n?'#3B6D11':'#D3D1C7')+'"></span>';return h;}
+
 function starsHtml(n,flame){
   var f='',e='';for(var i=0;i<Math.min(n,5);i++)f+='★';for(var i=n;i<5;i++)e+='★';
   var s='<span style="color:#BA7517;font-size:11px;">'+f+'</span><span style="color:#D3D1C7;font-size:11px;">'+e+'</span>';
@@ -2198,8 +2257,7 @@ function resetFilters(){
   document.getElementById('w-dt-on').checked=true;
   setDateMode('single');goToday();
   document.getElementById('w-time-on').checked=false;
-  document.getElementById('w-min-time').value='00:00';
-  document.getElementById('w-max-time').value='23:59';
+  setTimePreset('all');
   document.getElementById('w-bcast-on').checked=true;
   document.getElementById('w-tv-on').checked=false;
   document.getElementById('w-tv-bonus').value=100;
@@ -2347,8 +2405,9 @@ function getTeamData(name){
       'chelsea':'CHE','arsenal':'ARS','everton':'EVE','fulham':'FUL','liverpool':'LIV',
       'burnley':'BUR','bournemouth':'BOU',
       'inter miami cf':'MIA','cf montréal':'MTL','d.c. united':'DC','dc united':'DC',
+      'columbus crew':'CLB','columbus crew sc':'CLB',
       'new england revolution':'NE','new york city fc':'NYCFC','nycfc':'NYCFC',
-      'new york red bulls':'NYRB','orlando city sc':'ORL','orlando city':'ORL',
+      'new york red bulls':'NYRB','red bull new york':'NYRB','orlando city sc':'ORL','orlando city':'ORL',
       'philadelphia union':'PHI','toronto fc':'TOR','charlotte fc':'CLT',
       'chicago fire fc':'CHI','chicago fire':'CHI','fc cincinnati':'CIN','nashville sc':'NSH',
       'austin fc':'ATX','colorado rapids':'COL','fc dallas':'DAL',
@@ -2357,7 +2416,7 @@ function getTeamData(name){
       'seattle sounders fc':'SEA','seattle sounders':'SEA',
       'sporting kansas city':'SKC','st. louis city sc':'STL','st. louis city':'STL',
       'vancouver whitecaps fc':'VAN','vancouver whitecaps':'VAN','minnesota united fc':'MIN',
-      'minnesota united':'MIN','san diego fc':'SD','utah hc':'UTA','atlanta united fc':'ATL',
+      'minnesota united':'MIN','san diego fc':'SD','atlanta united fc':'ATL',
       'atlanta united':'ATL',
     };
     if(SOCCER_MAP[lname]){
@@ -2399,6 +2458,10 @@ function processEvent(ev,tz){
   var home=comp.competitors[0],away=comp.competitors[1];
   var hd=getTeamData(home.team.displayName),ad=getTeamData(away.team.displayName);
   var combined=hd.elo+ad.elo,utc=new Date(ev.date);
+  // Extract logo: ESPN uses team.logo (most sports) or team.logos[0].href (soccer)
+  function teamLogo(t){return t.logo||(t.logos&&t.logos[0]&&t.logos[0].href)||'';}
+  var homeLogo=teamLogo(home.team)||LC.logo(hd.espn);
+  var awayLogo=teamLogo(away.team)||LC.logo(ad.espn);
 
   var watch=LC.showLeaguePass?'League Pass':'Local',isNat=false,watchTBD=false;
   var hasBroadcast=comp.broadcasts&&comp.broadcasts.length&&comp.broadcasts[0].names&&comp.broadcasts[0].names.length;
@@ -2511,6 +2574,8 @@ function processEvent(ev,tz){
     if(etDay===0&&isPT_time&&snfVal){lev+=snfVal;levLbl='SNF';isPrimetime=true;}
     else if(etDay===1&&isPT_time&&mnfVal){lev+=mnfVal;levLbl='MNF';isPrimetime=true;}
     else if(etDay===4&&isPT_time&&tnfVal){lev+=tnfVal;levLbl='TNF';isPrimetime=true;}
+    // TNF always on Prime Video — default to it if no broadcast detected
+    if(etDay===4&&isPT_time&&(watch==='Local'||watch==='TBD')){watch='Prime Video';isNat=false;}
     // Divisional
     var awayTeamData=null,homeTeamData=null;
     for(var i=0;i<LC.teams.length;i++){
@@ -2611,7 +2676,7 @@ function processEvent(ev,tz){
 
   return{
     homeAbbr:hd.abbr,awayAbbr:ad.abbr,homeEspn:hd.espn,awayEspn:ad.espn,
-    homeLogo:home.team.logo,awayLogo:away.team.logo,
+    homeLogo:homeLogo,awayLogo:awayLogo,
     awayRec:away.records&&away.records[0]?away.records[0].summary:'',
     homeRec:home.records&&home.records[0]?home.records[0].summary:'',
     homeElo:hd.elo,awayElo:ad.elo,combined:combined,
@@ -2719,25 +2784,26 @@ function renderCards(games){
     }
     return'<div class="game-card">'+
       '<div class="game-card-header">'+
-        '<span class="rank-dot" style="background:'+g.dotColor+'"></span>'+
+        '<span class="rank-dot" style="background:'+g.dotColor+';border:'+getMedalBorder(rank)+'"></span>'+
         '<span class="game-rank-num" style="background:'+rc+';">#'+rank+'</span>'+
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
-        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.awayDots)+'</div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div></div>'+
+        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||LC.logo(g.awayEspn))+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.awayDots,g.dotColor)+'</div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div></div>'+
         '<div class="g-mid">'+
           dateTimeLine+badge+seriesBlock+
           '<div class="g-stars">'+starsHtml(g.totalStars,g.flame)+'</div>'+
           '<div class="g-combined">'+g.total+'</div>'+
           bonuses+
         '</div>'+
-        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.homeDots)+'</div>'+'<div class="g-elo">'+(g.homeElo||'')+'</div></div>'+
+        '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||LC.logo(g.homeEspn))+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+'<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+'<div class="g-dots">'+dotsHtml(g.homeDots,g.dotColor)+'</div>'+'<div class="g-elo">'+(g.homeElo||'')+'</div></div>'+
       '</div>'+
     '</div>';
   }).join('');
 }
 
 function applyAndLoad(){
+  switchTab('games');
   if(dateMode==='range')loadRange();
   else if(currentLeague==='nfl')loadGames();
   else loadSingle();
@@ -2753,6 +2819,7 @@ function getTz(){
 // ALL-TAB MULTI-SPORT FETCH
 // ════════════════════════════════════════════════════════════
 function loadAllGames(callback){
+  if(DEMO_MODE){loadGames(callback);return;}
   var el=document.getElementById('games-content');
   if(el)el.innerHTML='<div class="loading">loading all sports...</div>';
   var noteEl=document.getElementById('games-note');
@@ -2859,7 +2926,7 @@ function finishAllLoad(games,callback){
     // Tiebreaker: soonest game first
     return(a.utcMs||0)-(b.utcMs||0);
   });
-  games.forEach(function(g,i){g.dotColor=getDotColor(i);});
+  games.forEach(function(g,i){g.dotColor=getDotColor(i,g._league||currentLeague);g._rank=i+1;});
   lastGames=games;
   var el=document.getElementById('games-content');
   if(!games.length){
@@ -2906,7 +2973,7 @@ function renderAllCard(g,i){
   }
   return'<div class="game-card">'+
     '<div class="game-card-header">'+
-      '<span class="rank-dot" style="background:'+g.dotColor+'"></span>'+
+      '<span class="rank-dot" style="background:'+g.dotColor+';border:'+getMedalBorder(rank)+'"></span>'+
       '<span class="game-rank-num" style="background:'+rc+';">#'+rank+'</span>'+
       sportTag+
       (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn">📅 add to gcal</a>':'')+
@@ -2914,18 +2981,27 @@ function renderAllCard(g,i){
     '<div class="game-teams">'+
       '<div class="g-team"><div class="logo-wrap"><img src="'+(g.awayLogo||'')+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
         '<div class="g-abbr">'+g.awayAbbr+'</div>'+(g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
-        '<div class="g-dots">'+dotsHtml(g.awayDots)+'</div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div></div>'+
+        '<div class="g-dots">'+dotsHtml(g.awayDots,g.dotColor)+'</div>'+'<div class="g-elo">'+(g.awayElo||'')+'</div></div>'+
       '<div class="g-mid">'+dateTimeLine+badge+seriesBlock+
         '<div class="g-stars">'+starsHtmlAll(g.totalStars,g.flame)+'</div>'+
         '<div class="g-combined">'+g.total+'</div>'+bonuses+'</div>'+
       '<div class="g-team"><div class="logo-wrap"><img src="'+(g.homeLogo||'')+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
         '<div class="g-abbr">'+g.homeAbbr+'</div>'+(g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
-        '<div class="g-dots">'+dotsHtml(g.homeDots)+'</div>'+'<div class="g-elo">'+(g.homeElo||'')+'</div></div>'+
+        '<div class="g-dots">'+dotsHtml(g.homeDots,g.dotColor)+'</div>'+'<div class="g-elo">'+(g.homeElo||'')+'</div></div>'+
     '</div>'+
   '</div>';
 }
 
 function loadGames(callback){
+  if(DEMO_MODE){
+    var games=DEMO_GAMES.filter(function(g){return currentLeague==='all'||g._league===currentLeague;});
+    games=applyFilters(games);
+    games.forEach(function(g,i){g.dotColor=getDotColor(i,g._league);g._rank=i+1;});
+    lastGames=games;renderCards(games);
+    document.getElementById('games-note').textContent=games.length+' demo games';
+    if(callback)callback();
+    return;
+  }
   if(currentLeague==='all'){loadAllGames(callback);return;}
   var el=document.getElementById('games-content');
   el.innerHTML='<div class="loading">loading games...</div>';
@@ -2978,7 +3054,7 @@ function loadGames(callback){
         var cp=(bonusScore-combMin)/(combMax-combMin);
         g.totalStars=cp>=0.8?5:cp>=0.6?4:cp>=0.4?3:cp>=0.2?2:1;
         g.flame=cp>=0.95||g.flame; // preserve processEvent flame if already set
-        g.dotColor=getDotColor(i);
+        g.dotColor=getDotColor(i,g._league||currentLeague);g._rank=i+1;
         // Update recordCache from live game data
         if(!window.recordCache)window.recordCache={};
         if(g.awayRec&&g.awayRec!=='0-0'){window.recordCache[(g._league||currentLeague)+'_'+g.awayAbbr]=g.awayRec;}
@@ -3068,7 +3144,7 @@ function loadRange(){
     if(i>=dates.length){
       var games=applyFilters(all);
       games=sortGames(games);
-      games.forEach(function(g,idx){g.dotColor=getDotColor(idx);});
+      games.forEach(function(g,idx){g.dotColor=getDotColor(idx,g._league||currentLeague);g._rank=idx+1;});
       lastGames=games;renderCards(games);
       document.getElementById('games-note').textContent=games.length+' games · '+days+' days · ranked by elo';
       return;
@@ -3117,9 +3193,13 @@ function buildMapChart(){
   }
   function lds(pts,c,d,w){return{type:'scatter',data:pts,borderColor:c,backgroundColor:'transparent',pointRadius:0,pointHoverRadius:0,showLine:true,borderDash:d,borderWidth:w,label:'_'};}
   var dots=lastGames.map(function(g,i){
+    var rank=i+1;
+    var medalColor=rank===1?'#BA7517':rank===2?'#9A9A9A':rank===3?'#7A5230':g.dotColor;
+    var borderWidth=rank<=3?5:1.5;
     return{type:'scatter',data:[{x:g.awayElo,y:g.homeElo}],
-      backgroundColor:g.dotColor,borderColor:g.dotColor,
-      pointBackgroundColor:g.dotColor,pointBorderColor:g.dotColor,
+      backgroundColor:g.dotColor,borderColor:medalColor,
+      pointBackgroundColor:g.dotColor,pointBorderColor:medalColor,
+      pointBorderWidth:borderWidth,
       pointRadius:14,pointHoverRadius:17,showLine:false,
       label:(i+1)+'. '+g.awayAbbr+' @ '+g.homeAbbr};
   });
@@ -3163,7 +3243,8 @@ function buildMapChart(){
     }
   });
   document.getElementById('map-legend').innerHTML=lastGames.map(function(g,i){
-    return'<div class="leg-item" style="font-size:11px"><span class="leg-dot" style="background:'+g.dotColor+';width:10px;height:10px;display:inline-block;border-radius:50%;flex-shrink:0"></span>'+(i+1)+'. '+g.awayAbbr+' @ '+g.homeAbbr+'</div>';
+    var medalBorder=i===0?'2.5px solid #BA7517':i===1?'2.5px solid #9A9A9A':i===2?'2.5px solid #7A5230':'1px solid '+g.dotColor;
+    return'<div class="leg-item" style="font-size:11px"><span class="leg-dot" style="background:'+g.dotColor+';width:10px;height:10px;display:inline-block;border-radius:50%;flex-shrink:0;box-sizing:border-box;border:'+medalBorder+'"></span>'+(i+1)+'. '+g.awayAbbr+' @ '+g.homeAbbr+'</div>';
   }).join('');
 }
 
@@ -3242,21 +3323,37 @@ function setSportFilter(val){
   else if(val==='big4')includeSports=BIG4.slice();
   else if(val==='basketball')includeSports=BBALL.slice();
   else if(val==='soccer')includeSports=SOCCER.slice();
-  // custom: don't change includeSports, let user toggle manually
-  // Update preset pills
+  // Sync to tierSports
+  ALL_SPORTS.forEach(function(s){tierSports[s]=includeSports.indexOf(s)>=0;});
+  // Update preset pills on both tabs
   document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(el){
     el.classList.toggle('on',el.dataset.sportval===val);
   });
+  document.querySelectorAll('[data-tcat]').forEach(function(el){
+    el.classList.toggle('on',el.dataset.tcat===val);
+  });
+  var cp=document.getElementById('tier-custom-pill');if(cp)cp.classList.toggle('on',val==='custom');
   renderSportPills();
+  document.querySelectorAll('#tier-sport-filter .sport-pill').forEach(function(el){
+    el.classList.toggle('on',tierSports[el.dataset.ts]!==false);
+  });
   if(val!=='custom')loadAllGames();
 }
 function toggleSport(sport, el){
   var idx=includeSports.indexOf(sport);
   if(idx>=0){includeSports.splice(idx,1);}
   else{includeSports.push(sport);}
-  // Switch preset to 'custom'
+  // Sync to tierSports
+  tierSports[sport]=includeSports.indexOf(sport)>=0;
+  // Mark both sides as custom
   document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(el){
     el.classList.toggle('on',el.dataset.sportval==='custom');
+  });
+  document.querySelectorAll('[data-tcat]').forEach(function(p){p.classList.remove('on');});
+  var cp=document.getElementById('tier-custom-pill');if(cp)cp.classList.add('on');
+  // Update elo tab pill
+  document.querySelectorAll('#tier-sport-filter .sport-pill[data-ts="'+sport+'"]').forEach(function(p){
+    p.classList.toggle('on',tierSports[sport]);
   });
   renderSportPills();
   loadAllGames();
@@ -3323,7 +3420,7 @@ var SPORT_CATS={
     {lg:'wnba',label:'WNBA',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png'}
   ],
   soccer:[
-    {lg:'epl',label:'EPL',logo:'https://a.espncdn.com/i/teamlogos/soccer/500/706.png'},
+    {lg:'epl',label:'EPL',logo:'https://a.espncdn.com/i/leaguelogos/soccer/500/23.png'},
     {lg:'mls',label:'MLS',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png'}
   ],
   football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'}],
@@ -3342,9 +3439,6 @@ document.addEventListener('click',function(e){
 function selectSportCat(cat){
   var wasOpen=document.getElementById('lgpop-'+cat)&&document.getElementById('lgpop-'+cat).classList.contains('open');
   closeAllPopups();
-  document.querySelectorAll('.sport-nav-btn').forEach(function(b){b.classList.remove('active');});
-  var catBtn=document.getElementById('lgcat-'+cat)||document.getElementById('lgbtn-all');
-  if(catBtn)catBtn.classList.add('active');
   if(cat==='all'){currentSportCat=null;switchLeague('all');return;}
   // Toggle: clicking active cat again closes it
   if(wasOpen){return;}
@@ -3384,11 +3478,12 @@ function switchLeague(lg){
   // theme color
   var themes={
     nba:  {amber:'#C8102E', amberDark:'#9a0c23', blue:'#185FA5', blueLight:'#E6F1FB'},
-    wnba: {amber:'#FF8C00', amberDark:'#CC6F00', blue:'#185FA5', blueLight:'#E6F1FB'},
-    epl:  {amber:'#7c3aed', amberDark:'#5b21b6', blue:'#185FA5', blueLight:'#E6F1FB'},
-    mlb:  {amber:'#1a7a2e', amberDark:'#155a22', blue:'#185FA5', blueLight:'#E6F1FB'},
-    nhl:  {amber:'#6b7280', amberDark:'#4b5563', blue:'#185FA5', blueLight:'#E6F1FB'},
-    nfl:  {amber:'#185FA5', amberDark:'#0D4070', blue:'#185FA5', blueLight:'#E6F1FB'},
+    wnba: {amber:'#E8892A', amberDark:'#b56616', blue:'#185FA5', blueLight:'#E6F1FB'},
+    epl:  {amber:'#3D7A5C', amberDark:'#2a5740', blue:'#185FA5', blueLight:'#E6F1FB'},
+    mlb:  {amber:'#A0603A', amberDark:'#7a4528', blue:'#185FA5', blueLight:'#E6F1FB'},
+    nhl:  {amber:'#4E8A9E', amberDark:'#376478', blue:'#185FA5', blueLight:'#E6F1FB'},
+    nfl:  {amber:'#3A5A8C', amberDark:'#274068', blue:'#185FA5', blueLight:'#E6F1FB'},
+    mls:  {amber:'#5E9E72', amberDark:'#3f7451', blue:'#185FA5', blueLight:'#E6F1FB'},
     all:  {amber:'#BA7517', amberDark:'#854F0B', blue:'#185FA5', blueLight:'#E6F1FB'},
   };
   var t=themes[lg]||themes.nba;
@@ -3553,7 +3648,7 @@ var RECORD_NORM={
   mlb:{'WSH':'WSN','CWS':'CWS','CHW':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
   nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'},
   nfl:{'JAC':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','DAL':'DAL','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA','JAX':'JAX'},
-  mls:{'ATL':'ATL','CLT':'CLT','CHI':'CHI','CIN':'CIN','MTL':'MTL','DC':'DC','MIA':'MIA','NSH':'NSH','NE':'NE','NYC':'NYCFC','NYCFC':'NYCFC','NYRB':'NYRB','NY':'NYRB','ORL':'ORL','PHI':'PHI','TOR':'TOR','ATX':'ATX','COL':'COL','DAL':'DAL','HOU':'HOU','LA':'LA','LAFC':'LAFC','MIN':'MIN','POR':'POR','RSL':'RSL','SJ':'SJ','SEA':'SEA','SKC':'SKC','STL':'STL','VAN':'VAN','SD':'SD','UTA':'UTA'},
+  mls:{'ATL':'ATL','CLT':'CLT','CHI':'CHI','CIN':'CIN','MTL':'MTL','DC':'DC','MIA':'MIA','NSH':'NSH','NE':'NE','NYC':'NYCFC','NYCFC':'NYCFC','NYRB':'NYRB','NY':'NYRB','CLB':'CLB','CLU':'CLB','COL2':'CLB','ORL':'ORL','PHI':'PHI','TOR':'TOR','ATX':'ATX','COL':'COL','DAL':'DAL','HOU':'HOU','LA':'LA','LAFC':'LAFC','MIN':'MIN','POR':'POR','RSL':'RSL','SJ':'SJ','SEA':'SEA','SKC':'SKC','STL':'STL','VAN':'VAN','SD':'SD'},
   epl:{'ARS':'ARS','MNC':'MCI','MAN':'MUN','LIV':'LIV','AVL':'AVL','BOU':'BOU','BHA':'BHA','BRE':'BRE','CHE':'CHE','EVE':'EVE','FUL':'FUL','SUN':'SUN','NEW':'NEW','LEE':'LEE','CRY':'CRY','NFO':'NFO','TOT':'TOT','WHU':'WHU','BUR':'BUR','WOL':'WOL'},
 };
 
