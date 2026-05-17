@@ -826,7 +826,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.20', vdate: '2026-05-12',
+    title: 'EPL', version: 'epl.v3.21', vdate: '2026-05-17',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -875,7 +875,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mls: {
-    title: 'MLS', version: 'mls.v1.3', vdate: '2026-05-17',
+    title: 'MLS', version: 'mls.v1.4', vdate: '2026-05-17',
     icon: '⚽',
     storageKey: 'mls',
     sport: 'soccer', league: 'usa.1',
@@ -1413,6 +1413,7 @@ function toggleTierSport(sport,el){
   tierSports[sport]=!tierSports[sport];
   document.querySelectorAll('[data-tcat]').forEach(function(p){p.classList.remove('on');});
   var cp=document.getElementById('tier-custom-pill');if(cp)cp.classList.add('on');
+  document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(p){p.classList.toggle('on',p.dataset.sportval==='custom');});
   syncSportFilters();
   renderTierRankings();
 }
@@ -1625,15 +1626,64 @@ function rankByRecord(){
         'LIV':'LIV','MCI':'MCI','MUN':'MUN','MANU':'MUN','MAN UTD':'MUN','NEW':'NEW',
         'NFO':'NFO','NOT':'NFO','TOT':'TOT','WHU':'WHU','WOL':'WOL'
       };
-      var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:NORM_NBA;
+      var NORM_MLS_NAME={
+        'Atlanta United FC':'ATL','Atlanta United':'ATL',
+        'Charlotte FC':'CLT',
+        'Chicago Fire FC':'CHI','Chicago Fire':'CHI',
+        'FC Cincinnati':'CIN',
+        'CF Montréal':'MTL','CF Montreal':'MTL','Montreal Impact':'MTL',
+        'D.C. United':'DC','DC United':'DC',
+        'Inter Miami CF':'MIA','Inter Miami':'MIA',
+        'Nashville SC':'NSH',
+        'New England Revolution':'NE',
+        'New York City FC':'NYCFC','NYCFC':'NYCFC',
+        'New York Red Bulls':'NYRB','Red Bull New York':'NYRB','NY Red Bulls':'NYRB',
+        'Orlando City SC':'ORL','Orlando City':'ORL',
+        'Philadelphia Union':'PHI',
+        'Toronto FC':'TOR',
+        'Columbus Crew':'CLB','Columbus Crew SC':'CLB',
+        'Austin FC':'ATX',
+        'Colorado Rapids':'COL',
+        'FC Dallas':'DAL',
+        'Houston Dynamo FC':'HOU','Houston Dynamo':'HOU',
+        'LA Galaxy':'LA','Los Angeles Galaxy':'LA',
+        'LAFC':'LAFC','Los Angeles FC':'LAFC',
+        'Minnesota United FC':'MIN','Minnesota United':'MIN',
+        'Portland Timbers':'POR',
+        'Real Salt Lake':'RSL',
+        'San Jose Earthquakes':'SJ',
+        'Seattle Sounders FC':'SEA','Seattle Sounders':'SEA',
+        'Sporting Kansas City':'SKC',
+        'St. Louis City SC':'STL','St. Louis City':'STL',
+        'Vancouver Whitecaps FC':'VAN','Vancouver Whitecaps':'VAN',
+        'San Diego FC':'SD',
+        'ATL':'ATL','CLT':'CLT','CHI':'CHI','CIN':'CIN','MTL':'MTL','DC':'DC',
+        'MIA':'MIA','NSH':'NSH','NE':'NE','NYC':'NYCFC','NYCFC':'NYCFC',
+        'NYRB':'NYRB','ORL':'ORL','PHI':'PHI','TOR':'TOR','CLB':'CLB',
+        'ATX':'ATX','COL':'COL','DAL':'DAL','HOU':'HOU','LA':'LA','LAFC':'LAFC',
+        'MIN':'MIN','POR':'POR','RSL':'RSL','SJ':'SJ','SEA':'SEA','SKC':'SKC',
+        'STL':'STL','VAN':'VAN','SD':'SD',
+      };
+      var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:currentLeague==='mls'?NORM_MLS_NAME:NORM_NBA;
       // Soccer (EPL) standings are flat: data.standings.entries or data.children[0].standings.entries
       // Other sports: data.children[conf].children[div].standings.entries (NFL)
       //               data.children[conf].standings.entries (NBA/NHL)
       var allEntryGroups=[];
       if(LC.sport==='soccer'){
-        // Flat structure
-        var flat=(data.standings&&data.standings.entries)||(data.children&&data.children[0]&&data.children[0].standings&&data.children[0].standings.entries)||[];
-        allEntryGroups.push(flat);
+        // EPL is flat; MLS has children (Eastern/Western conferences)
+        var flat=(data.standings&&data.standings.entries)||[];
+        if(flat.length){
+          allEntryGroups.push(flat);
+        } else if(data.children&&data.children.length){
+          data.children.forEach(function(conf){
+            var confEntries=(conf.standings&&conf.standings.entries)||
+                            (conf.children&&conf.children[0]&&conf.children[0].standings&&conf.children[0].standings.entries)||[];
+            if(confEntries.length)allEntryGroups.push(confEntries);
+            else if(conf.children)conf.children.forEach(function(div){
+              allEntryGroups.push((div.standings||{}).entries||[]);
+            });
+          });
+        }
       } else {
         var confs=data.children||[data];
         confs.forEach(function(conf){
@@ -2393,7 +2443,7 @@ function renderFilterProfiles(){
 
 // ── GAME PROCESSING ──
 var lastGames=[];
-function getTeamData(name){
+function getTeamData(name, espnId){
   var lname=name.toLowerCase();
   // Soccer explicit display name map (ESPN sends full names, we use short names)
   if(LC.sport==='soccer'){
@@ -2422,6 +2472,12 @@ function getTeamData(name){
     if(SOCCER_MAP[lname]){
       var abbr=SOCCER_MAP[lname];
       var tm=LC.teams.find(function(t){return t.abbr===abbr;})||null;
+      if(tm)return{elo:ratings[tm.abbr]||LC.defaultElo,abbr:tm.abbr,espn:tm.espn};
+    }
+    // Fallback: match by ESPN team ID
+    if(espnId){
+      var tid=String(espnId);
+      var tm=LC.teams.find(function(t){return String(t.espn)===tid;})||null;
       if(tm)return{elo:ratings[tm.abbr]||LC.defaultElo,abbr:tm.abbr,espn:tm.espn};
     }
   }
@@ -2456,7 +2512,7 @@ function isNflPrimetime(watch, utcDate){
 function processEvent(ev,tz){
   var comp=ev.competitions[0];
   var home=comp.competitors[0],away=comp.competitors[1];
-  var hd=getTeamData(home.team.displayName),ad=getTeamData(away.team.displayName);
+  var hd=getTeamData(home.team.displayName, home.team.id), ad=getTeamData(away.team.displayName, away.team.id);
   var combined=hd.elo+ad.elo,utc=new Date(ev.date);
   // Extract logo: ESPN uses team.logo (most sports) or team.logos[0].href (soccer)
   function teamLogo(t){return t.logo||(t.logos&&t.logos[0]&&t.logos[0].href)||'';}
@@ -3680,19 +3736,53 @@ function normalizeRecordAbbr(sport,raw){
   };
   var NORM_EPL=RECORD_NORM.epl;
   var NORM_NFL=RECORD_NORM.nfl;
-  var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL,epl:NORM_EPL};
-  [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'baseball',league:'mlb'},{sport:'hockey',league:'nhl'},{sport:'football',league:'nfl'},{sport:'soccer',league:'eng.1',storageKey:'epl'}]
+  var NORM_MLS={
+    'Atlanta United FC':'ATL','Atlanta United':'ATL','Charlotte FC':'CLT',
+    'Chicago Fire FC':'CHI','Chicago Fire':'CHI','FC Cincinnati':'CIN',
+    'CF Montréal':'MTL','CF Montreal':'MTL','D.C. United':'DC','DC United':'DC',
+    'Inter Miami CF':'MIA','Inter Miami':'MIA','Nashville SC':'NSH',
+    'New England Revolution':'NE','New York City FC':'NYCFC','NYCFC':'NYCFC',
+    'New York Red Bulls':'NYRB','Red Bull New York':'NYRB',
+    'Orlando City SC':'ORL','Orlando City':'ORL','Philadelphia Union':'PHI',
+    'Toronto FC':'TOR','Columbus Crew':'CLB','Columbus Crew SC':'CLB',
+    'Austin FC':'ATX','Colorado Rapids':'COL','FC Dallas':'DAL',
+    'Houston Dynamo FC':'HOU','Houston Dynamo':'HOU',
+    'LA Galaxy':'LA','Los Angeles Galaxy':'LA','LAFC':'LAFC','Los Angeles FC':'LAFC',
+    'Minnesota United FC':'MIN','Minnesota United':'MIN','Portland Timbers':'POR',
+    'Real Salt Lake':'RSL','San Jose Earthquakes':'SJ',
+    'Seattle Sounders FC':'SEA','Seattle Sounders':'SEA',
+    'Sporting Kansas City':'SKC','St. Louis City SC':'STL','St. Louis City':'STL',
+    'Vancouver Whitecaps FC':'VAN','Vancouver Whitecaps':'VAN','San Diego FC':'SD',
+    'ATL':'ATL','CLT':'CLT','CHI':'CHI','CIN':'CIN','MTL':'MTL','DC':'DC',
+    'MIA':'MIA','NSH':'NSH','NE':'NE','NYC':'NYCFC','NYCFC':'NYCFC','NYRB':'NYRB',
+    'ORL':'ORL','PHI':'PHI','TOR':'TOR','CLB':'CLB','ATX':'ATX','COL':'COL',
+    'DAL':'DAL','HOU':'HOU','LA':'LA','LAFC':'LAFC','MIN':'MIN','POR':'POR',
+    'RSL':'RSL','SJ':'SJ','SEA':'SEA','SKC':'SKC','STL':'STL','VAN':'VAN','SD':'SD',
+  };
+  var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL,epl:NORM_EPL,'usa.1':NORM_MLS,mls:NORM_MLS};
+  [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'baseball',league:'mlb'},{sport:'hockey',league:'nhl'},{sport:'football',league:'nfl'},{sport:'soccer',league:'eng.1',storageKey:'epl'},{sport:'soccer',league:'usa.1',storageKey:'mls'}]
   .forEach(function(sp){
     var norm=NORMS[sp.league]||{};
     fetch('https://site.api.espn.com/apis/v2/sports/'+sp.sport+'/'+sp.league+'/standings')
     .then(function(r){return r.json();})
     .then(function(data){
       var entries=[];
-      // Soccer standings are flat; others are nested
+      // Soccer: EPL is flat, MLS has conference children
       var entryGroups=[];
       if(sp.sport==='soccer'){
-        var flat=(data.standings&&data.standings.entries)||(data.children&&data.children[0]&&data.children[0].standings&&data.children[0].standings.entries)||[];
-        entryGroups.push(flat);
+        var flat=(data.standings&&data.standings.entries)||[];
+        if(flat.length){
+          entryGroups.push(flat);
+        } else if(data.children&&data.children.length){
+          data.children.forEach(function(conf){
+            var confEntries=(conf.standings&&conf.standings.entries)||
+                            (conf.children&&conf.children[0]&&conf.children[0].standings&&conf.children[0].standings.entries)||[];
+            if(confEntries.length)entryGroups.push(confEntries);
+            else if(conf.children)conf.children.forEach(function(div){
+              entryGroups.push((div.standings||{}).entries||[]);
+            });
+          });
+        }
       } else {
         (data.children||[data]).forEach(function(conf){
           if(conf.children&&conf.children.length){
