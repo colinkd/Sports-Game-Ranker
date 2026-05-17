@@ -1122,7 +1122,7 @@ var DOT_TOP3=["#BA7517","#888780","#854F0B"]; // gold, silver, bronze
 var LEAGUE_DOT_COLORS={nba:'#C8102E',wnba:'#E8892A',epl:'#3D7A5C',mlb:'#A0603A',nhl:'#4E8A9E',nfl:'#3A5A8C',mls:'#5E9E72',all:'#BA7517'};
 function getDotColor(i,league){return LEAGUE_DOT_COLORS[league]||LEAGUE_DOT_COLORS.all;}
 function getMedalBorder(rank){if(rank===1)return'3px solid #BA7517';if(rank===2)return'3px solid #9A9A9A';if(rank===3)return'3px solid #7A5230';return'none';}
-function dotsHtml(n,color){var c=color||'#3B6D11';var h='';for(var i=0;i<5;i++)h+='<span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 1px;background:'+(i<n?c:'#D3D1C7')+'"></span>';return h;}
+function dotsHtml(n,color){var c=color||'#3B6D11';var h='';for(var i=0;i<5;i++)h+='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 1px;background:'+(i<n?c:'#D3D1C7')+'"></span>';return h;}
 var DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 // ── DEMO MODE ──
