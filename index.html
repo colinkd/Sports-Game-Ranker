@@ -219,7 +219,10 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 
 <!-- ══ LEAGUE SWITCHER ══ -->
 <header class="site-header">
-  <div class="site-title" id="site-title" onclick="selectSportCat('all');switchTab('games');" style="cursor:pointer">GAME RANKER</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="site-title" id="site-title" onclick="selectSportCat('all');switchTab('games');" style="cursor:pointer">GAME RANKER</div>
+    <button onclick="showWelcome(true)" style="font-family:var(--mono);font-size:10px;padding:2px 8px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s" title="about">?</button>
+  </div>
   <div onclick="var vp=document.getElementById('version-panel'),st=document.getElementById('subtitle-text');var showing=vp.style.display==='block';vp.style.display=showing?'none':'block';st.style.display=showing?'block':'none';"
        style="text-align:right;cursor:pointer;user-select:none;flex-shrink:0;height:2.8em;display:flex;align-items:center;justify-content:flex-end">
     <div id="subtitle-text" style="font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">find the perfect matchups<br/>powered by your picks</div>
@@ -1210,7 +1213,7 @@ function getTierLabel(abbr){
 
 function getAllTeamTierRankings(){
   var all=[];
-  ['nba','wnba','mlb','nhl','nfl','epl'].forEach(function(lg){
+  ['nba','wnba','mlb','nhl','nfl','epl','mls'].forEach(function(lg){
     LEAGUE_CONFIGS[lg].teams.forEach(function(t){
       var ta=t.tierAbbr||lg+'_'+t.abbr;
       all.push({abbr:t.abbr,tierAbbr:ta,name:t.name,league:lg,logo:LEAGUE_CONFIGS[lg].logo(t.espn),elo:tierElo[ta]||TIER_DEFAULT});
@@ -2388,7 +2391,17 @@ function applyFilterState(s){
   setStarPicker('stars-min-picker',+(s.starsMin||1));setStarPicker('stars-max-picker',+(s.starsMax||5));
   setDotPicker('dots-min-picker',+(s.dotsMin||1));setDotPicker('dots-max-picker',+(s.dotsMax||5));
   includeTeams=s.includeTeams||[];excludeTeams=s.excludeTeams||[];renderTeamBubbles();
-  if(s.includeSports&&currentLeague==='all'){includeSports=s.includeSports;document.querySelectorAll('#sport-pill-wrap .sport-pill').forEach(function(el){el.classList.toggle('on',includeSports.indexOf(el.dataset.sport)>=0);});}
+  if(s.includeSports&&currentLeague==='all'){
+    includeSports=s.includeSports;
+    var ALL_S=['nba','wnba','nfl','nhl','mlb','epl','mls'];
+    ALL_S.forEach(function(sp){tierSports[sp]=includeSports.indexOf(sp)>=0;});
+    document.querySelectorAll('#sport-pill-wrap .sport-pill').forEach(function(el){el.classList.toggle('on',includeSports.indexOf(el.dataset.sport)>=0);});
+    document.querySelectorAll('#tier-sport-filter .sport-pill').forEach(function(el){el.classList.toggle('on',tierSports[el.dataset.ts]!==false);});
+    // Mark category pills as custom since a saved profile is a custom set
+    document.querySelectorAll('#sport-filter-card .pill[data-sportval]').forEach(function(el){el.classList.toggle('on',el.dataset.sportval==='custom');});
+    document.querySelectorAll('[data-tcat]').forEach(function(p){p.classList.remove('on');});
+    var cp=document.getElementById('tier-custom-pill');if(cp)cp.classList.add('on');
+  }
   enabledNets=Object.assign({},s.enabledNets||enabledNets);
   enabledDows=Object.assign({},s.enabledDows||enabledDows);
   try{if(s.bcastCats)bcastCats=JSON.parse(s.bcastCats);}catch(e){}
@@ -2443,8 +2456,13 @@ function renderFilterProfiles(){
 
 // ── GAME PROCESSING ──
 var lastGames=[];
-function getTeamData(name, espnId){
+function getTeamData(name, espnId, abbr){
   var lname=name.toLowerCase();
+  // Step 0: direct abbreviation match (ESPN sends e.g. "BUF" which matches our abbr)
+  if(abbr){
+    var tm=LC.teams.find(function(t){return t.abbr===abbr;});
+    if(tm)return{elo:ratings[tm.abbr]||LC.defaultElo,abbr:tm.abbr,espn:tm.espn};
+  }
   // Soccer explicit display name map (ESPN sends full names, we use short names)
   if(LC.sport==='soccer'){
     var SOCCER_MAP={
@@ -2512,7 +2530,7 @@ function isNflPrimetime(watch, utcDate){
 function processEvent(ev,tz){
   var comp=ev.competitions[0];
   var home=comp.competitors[0],away=comp.competitors[1];
-  var hd=getTeamData(home.team.displayName, home.team.id), ad=getTeamData(away.team.displayName, away.team.id);
+  var hd=getTeamData(home.team.displayName, home.team.id, home.team.abbreviation), ad=getTeamData(away.team.displayName, away.team.id, away.team.abbreviation);
   var combined=hd.elo+ad.elo,utc=new Date(ev.date);
   // Extract logo: ESPN uses team.logo (most sports) or team.logos[0].href (soccer)
   function teamLogo(t){return t.logo||(t.logos&&t.logos[0]&&t.logos[0].href)||'';}
@@ -3852,8 +3870,9 @@ document.getElementById('w-dt-on').checked=true;
 updateStates();
 
 // ── WELCOME MODAL ──
-(function(){
-  try{if(localStorage.getItem('ranker_welcome_seen')==='1')return;}catch(e){}
+function showWelcome(force){
+  if(!force){try{if(localStorage.getItem('ranker_welcome_seen')==='1')return;}catch(e){}}
+  if(document.getElementById('welcome-overlay'))return;
   var overlay=document.createElement('div');
   overlay.id='welcome-overlay';
   overlay.innerHTML=`
@@ -3867,7 +3886,7 @@ updateStates();
         </div>
         <div class="welcome-section">
           <div class="welcome-section-title">🟢 dots</div>
-          <p>The dots under each team show their within-sport rank — 5 dots = top 20% of teams in that league.</p>
+          <p>The dots under each team show their within-sport rank — 5 dots = top 20% of teams in that league. Colors correspond to each league.</p>
         </div>
         <div class="welcome-section">
           <div class="welcome-section-title">⭐ stars & flames</div>
@@ -3884,6 +3903,10 @@ updateStates();
         <div class="welcome-section">
           <div class="welcome-section-title">starting from scratch</div>
           <p>Want to reset a sport entirely? In the <strong>elo ratings</strong> tab, use <strong>reset all to 1200</strong> to set every team to the default midpoint — or enter any value you like before resetting. From there you can sort by record or start ranking matchups fresh.</p>
+        </div>
+        <div class="welcome-section">
+          <div class="welcome-section-title">💬 feedback & bugs</div>
+          <p>Found a bug, missing team, or have a feature request? <a href="https://github.com/colinkd/Sports-Game-Ranker/issues/new" target="_blank" style="color:var(--amber)">Open a GitHub issue</a> — it's the best way to track things.</p>
         </div>
       </div>
       <div id="welcome-footer">
@@ -3909,7 +3932,8 @@ updateStates();
     #welcome-btn:hover{opacity:0.88;}
   `;
   document.head.appendChild(style);
-})();
+}
+showWelcome();
 
 function closeWelcome(){
   try{if(document.getElementById('welcome-dsa-chk').checked)localStorage.setItem('ranker_welcome_seen','1');}catch(e){}
