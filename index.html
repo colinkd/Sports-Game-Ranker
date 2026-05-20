@@ -2687,11 +2687,11 @@ function getTeamData(name, espnId, abbr){
       // Bundesliga
       'MUN':'BAY','BMU':'BAY','FCB':'BAY','VFB':'STU','RB':'RBL',
       // Ligue 1 — ESPN uses longer/different abbrs
-      'OLM':'OL','LILL':'LIL','METZ':'MET',
+      'OLM':'OL','LILL':'LIL','METZ':'MET','NICE':'NIC','MARS':'OM','BRES':'BRE','NANT':'NAN','RENN':'REN',
       // La Liga
       'MLL':'MAL','REA':'RMA','ATL':'ATM','SOC':'RSO',
       // Serie A
-      'VNA':'VER','ACM':'MIL','AC':'MIL',
+      'VNA':'VER','ACM':'MIL','AC':'MIL','ROMA':'ROM','COMO':'COM',
     };
     if(SOCCER_ABBR_NORM[abbr])abbr=SOCCER_ABBR_NORM[abbr];
   }
@@ -2801,6 +2801,7 @@ function getTeamData(name, espnId, abbr){
   if(firstMatches.length===1){var t=firstMatches[0];return{elo:ratings[t.abbr]||LC.defaultElo,abbr:t.abbr,espn:t.espn};}
   // 5. fallback
   if(LC.sport==='soccer')console.warn('[soccer getTeamData] no match for:',name);
+  if(LC.sport==='soccer')console.log('[getTeamData unresolved] name='+name+' id='+espnId+' abbr_in='+abbr);
   return{elo:LC.defaultElo,abbr:name.substring(0,3).toUpperCase(),espn:''};
 }
 function isNflPrimetime(watch, utcDate){
@@ -2822,8 +2823,8 @@ function processEvent(ev,tz){
     if(LC.sport==='soccer'&&teamData&&teamData.espn){return LC.logo(teamData.espn);}
     return t.logo||(t.logos&&t.logos[0]&&t.logos[0].href)||'';
   }
-  var homeLogo=teamLogo(home.team,hd)||LC.logo(hd.espn);
-  var awayLogo=teamLogo(away.team,ad)||LC.logo(ad.espn);
+  var homeLogo=teamLogo(home.team,hd)||(hd.espn?LC.logo(hd.espn):'');
+  var awayLogo=teamLogo(away.team,ad)||(ad.espn?LC.logo(ad.espn):'');
 
   var watch=LC.showLeaguePass?'League Pass':'Local',isNat=false,watchTBD=false;
   var hasBroadcast=comp.broadcasts&&comp.broadcasts.length&&comp.broadcasts[0].names&&comp.broadcasts[0].names.length;
@@ -4126,7 +4127,7 @@ var RECORD_NORM={
     'MIL':'MIL','ACM':'MIL','AC':'MIL',               // AC Milan
     'NAP':'NAP',                                       // Napoli
     'ATA':'ATA',                                       // Atalanta
-    'ROM':'ROM',                                       // AS Roma
+    'ROM':'ROM','ROMA':'ROM',                          // AS Roma
     'LAZ':'LAZ',                                       // Lazio
     'FIO':'FIO',                                       // Fiorentina
     'BOL':'BOL',                                       // Bologna
@@ -4134,7 +4135,7 @@ var RECORD_NORM={
     'UDI':'UDI',                                       // Udinese
     'GEN':'GEN',                                       // Genoa
     'LEC':'LEC',                                       // Lecce
-    'COM':'COM',                                       // Como
+    'COM':'COM','COMO':'COM',                          // Como
     'PAR':'PAR',                                       // Parma
     'SAS':'SAS',                                       // Sassuolo
     'CAG':'CAG',                                       // Cagliari
@@ -4145,20 +4146,20 @@ var RECORD_NORM={
   ligue1:{
     'PSG':'PSG',                                       // Paris Saint-Germain
     'RCL':'RCL','LEN':'RCL',                           // Lens
-    'OM':'OM','MAR':'OM',                              // Marseille
+    'OM':'OM','MAR':'OM','MARS':'OM',                 // Marseille
     'LIL':'LIL','LILL':'LIL',                          // Lille (ESPN uses LILL!)
     'OL':'OL','OLM':'OL','LYO':'OL',                  // Lyon (ESPN uses OLM!)
-    'REN':'REN',                                       // Rennes
+    'REN':'REN','RENN':'REN',                          // Rennes
     'ASM':'ASM','MON':'ASM',                           // Monaco
     'RCS':'RCS','STR':'RCS',                           // Strasbourg
     'FCL':'FCL','LOR':'FCL',                           // Lorient
     'TFC':'TFC','TOU':'TFC',                           // Toulouse
     'PAR':'PAR','PFC':'PAR',                           // Paris FC
-    'BRE':'BRE',                                       // Brest
+    'BRE':'BRE','BRES':'BRE',                          // Brest
     'SCO':'SCO','ANG':'SCO',                           // Angers
     'HAC':'HAC',                                       // Le Havre
-    'NIC':'NIC',                                       // Nice
-    'NAN':'NAN',                                       // Nantes
+    'NIC':'NIC','NICE':'NIC',                          // Nice (ESPN uses NICE!)
+    'NAN':'NAN','NANT':'NAN',                          // Nantes
     'AJA':'AJA','AUX':'AJA',                           // Auxerre
     'MET':'MET','METZ':'MET',                          // Metz (ESPN uses METZ!)
   },
@@ -4236,8 +4237,8 @@ function normalizeRecordAbbr(sport,raw){
     'KOE':'KOE','KLN':'KOE','COL':'KOE',              // FC Köln
     'STP':'STP','PAU':'STP',                           // St. Pauli
   };
-  var NORM_SERIEA={'INT':'INT','JUV':'JUV','MIL':'MIL','ACM':'MIL','AC':'MIL','NAP':'NAP','ATA':'ATA','ROM':'ROM','LAZ':'LAZ','FIO':'FIO','BOL':'BOL','TOR':'TOR','UDI':'UDI','GEN':'GEN','LEC':'LEC','COM':'COM','PAR':'PAR','SAS':'SAS','CAG':'CAG','PIS':'PIS','PISA':'PIS','CRE':'CRE','VER':'VER','VNA':'VER','HEL':'VER'};
-  var NORM_LIGUE1={'PSG':'PSG','RCL':'RCL','LEN':'RCL','OM':'OM','MAR':'OM','LIL':'LIL','LILL':'LIL','OL':'OL','OLM':'OL','LYO':'OL','REN':'REN','ASM':'ASM','MON':'ASM','RCS':'RCS','STR':'RCS','FCL':'FCL','LOR':'FCL','TFC':'TFC','TOU':'TFC','PAR':'PAR','PFC':'PAR','BRE':'BRE','SCO':'SCO','ANG':'SCO','HAC':'HAC','NIC':'NIC','NAN':'NAN','AJA':'AJA','AUX':'AJA','MET':'MET','METZ':'MET'};
+  var NORM_SERIEA={'INT':'INT','JUV':'JUV','MIL':'MIL','ACM':'MIL','AC':'MIL','NAP':'NAP','ATA':'ATA','ROM':'ROM','ROMA':'ROM','LAZ':'LAZ','FIO':'FIO','BOL':'BOL','TOR':'TOR','UDI':'UDI','GEN':'GEN','LEC':'LEC','COM':'COM','COMO':'COM','PAR':'PAR','SAS':'SAS','CAG':'CAG','PIS':'PIS','PISA':'PIS','CRE':'CRE','VER':'VER','VNA':'VER','HEL':'VER'};
+  var NORM_LIGUE1={'PSG':'PSG','RCL':'RCL','LEN':'RCL','OM':'OM','MAR':'OM','MARS':'OM','OLM':'OL','LIL':'LIL','LILL':'LIL','OL':'OL','LYO':'OL','REN':'REN','RENN':'REN','ASM':'ASM','MON':'ASM','RCS':'RCS','STR':'RCS','FCL':'FCL','LOR':'FCL','TFC':'TFC','TOU':'TFC','PAR':'PAR','PFC':'PAR','BRE':'BRE','BRES':'BRE','SCO':'SCO','ANG':'SCO','HAC':'HAC','NIC':'NIC','NICE':'NIC','NAN':'NAN','NANT':'NAN','AJA':'AJA','AUX':'AJA','MET':'MET','METZ':'MET'};
   var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL,epl:NORM_EPL,'usa.1':NORM_MLS,mls:NORM_MLS,'esp.1':NORM_LALIGA,laliga:NORM_LALIGA,'ger.1':NORM_BUNDESLIGA,bundesliga:NORM_BUNDESLIGA,'ita.1':NORM_SERIEA,seriea:NORM_SERIEA,'fra.1':NORM_LIGUE1,ligue1:NORM_LIGUE1};
   // Log league logo URLs from first game load to find ESPN CDN IDs
   // These will appear in DevTools console as [leaguelogo] entries
@@ -4281,10 +4282,11 @@ function normalizeRecordAbbr(sport,raw){
           if(sp.sport==='soccer'&&sp.league!=='eng.1')console.log('['+sp.league+' standings] raw='+raw+' -> abbr='+abbr+'  id='+(e.team||{}).id);
           var wins=0,losses=0,otl=0,draws=0;
           (e.stats||[]).forEach(function(s){
-            if(s.name==='wins')wins=+s.value;
-            if(s.name==='losses')losses=+s.value;
-            if(s.name==='ties'||s.name==='draws')draws=+s.value;
-            if(s.name==='otLosses'||s.name==='overtimeLosses')otl=+s.value;
+            var n=s.name;
+            if(n==='wins'||n==='gamesWon'||n==='won')wins=+s.value;
+            if(n==='losses'||n==='gamesLost'||n==='lost'||n==='defeated')losses=+s.value;
+            if(n==='ties'||n==='draws'||n==='drawn'||n==='gamesTied'||n==='tied')draws=+s.value;
+            if(n==='otLosses'||n==='overtimeLosses')otl=+s.value;
           });
           if(abbr&&(wins+losses+draws+otl>0)){
             var rec=(sp.sport==='soccer')?(wins+'-'+draws+'-'+losses):sp.league==='nhl'&&otl>0?wins+'-'+losses+'-'+otl:wins+'-'+losses;
