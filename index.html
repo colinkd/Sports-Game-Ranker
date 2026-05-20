@@ -3253,6 +3253,18 @@ function loadAllGames(callback){
     var timer=setTimeout(function(){if(!done){done=true;onDone();}},12000);
     fetch(url).then(function(r){return r.json();})
       .then(function(data){
+        // Capture league logo from scoreboard response for soccer leagues
+        if(sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls'){
+          var lgData=(data.leagues&&data.leagues[0])||{};
+          var lgLogos=lgData.logos||[];
+          var lgLogo=lgLogos[0]&&lgLogos[0].href;
+          if(lgLogo){
+            console.log('[leaguelogo] '+sp.key+' = '+lgLogo);
+            SPORT_CATS.soccer.forEach(function(entry){
+              if(entry.lg===sp.key)entry.logo=lgLogo;
+            });
+          }
+        }
         var origLC=LC;
         var origRatings=ratings;
         LC=sp.cfg; // set LC so processEvent uses correct sport config
@@ -3433,6 +3445,18 @@ function loadGames(callback){
 
   fetch(url).then(function(r){return r.json();})
     .then(function(data){
+      // Capture league logo for soccer leagues from scoreboard response
+      if(LC.sport==='soccer'&&LC.storageKey!=='epl'&&LC.storageKey!=='mls'){
+        var lgData=(data.leagues&&data.leagues[0])||{};
+        var lgLogos=lgData.logos||[];
+        var lgLogo=lgLogos[0]&&lgLogos[0].href;
+        if(lgLogo){
+          console.log('[leaguelogo] '+LC.storageKey+' = '+lgLogo);
+          SPORT_CATS.soccer.forEach(function(entry){
+            if(entry.lg===LC.storageKey)entry.logo=lgLogo;
+          });
+        }
+      }
       var events=data.events||[];
       if(!events.length){el.innerHTML='<div class="no-games">no games on this date</div>';lastGames=[];return;}
       var games=events.map(function(ev){return processEvent(ev,tz);});
@@ -4215,23 +4239,9 @@ function normalizeRecordAbbr(sport,raw){
   var NORM_SERIEA={'INT':'INT','JUV':'JUV','MIL':'MIL','ACM':'MIL','AC':'MIL','NAP':'NAP','ATA':'ATA','ROM':'ROM','LAZ':'LAZ','FIO':'FIO','BOL':'BOL','TOR':'TOR','UDI':'UDI','GEN':'GEN','LEC':'LEC','COM':'COM','PAR':'PAR','SAS':'SAS','CAG':'CAG','PIS':'PIS','PISA':'PIS','CRE':'CRE','VER':'VER','VNA':'VER','HEL':'VER'};
   var NORM_LIGUE1={'PSG':'PSG','RCL':'RCL','LEN':'RCL','OM':'OM','MAR':'OM','LIL':'LIL','LILL':'LIL','OL':'OL','OLM':'OL','LYO':'OL','REN':'REN','ASM':'ASM','MON':'ASM','RCS':'RCS','STR':'RCS','FCL':'FCL','LOR':'FCL','TFC':'TFC','TOU':'TFC','PAR':'PAR','PFC':'PAR','BRE':'BRE','SCO':'SCO','ANG':'SCO','HAC':'HAC','NIC':'NIC','NAN':'NAN','AJA':'AJA','AUX':'AJA','MET':'MET','METZ':'MET'};
   var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL,epl:NORM_EPL,'usa.1':NORM_MLS,mls:NORM_MLS,'esp.1':NORM_LALIGA,laliga:NORM_LALIGA,'ger.1':NORM_BUNDESLIGA,bundesliga:NORM_BUNDESLIGA,'ita.1':NORM_SERIEA,seriea:NORM_SERIEA,'fra.1':NORM_LIGUE1,ligue1:NORM_LIGUE1};
-  // Fetch league logos dynamically from scoreboard API for soccer leagues
-  var SOCCER_LEAGUE_MAP={'esp.1':'laliga','ger.1':'bundesliga','ita.1':'seriea','fra.1':'ligue1','eng.1':'epl','usa.1':'mls'};
-  ['esp.1','ger.1','ita.1','fra.1'].forEach(function(lg){
-    fetch('https://site.api.espn.com/apis/v2/sports/soccer/'+lg+'/scoreboard')
-    .then(function(r){return r.json();})
-    .then(function(data){
-      var leagueData=(data.leagues&&data.leagues[0])||{};
-      var logos=leagueData.logos||[];
-      var logo=logos[0]&&logos[0].href;
-      if(logo){
-        var key=SOCCER_LEAGUE_MAP[lg];
-        SPORT_CATS.soccer.forEach(function(entry){
-          if(entry.lg===key)entry.logo=logo;
-        });
-      }
-    }).catch(function(){});
-  });
+  // Log league logo URLs from first game load to find ESPN CDN IDs
+  // These will appear in DevTools console as [leaguelogo] entries
+  var SOCCER_LEAGUE_MAP={'esp.1':'laliga','ger.1':'bundesliga','ita.1':'seriea','fra.1':'ligue1'};
   [{sport:'basketball',league:'nba'},{sport:'basketball',league:'wnba'},{sport:'baseball',league:'mlb'},{sport:'hockey',league:'nhl'},{sport:'football',league:'nfl'},{sport:'soccer',league:'eng.1',storageKey:'epl'},{sport:'soccer',league:'usa.1',storageKey:'mls'},{sport:'soccer',league:'esp.1',storageKey:'laliga'},{sport:'soccer',league:'ger.1',storageKey:'bundesliga'},{sport:'soccer',league:'ita.1',storageKey:'seriea'},{sport:'soccer',league:'fra.1',storageKey:'ligue1'}]
   .forEach(function(sp){
     var norm=NORMS[sp.league]||{};
