@@ -229,7 +229,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.69</div>
+          <div>v4.70</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -1879,7 +1879,10 @@ function rankByRecord(){
         'MIN':'MIN','POR':'POR','RSL':'RSL','SJ':'SJ','SEA':'SEA','SKC':'SKC',
         'STL':'STL','VAN':'VAN','SD':'SD',
       };
-      var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:currentLeague==='mls'?NORM_MLS_NAME:NORM_NBA;
+      var SOCCER_LEAGUES=['epl','laliga','bundesliga','seriea','ligue1','mls'];
+      var isSoccer=SOCCER_LEAGUES.indexOf(currentLeague)>=0;
+      var normMap=currentLeague==='wnba'?NORM_WNBA:currentLeague==='nfl'?NORM_NFL:currentLeague==='nhl'?NORM_NHL:currentLeague==='mlb'?NORM_MLB:currentLeague==='epl'?NORM_EPL_NAME:currentLeague==='mls'?NORM_MLS_NAME:isSoccer?(RECORD_NORM[currentLeague]||{}):NORM_NBA;
+      var SOCCER_ABBR_NORM_RBR={'MUN':'BAY','BMU':'BAY','FCB':'BAY','VFB':'STU','RB':'RBL','OLM':'OM','MARS':'OM','LILL':'LIL','LYON':'OL','METZ':'MET','NICE':'NIC','BRES':'BRE','NANT':'NAN','RENN':'REN','MLL':'MAL','REA':'RMA','ATL':'ATM','SOC':'RSO','VNA':'VER','ACM':'MIL','ROMA':'ROM','COMO':'COM'};
       // Soccer (EPL) standings are flat: data.standings.entries or data.children[0].standings.entries
       // Other sports: data.children[conf].children[div].standings.entries (NFL)
       //               data.children[conf].standings.entries (NBA/NHL)
@@ -1915,24 +1918,24 @@ function rankByRecord(){
         entryList.forEach(function(e){
           var wins=0,losses=0,draws=0,pts=0;
           var raw=(e.team||{}).abbreviation||(e.team||{}).shortDisplayName||'';
-          var abbr=normMap[raw]||normalizeAbbr(raw)||raw;
+          var abbr=normMap[raw]||(isSoccer&&SOCCER_ABBR_NORM_RBR[raw])||normalizeAbbr(raw)||raw;
           (e.stats||[]).forEach(function(s){
-            if(s.name==='wins')wins=+s.value||0;
-            if(s.name==='losses')losses=+s.value||0;
-            if(s.name==='ties'||s.name==='draws'||s.name==='otLosses'||s.name==='overtimeLosses')draws=+s.value||0;
-            if(s.name==='points')pts=+s.value||0;
+            var n=s.name;
+            if(n==='wins'||n==='gamesWon'||n==='won')wins=+s.value||0;
+            if(n==='losses'||n==='gamesLost'||n==='lost'||n==='defeated')losses=+s.value||0;
+            if(n==='ties'||n==='draws'||n==='drawn'||n==='gamesTied'||n==='tied'||n==='otLosses'||n==='overtimeLosses')draws=+s.value||0;
+            if(n==='points')pts=+s.value||0;
           });
           if(abbr&&(wins+losses+draws)>0){
             entries.push({abbr:abbr,pct:wins/(wins+losses||1),wins:wins,losses:losses,draws:draws,pts:pts});
             if(!window.recordCache)window.recordCache={};
-            var rkRec=(currentLeague==='epl'||currentLeague==='mls')?(wins+'-'+draws+'-'+losses):(currentLeague==='nhl'&&draws>0?wins+'-'+losses+'-'+draws:wins+'-'+losses);
+            var rkRec=isSoccer?(wins+'-'+draws+'-'+losses):(currentLeague==='nhl'&&draws>0?wins+'-'+losses+'-'+draws:wins+'-'+losses);
             window.recordCache[currentLeague+'_'+abbr]=rkRec;
           }
         });
       });
       if(!entries.length){document.getElementById('saved-note').textContent='could not parse standings';return;}
-      if(currentLeague==='epl'||currentLeague==='mls'){
-        // Use ESPN points directly (W=3, D=1 already computed); fall back to computing if missing
+      if(isSoccer){
         entries.forEach(function(e){if(!e.pts)e.pts=e.wins*3+(e.draws||0);});
         entries.sort(function(a,b){return b.pts!==a.pts?b.pts-a.pts:b.wins-a.wins;});
       } else if(currentLeague==='nhl'){
@@ -1945,7 +1948,7 @@ function rankByRecord(){
       if(!window.recordCache)window.recordCache={};
       entries.forEach(function(e){
         if(!window.recordCache[currentLeague+'_'+e.abbr]){
-          window.recordCache[currentLeague+'_'+e.abbr]=e.wins+'-'+e.losses;
+          window.recordCache[currentLeague+'_'+e.abbr]=isSoccer?(e.wins+'-'+(e.draws||0)+'-'+e.losses):(e.wins+'-'+e.losses);
         }
       });
       var n=entries.length, lo=900, hi=1500;
@@ -2687,7 +2690,7 @@ function getTeamData(name, espnId, abbr){
       // Bundesliga
       'MUN':'BAY','BMU':'BAY','FCB':'BAY','VFB':'STU','RB':'RBL',
       // Ligue 1 — ESPN uses longer/different abbrs
-      'OLM':'OL','LILL':'LIL','METZ':'MET','NICE':'NIC','MARS':'OM','BRES':'BRE','NANT':'NAN','RENN':'REN',
+      'OLM':'OM','MARS':'OM','LILL':'LIL','LYON':'OL','METZ':'MET','NICE':'NIC','BRES':'BRE','NANT':'NAN','RENN':'REN',
       // La Liga
       'MLL':'MAL','REA':'RMA','ATL':'ATM','SOC':'RSO',
       // Serie A
@@ -4146,9 +4149,9 @@ var RECORD_NORM={
   ligue1:{
     'PSG':'PSG',                                       // Paris Saint-Germain
     'RCL':'RCL','LEN':'RCL',                           // Lens
-    'OM':'OM','MAR':'OM','MARS':'OM',                 // Marseille
-    'LIL':'LIL','LILL':'LIL',                          // Lille (ESPN uses LILL!)
-    'OL':'OL','OLM':'OL','LYO':'OL',                  // Lyon (ESPN uses OLM!)
+    'OM':'OM','MAR':'OM','MARS':'OM','OLM':'OM',       // Marseille (ESPN uses OLM!)
+    'LIL':'LIL','LILL':'LIL',                          // Lille
+    'OL':'OL','LYON':'OL','LYO':'OL',                  // Lyon (ESPN uses LYON!)
     'REN':'REN','RENN':'REN',                          // Rennes
     'ASM':'ASM','MON':'ASM',                           // Monaco
     'RCS':'RCS','STR':'RCS',                           // Strasbourg
@@ -4238,7 +4241,7 @@ function normalizeRecordAbbr(sport,raw){
     'STP':'STP','PAU':'STP',                           // St. Pauli
   };
   var NORM_SERIEA={'INT':'INT','JUV':'JUV','MIL':'MIL','ACM':'MIL','AC':'MIL','NAP':'NAP','ATA':'ATA','ROM':'ROM','ROMA':'ROM','LAZ':'LAZ','FIO':'FIO','BOL':'BOL','TOR':'TOR','UDI':'UDI','GEN':'GEN','LEC':'LEC','COM':'COM','COMO':'COM','PAR':'PAR','SAS':'SAS','CAG':'CAG','PIS':'PIS','PISA':'PIS','CRE':'CRE','VER':'VER','VNA':'VER','HEL':'VER'};
-  var NORM_LIGUE1={'PSG':'PSG','RCL':'RCL','LEN':'RCL','OM':'OM','MAR':'OM','MARS':'OM','OLM':'OL','LIL':'LIL','LILL':'LIL','OL':'OL','LYO':'OL','REN':'REN','RENN':'REN','ASM':'ASM','MON':'ASM','RCS':'RCS','STR':'RCS','FCL':'FCL','LOR':'FCL','TFC':'TFC','TOU':'TFC','PAR':'PAR','PFC':'PAR','BRE':'BRE','BRES':'BRE','SCO':'SCO','ANG':'SCO','HAC':'HAC','NIC':'NIC','NICE':'NIC','NAN':'NAN','NANT':'NAN','AJA':'AJA','AUX':'AJA','MET':'MET','METZ':'MET'};
+  var NORM_LIGUE1={'PSG':'PSG','RCL':'RCL','LEN':'RCL','OM':'OM','MAR':'OM','MARS':'OM','OLM':'OM','OL':'OL','LYON':'OL','LYO':'OL','LIL':'LIL','LILL':'LIL','REN':'REN','RENN':'REN','ASM':'ASM','MON':'ASM','RCS':'RCS','STR':'RCS','FCL':'FCL','LOR':'FCL','TFC':'TFC','TOU':'TFC','PAR':'PAR','PFC':'PAR','BRE':'BRE','BRES':'BRE','SCO':'SCO','ANG':'SCO','HAC':'HAC','NIC':'NIC','NICE':'NIC','NAN':'NAN','NANT':'NAN','AJA':'AJA','AUX':'AJA','MET':'MET','METZ':'MET'};
   var NORMS={nba:NORM_NBA,wnba:NORM_WNBA,mlb:NORM_MLB,nhl:NORM_NHL,nfl:NORM_NFL,'eng.1':NORM_EPL,epl:NORM_EPL,'usa.1':NORM_MLS,mls:NORM_MLS,'esp.1':NORM_LALIGA,laliga:NORM_LALIGA,'ger.1':NORM_BUNDESLIGA,bundesliga:NORM_BUNDESLIGA,'ita.1':NORM_SERIEA,seriea:NORM_SERIEA,'fra.1':NORM_LIGUE1,ligue1:NORM_LIGUE1};
   // Log league logo URLs from first game load to find ESPN CDN IDs
   // These will appear in DevTools console as [leaguelogo] entries
