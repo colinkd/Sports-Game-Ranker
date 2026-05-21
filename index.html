@@ -4768,6 +4768,33 @@ function normalizeRecordAbbr(sport,raw){
 try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.parse(tp);}catch(e){}
 // Lock sport button widths so they don't resize when label changes
 (function(){var btns=document.querySelectorAll('.sport-nav-btn');btns.forEach(function(b){b.style.minWidth=b.offsetWidth+'px';});})();
+// Ensure CFB 2025 records are in cache (must run after fetchAllStandings pre-fill)
+(function(){
+  var RECORDS2025={
+    'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2',
+    'UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2',
+    'BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3',
+    'UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3',
+    'GT':'9-3','TCU':'9-4',
+    'ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6',
+    'LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5',
+    'TENN':'8-4',
+    'ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5',
+    'NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10',
+    'RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8',
+    'ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6',
+    'COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6',
+    'OKST':'1-11','UCF':'5-7','WVU':'4-8',
+    'BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5',
+    'FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6',
+    'PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8',
+    'VT':'5-7','WAKE':'9-4',
+  };
+  window.recordCache=window.recordCache||{};
+  Object.keys(RECORDS2025).forEach(function(abbr){
+    window.recordCache['ncaafb_'+abbr]=RECORDS2025[abbr];
+  });
+})();
 switchLeague('all');
 document.getElementById('w-dt-on').checked=true;
 updateStates();
