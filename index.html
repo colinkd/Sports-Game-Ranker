@@ -1344,7 +1344,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.1', vdate: '2026-05-20',
+    title: 'CFB', version: 'ncaafb.v1.2', vdate: '2026-05-20',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -3484,14 +3484,17 @@ function loadAllGames(callback){
     fetch(url).then(function(r){return r.json();})
       .then(function(data){
         // Capture league logo from scoreboard response for soccer leagues
-        if(sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls'){
+        if((sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls')||sp.key==='ncaafb'){
           var lgData=(data.leagues&&data.leagues[0])||{};
           var lgLogos=lgData.logos||[];
           var lgLogo=lgLogos[0]&&lgLogos[0].href;
           if(lgLogo){
             console.log('[leaguelogo] '+sp.key+' = '+lgLogo);
-            SPORT_CATS.soccer.forEach(function(entry){
-              if(entry.lg===sp.key)entry.logo=lgLogo;
+            // Update SPORT_CATS for both soccer and football categories
+            ['soccer','football'].forEach(function(cat){
+              (SPORT_CATS[cat]||[]).forEach(function(entry){
+                if(entry.lg===sp.key)entry.logo=lgLogo;
+              });
             });
           }
         }
@@ -3676,14 +3679,16 @@ function loadGames(callback){
   fetch(url).then(function(r){return r.json();})
     .then(function(data){
       // Capture league logo for soccer leagues from scoreboard response
-      if(LC.sport==='soccer'&&LC.storageKey!=='epl'&&LC.storageKey!=='mls'){
-        var lgData=(data.leagues&&data.leagues[0])||{};
-        var lgLogos=lgData.logos||[];
-        var lgLogo=lgLogos[0]&&lgLogos[0].href;
-        if(lgLogo){
-          console.log('[leaguelogo] '+LC.storageKey+' = '+lgLogo);
-          SPORT_CATS.soccer.forEach(function(entry){
-            if(entry.lg===LC.storageKey)entry.logo=lgLogo;
+      if((LC.sport==='soccer'&&LC.storageKey!=='epl'&&LC.storageKey!=='mls')||LC.storageKey==='ncaafb'){
+        var lgData2=(data.leagues&&data.leagues[0])||{};
+        var lgLogos2=lgData2.logos||[];
+        var lgLogo2=lgLogos2[0]&&lgLogos2[0].href;
+        if(lgLogo2){
+          console.log('[leaguelogo] '+LC.storageKey+' = '+lgLogo2);
+          ['soccer','football'].forEach(function(cat){
+            (SPORT_CATS[cat]||[]).forEach(function(entry){
+              if(entry.lg===LC.storageKey)entry.logo=lgLogo2;
+            });
           });
         }
       }
