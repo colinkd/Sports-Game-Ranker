@@ -229,7 +229,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.74</div>
+          <div>v4.76</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -523,7 +523,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- TEAM FILTER -->
 
       <div class="fs" id="team-filter-card">
-        <div class="fs-head"><div class="fs-title">team filter</div><label class="tog"><input type="checkbox" id="w-team-on" checked onchange="updateStates()"/><span class="tog-track"></span></label></div>
+        <div class="fs-head"><div class="fs-title">team &amp; division filter</div><label class="tog"><input type="checkbox" id="w-team-on" checked onchange="updateStates()"/><span class="tog-track"></span></label></div>
         <div class="fs-body" id="team-body">
           <div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">include</div>
           <select class="team-sel" id="team-include" onchange="addTeam('include',this)"><option value="">add a team...</option></select>
@@ -888,7 +888,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.44', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v2.46', vdate: '2026-05-21',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -1108,7 +1108,7 @@ var LEAGUE_CONFIGS = {
 
 
   championsleague: {
-    title: 'Champs Lg', version: 'championsleague.v1.1', vdate: '2026-05-21',
+    title: 'Champs Lg', version: 'championsleague.v1.3', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'championsleague',
     sport: 'soccer', league: null,
@@ -1120,7 +1120,7 @@ var LEAGUE_CONFIGS = {
                'Paramount+','CBS Sports Network','CBS Sports Golazo','Fox Deportes',
                'beIN Sports','beIN Sports en Español','beIN Sports Connect'],
     logo: function(espn){ if(espn&&espn.indexOf('data:')===0)return espn; return 'https://a.espncdn.com/i/teamlogos/soccer/500/'+espn+'.png'; },
-    uclLogo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0iIzBCMUUzRSIvPjxnIGZpbGw9IiNDOEE5NTEiPjxwb2x5Z29uIHBvaW50cz0iNTAsMTIgNTMsNDAgNzgsMjYgNjAsNDYgOTIsNDggNjQsNTcgODAsODAgNTIsNjUgNTAsOTQgNDgsNjUgMjAsODAgMzYsNTcgOCw0OCA0MCw0NiAyMiwyNiA0Nyw0MCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjEyIiBmaWxsPSIjMEIxRTNFIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNyIvPjwvZz48L3N2Zz4=',
+    uclLogo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0iIzFCM0E2QiIvPjxwYXRoIGQ9Ik01MC4wMDAsMTAuNTAwIEw1Mi4wNTcsMTYuMTY4IEw1OC4wODQsMTYuMzczIEw1My4zMjksMjAuMDgyIEw1NC45OTYsMjUuODc3IEw1MC4wMDAsMjIuNTAwIEw0NS4wMDQsMjUuODc3IEw0Ni42NzEsMjAuMDgyIEw0MS45MTYsMTYuMzczIEw0Ny45NDMsMTYuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTcxLjkyMCwxOS41ODAgTDczLjk3OCwyNS4yNDggTDgwLjAwNCwyNS40NTMgTDc1LjI0OSwyOS4xNjEgTDc2LjkxNiwzNC45NTYgTDcxLjkyMCwzMS41ODAgTDY2LjkyNCwzNC45NTYgTDY4LjU5MiwyOS4xNjEgTDYzLjgzNiwyNS40NTMgTDY5Ljg2MywyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNODEuMDAwLDQxLjUwMCBMODMuMDU3LDQ3LjE2OCBMODkuMDg0LDQ3LjM3MyBMODQuMzI5LDUxLjA4MiBMODUuOTk2LDU2Ljg3NyBMODEuMDAwLDUzLjUwMCBMNzYuMDA0LDU2Ljg3NyBMNzcuNjcxLDUxLjA4MiBMNzIuOTE2LDQ3LjM3MyBMNzguOTQzLDQ3LjE2OCBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik03MS45MjAsNjMuNDIwIEw3My45NzgsNjkuMDg5IEw4MC4wMDQsNjkuMjk0IEw3NS4yNDksNzMuMDAyIEw3Ni45MTYsNzguNzk3IEw3MS45MjAsNzUuNDIwIEw2Ni45MjQsNzguNzk3IEw2OC41OTIsNzMuMDAyIEw2My44MzYsNjkuMjk0IEw2OS44NjMsNjkuMDg5IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTUwLjAwMCw3Mi41MDAgTDUyLjA1Nyw3OC4xNjggTDU4LjA4NCw3OC4zNzMgTDUzLjMyOSw4Mi4wODIgTDU0Ljk5Niw4Ny44NzcgTDUwLjAwMCw4NC41MDAgTDQ1LjAwNCw4Ny44NzcgTDQ2LjY3MSw4Mi4wODIgTDQxLjkxNiw3OC4zNzMgTDQ3Ljk0Myw3OC4xNjggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjguMDgwLDYzLjQyMCBMMzAuMTM3LDY5LjA4OSBMMzYuMTY0LDY5LjI5NCBMMzEuNDA4LDczLjAwMiBMMzMuMDc2LDc4Ljc5NyBMMjguMDgwLDc1LjQyMCBMMjMuMDg0LDc4Ljc5NyBMMjQuNzUxLDczLjAwMiBMMTkuOTk2LDY5LjI5NCBMMjYuMDIyLDY5LjA4OSBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik0xOS4wMDAsNDEuNTAwIEwyMS4wNTcsNDcuMTY4IEwyNy4wODQsNDcuMzczIEwyMi4zMjksNTEuMDgyIEwyMy45OTYsNTYuODc3IEwxOS4wMDAsNTMuNTAwIEwxNC4wMDQsNTYuODc3IEwxNS42NzEsNTEuMDgyIEwxMC45MTYsNDcuMzczIEwxNi45NDMsNDcuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI4LjA4MCwxOS41ODAgTDMwLjEzNywyNS4yNDggTDM2LjE2NCwyNS40NTMgTDMxLjQwOCwyOS4xNjEgTDMzLjA3NiwzNC45NTYgTDI4LjA4MCwzMS41ODAgTDIzLjA4NCwzNC45NTYgTDI0Ljc1MSwyOS4xNjEgTDE5Ljk5NiwyNS40NTMgTDI2LjAyMiwyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNTAuMDAwLDM3LjAwMCBMNTMuMjMzLDQ1LjU1MCBMNjIuMzY0LDQ1Ljk4MyBMNTUuMjMxLDUxLjcwMCBMNTcuNjQxLDYwLjUxNyBMNTAuMDAwLDU1LjUwMCBMNDIuMzU5LDYwLjUxNyBMNDQuNzY5LDUxLjcwMCBMMzcuNjM2LDQ1Ljk4MyBMNDYuNzY3LDQ1LjU1MCBaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==',
     teams: [],
     defaultElo: 1200, TMIN: 900, TMAX: 1500, CMIN: 1820, CMAX: 3000, chartMin: 800, chartMax: 1700,
     scoreGame: function(g, v, em){ var combined=(em[g.awayAbbr]||1200)+(em[g.homeAbbr]||1200); return combined+(g.lev||0)+(g.tvBonus||0); },
@@ -1366,7 +1366,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.7', vdate: '2026-05-21',
+    title: 'CFB', version: 'ncaafb.v1.9', vdate: '2026-05-21',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -1797,7 +1797,7 @@ function renderTierRankings(){
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
       '<div class="rank-name">'+t.name+(rec?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+rec+'</span>':'')+'</div>'+
-      '<span style="font-size:10px;opacity:0.5;margin-right:3px;flex-shrink:0">'+(lgIcons[t.league]||'')+'</span>'+
+      '<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:6px;flex-shrink:0;white-space:nowrap">'+(lgIcons[t.league]||'')+' '+({'nba':'NBA','wnba':'WNBA','mlb':'MLB','nfl':'NFL','nhl':'NHL','ncaafb':'CFB','championsleague':'','mls':'MLS'}[t.league]||'')+'</span>'+
       '<div class="rank-elo" style="margin-right:4px">'+t.elo+'</div>'+
       '<span class="tier-badge tier-'+tier+'">'+tier+'</span>'+
     '</div>';
@@ -1933,36 +1933,48 @@ function rankByRecord(){
   if(currentLeague==='championsleague'){document.getElementById('saved-note').textContent='use individual league tabs to sort by record';return;}
   document.getElementById('saved-note').textContent='fetching standings...';
 
-  // CFB: use AP poll rankings instead of standings
+  // CFB: use AP poll (in-season) or 2025 seed data (off-season)
   if(currentLeague==='ncaafb'){
+    document.getElementById('saved-note').textContent='loading rankings...';
     fetch('https://site.api.espn.com/apis/v2/sports/football/college-football/rankings?group=80')
     .then(function(r){return r.json();})
     .then(function(data){
       var polls=(data.rankings||[]);
       var ap=polls.find(function(p){return p.name&&p.name.toLowerCase().indexOf('ap')>=0;})||polls[0];
       var savedR={};
-      LC.teams.forEach(function(t){savedR[t.abbr]=LC.defaultElo;});
-      if(ap&&ap.ranks){
-        var top25=ap.ranks.slice(0,25);
-        top25.forEach(function(r){
+      // Start with 2025 seed data as base
+      var RECORDS2025={'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2','UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2','BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3','UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3','GT':'9-3','TCU':'9-4','ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6','LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5','TENN':'8-4','ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5','NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10','RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8','ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6','COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6','OKST':'1-11','UCF':'5-7','WVU':'4-8','BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5','FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6','PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8','VT':'5-7','WAKE':'9-4'};
+      function eloFromRec(rec){var p=rec.split('-');var w=+p[0]||0,l=+p[1]||0,g=w+l;if(!g)return 1200;return Math.round(1000+(w/g*400));}
+      LC.teams.forEach(function(t){savedR[t.abbr]=eloFromRec(RECORDS2025[t.abbr]||'6-6');});
+      var AP2025={1:'IU',2:'MIA',3:'MISS',4:'ORE',5:'OSU',6:'UGA',7:'TTU',8:'TAMU',9:'BAMA',10:'ND',11:'BYU',12:'TEX',13:'OU',14:'UTAH',15:'VAN',16:'UVA',17:'IOWA',20:'USC',21:'MICH',22:'HOU',23:'GT',25:'TCU'};
+      Object.keys(AP2025).forEach(function(rank){savedR[AP2025[rank]]=Math.round(1400-((+rank-1)*16));});
+      window.recordCache=window.recordCache||{};
+      Object.keys(RECORDS2025).forEach(function(a){window.recordCache['ncaafb_'+a]=RECORDS2025[a];});
+      // Override with live AP poll if available
+      if(ap&&ap.ranks&&ap.ranks.length){
+        ap.ranks.slice(0,25).forEach(function(r){
           var name=((r.team||{}).displayName||'').toLowerCase();
           LC.teams.forEach(function(t){
-            if(t.name.toLowerCase()===name||name.indexOf(t.name.toLowerCase().split(' ')[0])>=0&&t.name.toLowerCase().indexOf(name.split(' ')[0])>=0){
-              var rank=r.current||r.previous||25;
-              savedR[t.abbr]=Math.round(1500-((rank-1)*12.5));
-              window.recordCache=window.recordCache||{};
+            if(t.name.toLowerCase()===name||name.indexOf(t.name.toLowerCase().split(' ').pop())>=0){
+              var rank=r.current||25;
+              savedR[t.abbr]=Math.round(1400-((rank-1)*16));
               window.recordCache['ncaafb_'+t.abbr]='#'+rank;
             }
           });
         });
+        document.getElementById('saved-note').textContent='sorted by AP rankings (live)';
+      } else {
+        document.getElementById('saved-note').textContent='sorted by 2025 final rankings';
       }
       try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
       if(ratingsStore)ratingsStore['ncaafb']=savedR;
       ratings=savedR;
       seedTierFromPercentile();
       renderRankings();
-      document.getElementById('saved-note').textContent='sorted by AP rankings';
-    }).catch(function(){document.getElementById('saved-note').textContent='could not load rankings';});
+    }).catch(function(){
+      document.getElementById('saved-note').textContent='sorted by 2025 final rankings (offline)';
+      renderRankings();
+    });
     return;
   }
 
@@ -2185,6 +2197,9 @@ function renderRankings(){
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img class="rank-logo" src="'+LC.logo(t.espn)+'" alt="'+t.abbr+'"/>'+
       '<div class="rank-name">'+t.name+xpTag+(function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+t.abbr];return r&&r!=='0-0'?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+r+'</span>':'';})()+'</div>'+
+      (currentLeague==='ncaafb'&&t.conf?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+(t.conf==='Big Ten'?'B1G':t.conf==='Big 12'?'B12':t.conf)+'</span>':'')+
+      (currentLeague==='mlb'&&t.div?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.div.replace('AL ','AL-').replace('NL ','NL-')+'</span>':'')+
+      (currentLeague==='nfl'&&t.div?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.div.replace('AFC ','AFC-').replace('NFC ','NFC-')+'</span>':'')+
       '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
       '<div class="rank-elo">'+(ratings[t.abbr]||LC.defaultElo)+'</div></div>';
     if(qdivs.indexOf(i)>=0)html+='<hr class="quintile-divider"/>';
@@ -2556,7 +2571,7 @@ function buildDivPills(){
         var isAll=cat==='All';
         var btn=document.createElement('div');
         var curCat=divCatState[lg]||'All';
-        btn.className='pill'+(curCat===cat?' on':'');
+        btn.className='sport-pill'+(curCat===cat?' on':'');
         btn.textContent=cat;
         btn.dataset.divcat=cat;
         btn.onclick=function(){setDivCat(cat);};
@@ -3229,66 +3244,34 @@ function processEvent(ev,tz){
   var isCup=false,isPrimetime=false,isDivisional=false,isIST=false;
   var gameLeague=currentLeague==='all'?(LC.storageKey||LC.league||currentLeague):currentLeague;
 
-  if(gameLeague==='epl'){
-    var eplOn=document.getElementById('w-epl-bon-on')?document.getElementById('w-epl-bon-on').checked:false;
-    if(eplOn){
-      var eplPts=function(abbr){
-        var rec=(window.recordCache&&window.recordCache['epl_'+abbr])||'';
-        var parts=rec.split('-');
-        if(parts.length===3){return (+parts[0])*3+(+parts[1]);}
-        if(parts.length===2){return (+parts[0])*3;}
-        return -1;
-      }
-      var ptsList=LC.teams.map(function(t){return eplPts(t.abbr);}).filter(function(p){return p>=0;}).sort(function(a,b){return b-a;});
-      var n=ptsList.length;
-      var awayPts=eplPts(ad.abbr), homePts=eplPts(hd.abbr);
-      var titleVal=+(document.getElementById('w-epl-title')?document.getElementById('w-epl-title').value:0)||0;
-      var top4Val=+(document.getElementById('w-epl-top4')?document.getElementById('w-epl-top4').value:0)||0;
-      var relVal=+(document.getElementById('w-epl-rel')?document.getElementById('w-epl-rel').value:0)||0;
-      if(n>=5&&awayPts>=0&&homePts>=0){
-        var top3thresh=ptsList[2]||0;   // both top 3
-        var top7thresh=ptsList[Math.min(6,n-1)]||0; // both top 7
-        var bot5thresh=ptsList[Math.max(n-5,0)]||0; // both bottom 5
-        if(awayPts>=top3thresh&&homePts>=top3thresh&&titleVal){lev+=titleVal;levLbl='title race';}
-        else if(awayPts>=top7thresh&&homePts>=top7thresh&&top4Val){lev+=top4Val;levLbl='champions league';}
-        if(awayPts<=bot5thresh&&homePts<=bot5thresh&&relVal){lev+=relVal;levLbl=levLbl?levLbl+' + relegation':'relegation';}
-      }
-    }
-  }
-  // Generic euro league bonus — thresholds: {clSpots, relSpots} = both-teams cutoffs
-  var EURO_LEAGUE_CFG={
-    laliga:    {clSpots:7, relSpots:5},
-    bundesliga:{clSpots:6, relSpots:4},
-    seriea:    {clSpots:6, relSpots:5},
-    ligue1:    {clSpots:5, relSpots:4},
-  };
-  if(EURO_LEAGUE_CFG[gameLeague]){
-    var cfg=EURO_LEAGUE_CFG[gameLeague];
-    var elOn=document.getElementById('w-'+gameLeague+'-bon-on')?document.getElementById('w-'+gameLeague+'-bon-on').checked:false;
-    if(elOn){
-      var euroPts=function(abbr){
+  var EURO_LEAGUES_BONUS=['epl','laliga','bundesliga','seriea','ligue1'];
+  if(EURO_LEAGUES_BONUS.indexOf(gameLeague)>=0){
+    var euroBonOn=document.getElementById('w-euro-bon-on')?document.getElementById('w-euro-bon-on').checked:false;
+    if(euroBonOn){
+      var euroPtsLocal=function(abbr){
         var rec=(window.recordCache&&window.recordCache[gameLeague+'_'+abbr])||'';
         var parts=rec.split('-');
         if(parts.length===3){return (+parts[0])*3+(+parts[1]);}
         if(parts.length===2){return (+parts[0])*3;}
         return -1;
-      }
-      var elPtsList=LC.teams.map(function(t){return euroPts(t.abbr);}).filter(function(p){return p>=0;}).sort(function(a,b){return b-a;});
-      var elN=elPtsList.length;
-      var elAway=euroPts(ad.abbr), elHome=euroPts(hd.abbr);
-      var elTitleVal=+(document.getElementById('w-'+gameLeague+'-title')?document.getElementById('w-'+gameLeague+'-title').value:0)||0;
-      var elTopVal=+(document.getElementById('w-'+gameLeague+'-top4')?document.getElementById('w-'+gameLeague+'-top4').value:0)||0;
-      var elRelVal=+(document.getElementById('w-'+gameLeague+'-rel')?document.getElementById('w-'+gameLeague+'-rel').value:0)||0;
-      if(elN>=4&&elAway>=0&&elHome>=0){
-        var elTop3thresh=elPtsList[2]||0;                                    // both top 3
-        var elTopThresh=elPtsList[Math.min(cfg.clSpots-1,elN-1)]||0;        // both top clSpots
-        var elBotThresh=elPtsList[Math.max(elN-cfg.relSpots,0)]||0;         // both bottom relSpots
-        if(elAway>=elTop3thresh&&elHome>=elTop3thresh&&elTitleVal){lev+=elTitleVal;levLbl='title race';}
-        else if(elAway>=elTopThresh&&elHome>=elTopThresh&&elTopVal){lev+=elTopVal;levLbl='champions league';}
-        if(elAway<=elBotThresh&&elHome<=elBotThresh&&elRelVal){lev+=elRelVal;levLbl=levLbl?levLbl+' + relegation':'relegation';}
+      };
+      var euroPtsList=LC.teams.map(function(t){return euroPtsLocal(t.abbr);}).filter(function(p){return p>=0;}).sort(function(a,b){return b-a;});
+      var en=euroPtsList.length;
+      var euroAwayPts=euroPtsLocal(ad.abbr),euroHomePts=euroPtsLocal(hd.abbr);
+      var euroTitleVal=+(document.getElementById('w-euro-title')?document.getElementById('w-euro-title').value:0)||0;
+      var euroTopVal=+(document.getElementById('w-euro-top7')?document.getElementById('w-euro-top7').value:0)||0;
+      var euroRelVal=+(document.getElementById('w-euro-rel')?document.getElementById('w-euro-rel').value:0)||0;
+      if(en>=5&&euroAwayPts>=0&&euroHomePts>=0){
+        var top3t=euroPtsList[2]||0;
+        var top7t=euroPtsList[Math.min(6,en-1)]||0;
+        var bot5t=euroPtsList[Math.max(en-5,0)]||0;
+        if(euroAwayPts>=top3t&&euroHomePts>=top3t&&euroTitleVal){lev+=euroTitleVal;levLbl='title race';}
+        else if(euroAwayPts>=top7t&&euroHomePts>=top7t&&euroTopVal){lev+=euroTopVal;levLbl='champions league';}
+        if(euroAwayPts<=bot5t&&euroHomePts<=bot5t&&euroRelVal){lev+=euroRelVal;levLbl=levLbl?levLbl+' + relegation':'relegation';}
       }
     }
   }
+
   if(gameLeague==='mlb'){
     // MLB: divisional matchup bonus
     var mlbBonOn=document.getElementById('w-nfl-bon-on')?document.getElementById('w-nfl-bon-on').checked:false;
@@ -4540,7 +4523,7 @@ var SPORT_CATS={
     {lg:'wnba',label:'WNBA',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png'}
   ],
   soccer:[
-    {lg:'championsleague',label:'Champs Lg',logo:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0iIzBCMUUzRSIvPjxnIGZpbGw9IiNDOEE5NTEiPjxwb2x5Z29uIHBvaW50cz0iNTAsMTIgNTMsNDAgNzgsMjYgNjAsNDYgOTIsNDggNjQsNTcgODAsODAgNTIsNjUgNTAsOTQgNDgsNjUgMjAsODAgMzYsNTcgOCw0OCA0MCw0NiAyMiwyNiA0Nyw0MCIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjEyIiBmaWxsPSIjMEIxRTNFIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNyIvPjwvZz48L3N2Zz4='},
+    {lg:'championsleague',label:'Champs Lg',logo:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0iIzFCM0E2QiIvPjxwYXRoIGQ9Ik01MC4wMDAsMTAuNTAwIEw1Mi4wNTcsMTYuMTY4IEw1OC4wODQsMTYuMzczIEw1My4zMjksMjAuMDgyIEw1NC45OTYsMjUuODc3IEw1MC4wMDAsMjIuNTAwIEw0NS4wMDQsMjUuODc3IEw0Ni42NzEsMjAuMDgyIEw0MS45MTYsMTYuMzczIEw0Ny45NDMsMTYuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTcxLjkyMCwxOS41ODAgTDczLjk3OCwyNS4yNDggTDgwLjAwNCwyNS40NTMgTDc1LjI0OSwyOS4xNjEgTDc2LjkxNiwzNC45NTYgTDcxLjkyMCwzMS41ODAgTDY2LjkyNCwzNC45NTYgTDY4LjU5MiwyOS4xNjEgTDYzLjgzNiwyNS40NTMgTDY5Ljg2MywyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNODEuMDAwLDQxLjUwMCBMODMuMDU3LDQ3LjE2OCBMODkuMDg0LDQ3LjM3MyBMODQuMzI5LDUxLjA4MiBMODUuOTk2LDU2Ljg3NyBMODEuMDAwLDUzLjUwMCBMNzYuMDA0LDU2Ljg3NyBMNzcuNjcxLDUxLjA4MiBMNzIuOTE2LDQ3LjM3MyBMNzguOTQzLDQ3LjE2OCBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik03MS45MjAsNjMuNDIwIEw3My45NzgsNjkuMDg5IEw4MC4wMDQsNjkuMjk0IEw3NS4yNDksNzMuMDAyIEw3Ni45MTYsNzguNzk3IEw3MS45MjAsNzUuNDIwIEw2Ni45MjQsNzguNzk3IEw2OC41OTIsNzMuMDAyIEw2My44MzYsNjkuMjk0IEw2OS44NjMsNjkuMDg5IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTUwLjAwMCw3Mi41MDAgTDUyLjA1Nyw3OC4xNjggTDU4LjA4NCw3OC4zNzMgTDUzLjMyOSw4Mi4wODIgTDU0Ljk5Niw4Ny44NzcgTDUwLjAwMCw4NC41MDAgTDQ1LjAwNCw4Ny44NzcgTDQ2LjY3MSw4Mi4wODIgTDQxLjkxNiw3OC4zNzMgTDQ3Ljk0Myw3OC4xNjggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjguMDgwLDYzLjQyMCBMMzAuMTM3LDY5LjA4OSBMMzYuMTY0LDY5LjI5NCBMMzEuNDA4LDczLjAwMiBMMzMuMDc2LDc4Ljc5NyBMMjguMDgwLDc1LjQyMCBMMjMuMDg0LDc4Ljc5NyBMMjQuNzUxLDczLjAwMiBMMTkuOTk2LDY5LjI5NCBMMjYuMDIyLDY5LjA4OSBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik0xOS4wMDAsNDEuNTAwIEwyMS4wNTcsNDcuMTY4IEwyNy4wODQsNDcuMzczIEwyMi4zMjksNTEuMDgyIEwyMy45OTYsNTYuODc3IEwxOS4wMDAsNTMuNTAwIEwxNC4wMDQsNTYuODc3IEwxNS42NzEsNTEuMDgyIEwxMC45MTYsNDcuMzczIEwxNi45NDMsNDcuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI4LjA4MCwxOS41ODAgTDMwLjEzNywyNS4yNDggTDM2LjE2NCwyNS40NTMgTDMxLjQwOCwyOS4xNjEgTDMzLjA3NiwzNC45NTYgTDI4LjA4MCwzMS41ODAgTDIzLjA4NCwzNC45NTYgTDI0Ljc1MSwyOS4xNjEgTDE5Ljk5NiwyNS40NTMgTDI2LjAyMiwyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNTAuMDAwLDM3LjAwMCBMNTMuMjMzLDQ1LjU1MCBMNjIuMzY0LDQ1Ljk4MyBMNTUuMjMxLDUxLjcwMCBMNTcuNjQxLDYwLjUxNyBMNTAuMDAwLDU1LjUwMCBMNDIuMzU5LDYwLjUxNyBMNDQuNzY5LDUxLjcwMCBMMzcuNjM2LDQ1Ljk4MyBMNDYuNzY3LDQ1LjU1MCBaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=='},
     {lg:'mls',label:'MLS',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png'}
   ],
   football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'data:image/png;base64,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'}],
@@ -4651,11 +4634,7 @@ function switchLeague(lg){
   $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   $sty('nfl-div-section','display',lg==='nfl'?'block':'none');
   $sty('ncaafb-bonuses-section','display',lg==='ncaafb'?'block':'none');
-  $sty('epl-bonuses-section','display',(lg==='epl'||lg==='championsleague')?'block':'none');
-  $sty('laliga-bonuses-section','display',(lg==='laliga'||lg==='championsleague')?'block':'none');
-  $sty('bundesliga-bonuses-section','display',(lg==='bundesliga'||lg==='championsleague')?'block':'none');
-  $sty('seriea-bonuses-section','display',(lg==='seriea'||lg==='championsleague')?'block':'none');
-  $sty('ligue1-bonuses-section','display',(lg==='ligue1'||lg==='championsleague')?'block':'none');
+  $sty('euro-bonuses-section','display',(lg==='epl'||lg==='laliga'||lg==='bundesliga'||lg==='seriea'||lg==='ligue1'||lg==='championsleague')?'block':'none');
   $sty('mlb-bonuses-section','display',lg==='mlb'?'block':'none');
   $sty('mls-bonuses-section','display',lg==='mls'?'block':'none');
   // Hide season selector and divider on All tab — each sport has its own season
@@ -4670,11 +4649,7 @@ function switchLeague(lg){
   $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   $sty('nfl-div-section','display',lg==='nfl'?'block':'none');
   $sty('ncaafb-bonuses-section','display',lg==='ncaafb'?'block':'none');
-  $sty('epl-bonuses-section','display',(lg==='epl'||lg==='championsleague')?'block':'none');
-  $sty('laliga-bonuses-section','display',(lg==='laliga'||lg==='championsleague')?'block':'none');
-  $sty('bundesliga-bonuses-section','display',(lg==='bundesliga'||lg==='championsleague')?'block':'none');
-  $sty('seriea-bonuses-section','display',(lg==='seriea'||lg==='championsleague')?'block':'none');
-  $sty('ligue1-bonuses-section','display',(lg==='ligue1'||lg==='championsleague')?'block':'none');
+  $sty('euro-bonuses-section','display',(lg==='epl'||lg==='laliga'||lg==='bundesliga'||lg==='seriea'||lg==='ligue1'||lg==='championsleague')?'block':'none');
   $sty('mlb-bonuses-section','display',lg==='mlb'?'block':'none');
   $sty('mls-bonuses-section','display',lg==='mls'?'block':'none');
   $sty('playoffs-bonus-section','display',(LC&&LC.showPlayoff&&!isAll)?'block':'none');
