@@ -229,7 +229,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.72</div>
+          <div>v4.73</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -888,7 +888,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.38', vdate: '2026-05-20',
+    title: 'ALL SPORTS', version: 'all.v2.39', vdate: '2026-05-20',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -1344,7 +1344,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.0', vdate: '2026-05-20',
+    title: 'CFB', version: 'ncaafb.v1.1', vdate: '2026-05-20',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -4093,7 +4093,7 @@ var SPORT_CATS={
     {lg:'ligue1',label:'Ligue 1',logo:'https://a.espncdn.com/i/leaguelogos/soccer/500/9.png'},
     {lg:'mls',label:'MLS',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png'}
   ],
-  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'https://a.espncdn.com/i/leaguelogos/ncaa-football/500/100.png'}],
+  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/cfb.png'}],
   baseball:[{lg:'mlb',label:'MLB',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png'}],
   hockey:[{lg:'nhl',label:'NHL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png'}],
 };
@@ -4644,68 +4644,121 @@ function normalizeRecordAbbr(sport,raw){
     }).catch(function(){});
   });
 })();
-// ── CFB: Seed from AP Rankings ──
+// ── CFB: Seed from 2025 Final AP Rankings + Records ──
 (function(){
-  // Only seed if no existing ratings saved
   var existing=null;
   try{var s=localStorage.getItem('ncaafb_elo_ratings');existing=s?JSON.parse(s):null;}catch(e){}
-  if(existing&&Object.keys(existing).length>10)return; // already seeded
+  var allDefault=existing&&Object.keys(existing).length>10&&Object.values(existing).every(function(v){return v===1050;});
+  if(existing&&!allDefault)return;
+
+  // 2025 Final AP Top 25 (post-championship)
+  var AP2025=[
+    {rank:1, abbr:'IU'},    // Indiana 16-0
+    {rank:2, abbr:'MIA'},   // Miami 13-3
+    {rank:3, abbr:'MISS'},  // Ole Miss 13-2
+    {rank:4, abbr:'ORE'},   // Oregon 13-2
+    {rank:5, abbr:'OSU'},   // Ohio State 12-2
+    {rank:6, abbr:'UGA'},   // Georgia 12-2
+    {rank:7, abbr:'TTU'},   // Texas Tech 12-2
+    {rank:8, abbr:'TAMU'},  // Texas A&M 11-2
+    {rank:9, abbr:'BAMA'},  // Alabama 11-4
+    {rank:10,abbr:'ND'},    // Notre Dame 10-2
+    {rank:11,abbr:'BYU'},   // BYU 11-2
+    {rank:12,abbr:'TEX'},   // Texas 9-4
+    {rank:13,abbr:'OU'},    // Oklahoma 10-3
+    {rank:14,abbr:'UTAH'},  // Utah 10-2
+    {rank:15,abbr:'VAN'},   // Vanderbilt 10-3
+    {rank:16,abbr:'UVA'},   // Virginia 10-3
+    {rank:17,abbr:'IOWA'},  // Iowa 8-4 (bowl)
+    {rank:20,abbr:'USC'},   // USC 9-3
+    {rank:21,abbr:'MICH'},  // Michigan 9-3
+    {rank:22,abbr:'HOU'},   // Houston 9-3
+    {rank:23,abbr:'GT'},    // Georgia Tech 9-3
+    {rank:25,abbr:'TCU'},   // TCU 9-4
+  ];
+
+  // 2025 final W-L records for ALL teams in our set
+  var RECORDS2025={
+    // Ranked teams
+    'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2',
+    'UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2',
+    'BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3',
+    'UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3',
+    'GT':'9-3','TCU':'9-4',
+    // SEC unranked
+    'ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6',
+    'LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5',
+    'TENN':'8-4','TEX':'9-4',
+    // Big Ten unranked
+    'ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5',
+    'NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10',
+    'RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8',
+    // Big 12 unranked
+    'ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6',
+    'COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6',
+    'OKST':'1-11','UCF':'5-7','WVU':'4-8',
+    // ACC unranked
+    'BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5',
+    'FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6',
+    'PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8',
+    'VT':'5-7','WAKE':'9-4',
+  };
+
+  // Elo from AP rank for ranked teams: 1→1500, 25→1200
+  // Elo from win% for unranked: win%→ 900-1187 range
+  function eloFromRecord(rec){
+    var parts=rec.split('-');
+    var w=+parts[0]||0, l=+parts[1]||0;
+    var g=w+l; if(!g)return 1050;
+    var pct=w/g;
+    return Math.round(900+(pct*287)); // 0%→900, 100%→1187
+  }
+
+  var savedR={};
+  LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
+    savedR[t.abbr]=eloFromRecord(RECORDS2025[t.abbr]||'6-6');
+  });
+  AP2025.forEach(function(r){
+    savedR[r.abbr]=Math.round(1500-((r.rank-1)*12.5));
+  });
+
+  // Populate recordCache
+  window.recordCache=window.recordCache||{};
+  Object.keys(RECORDS2025).forEach(function(abbr){
+    window.recordCache['ncaafb_'+abbr]=RECORDS2025[abbr];
+  });
+
+  try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
+  if(ratingsStore)ratingsStore['ncaafb']=savedR;
+  seedTierFromPercentile();
+  if(currentLeague==='ncaafb'){ratings=savedR;renderRankings();}
+  console.log('[CFB] Seeded from 2025 final AP+records');
+
+  // Also try live AP poll
   fetch('https://site.api.espn.com/apis/v2/sports/football/college-football/rankings?group=80')
   .then(function(r){return r.json();})
   .then(function(data){
     var polls=(data.rankings||[]);
     var ap=polls.find(function(p){return p.name&&p.name.toLowerCase().indexOf('ap')>=0;})||polls[0];
-    if(!ap||!ap.ranks)return;
-    // Build abbr→rank map from AP poll
-    var rankMap={};
+    if(!ap||!ap.ranks||!ap.ranks.length)return;
+    var updated=Object.assign({},savedR);
     ap.ranks.forEach(function(r){
-      var abbr=(r.team||{}).abbreviation||'';
-      if(abbr&&r.current)rankMap[abbr.toUpperCase()]=r.current;
-    });
-    // Build NCAAFB abbreviation lookup
-    var abbrLookup={};
-    LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){abbrLookup[t.abbr]=t;});
-    // ESPN CFB abbreviations differ from our abbrs — build ESPN abbr map
-    var espnAbbrMap={};
-    ap.ranks.forEach(function(r){
-      var espnAbbr=((r.team||{}).abbreviation||'').toUpperCase();
       var name=((r.team||{}).displayName||'').toLowerCase();
-      // Match by name to our team list
       LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
-        if(t.name.toLowerCase()===name||t.name.toLowerCase().indexOf(name)>=0||name.indexOf(t.name.toLowerCase())>=0){
-          espnAbbrMap[espnAbbr]=t.abbr;
+        var tname=t.name.toLowerCase();
+        if(tname===name||name.split(' ')[0]===tname.split(' ')[0]&&name.split(' ').pop()===tname.split(' ').pop()){
+          var rank=r.current||25;
+          updated[t.abbr]=Math.round(1500-((rank-1)*12.5));
+          window.recordCache['ncaafb_'+t.abbr]='#'+rank;
         }
       });
     });
-    var savedR={};
-    LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
-      // Find AP rank for this team
-      var rank=null;
-      ap.ranks.forEach(function(r){
-        var name=((r.team||{}).displayName||'').toLowerCase();
-        if(t.name.toLowerCase()===name||t.name.toLowerCase().indexOf(name.split(' ')[0])>=0){
-          rank=r.current;
-        }
-      });
-      if(rank&&rank<=25){
-        // Ranked: 1→1500, 25→1200, linear
-        savedR[t.abbr]=Math.round(1500-((rank-1)*12.5));
-      } else {
-        savedR[t.abbr]=1050; // unranked default
-      }
-    });
-    try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
-    if(ratingsStore)ratingsStore['ncaafb']=savedR;
+    try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(updated));}catch(e){}
+    if(ratingsStore)ratingsStore['ncaafb']=updated;
     seedTierFromPercentile();
-    if(currentLeague==='ncaafb'){ratings=savedR;renderRankings();}
-    console.log('[CFB] Seeded from AP rankings');
-  }).catch(function(){
-    // No AP data — seed all at defaultElo
-    var savedR={};
-    LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){savedR[t.abbr]=1050;});
-    try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
-    if(ratingsStore)ratingsStore['ncaafb']=savedR;
-  });
+    if(currentLeague==='ncaafb'){ratings=updated;renderRankings();}
+    console.log('[CFB] Updated from live AP poll');
+  }).catch(function(){console.log('[CFB] Using 2025 seed data');});
 })();
 try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.parse(tp);}catch(e){}
 // Lock sport button widths so they don't resize when label changes
@@ -4724,7 +4777,7 @@ function showWelcome(force){
     <div id="welcome-modal">
       <div id="welcome-title">👋 welcome to game ranker</div>
       <div id="welcome-body">
-        <p>Game Ranker helps you find the most watchable games across five sports: basketball (NBA, WNBA), soccer (EPL, La Liga, Ligue 1, Serie A, Bundesliga, MLS), football (NFL, CFB), baseball (MLB), and hockey (NHL).</p>
+        <p>Game Ranker helps you find the most watchable games across five sports: basketball (NBA, WNBA), soccer (EPL, La Liga, Ligue 1, Serie A, Bundesliga, MLS), football (NFL, CFB — SEC, Big Ten, Big 12, ACC), baseball (MLB), and hockey (NHL).</p>
         <div class="welcome-section">
           <div class="welcome-section-title">📊 elo ratings</div>
           <p>Game Ranker is built around head-to-head Elo ratings within each sport. Every team has a score — higher means stronger — and games are ranked by how much combined strength is on the court, field, or pitch. Each sport starts ranked by current standings on a 900–1500 scale. You can refine rankings by clicking through matchups in the <strong>elo ratings</strong> tab, or hit <strong>sort by current record</strong> to reset to standings at any time.</p>
