@@ -229,7 +229,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.70</div>
+          <div>v4.72</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -280,6 +280,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         <div class="pill on" data-tcat="all" onclick="setTierCat('all')">all</div>
         <div class="pill" data-tcat="big4" onclick="setTierCat('big4')">big 4</div>
         <div class="pill" data-tcat="basketball" onclick="setTierCat('basketball')">basketball</div>
+        <div class="pill" data-tcat="football" onclick="setTierCat('football')">football</div>
         <div class="pill" data-tcat="soccer" onclick="setTierCat('soccer')">soccer</div>
         <div class="pill" data-tcat="custom" id="tier-custom-pill">custom</div>
         <button class="btn btn-sm btn-outline" style="margin-left:auto;white-space:nowrap" onclick="seedTierFromPercentile();renderTierRankings()">refresh ratings</button>
@@ -289,6 +290,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         <div class="sport-pill on" data-ts="nba" onclick="toggleTierSport('nba',this)">🏀 NBA</div>
         <div class="sport-pill on" data-ts="wnba" onclick="toggleTierSport('wnba',this)">🏀 WNBA</div>
         <div class="sport-pill on" data-ts="nfl" onclick="toggleTierSport('nfl',this)">🏈 NFL</div>
+        <div class="sport-pill on" data-ts="ncaafb" onclick="toggleTierSport('ncaafb',this)">🏈 CFB</div>
         <div class="sport-pill on" data-ts="nhl" onclick="toggleTierSport('nhl',this)">🏒 NHL</div>
         <div class="sport-pill on" data-ts="mlb" onclick="toggleTierSport('mlb',this)">⚾ MLB</div>
         <div class="sport-pill on" data-ts="epl" onclick="toggleTierSport('epl',this)">⚽ EPL</div>
@@ -429,6 +431,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div class="pill on" data-sportval="all" onclick="setSportFilter('all')">all</div>
           <div class="pill" data-sportval="big4" onclick="setSportFilter('big4')">big 4</div>
           <div class="pill" data-sportval="basketball" onclick="setSportFilter('basketball')">basketball</div>
+          <div class="pill" data-sportval="football" onclick="setSportFilter('football')">football</div>
           <div class="pill" data-sportval="soccer" onclick="setSportFilter('soccer')">soccer</div>
           <div class="pill" data-sportval="custom" onclick="setSportFilter('custom')">custom</div>
         </div>
@@ -437,6 +440,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div class="sport-pill on" data-sport="nba" onclick="toggleSport('nba',this)">🏀 NBA</div>
           <div class="sport-pill on" data-sport="wnba" onclick="toggleSport('wnba',this)">🏀 WNBA</div>
           <div class="sport-pill on" data-sport="nfl" onclick="toggleSport('nfl',this)">🏈 NFL</div>
+          <div class="sport-pill on" data-sport="ncaafb" onclick="toggleSport('ncaafb',this)">🏈 CFB</div>
           <div class="sport-pill on" data-sport="nhl" onclick="toggleSport('nhl',this)">🏒 NHL</div>
           <div class="sport-pill on" data-sport="mlb" onclick="toggleSport('mlb',this)">⚾ MLB</div>
           <div class="sport-pill on" data-sport="epl" onclick="toggleSport('epl',this)">⚽ EPL</div>
@@ -498,8 +502,6 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           </div>
         </div>
       </div>
-
-      <!-- BROADCAST -->
       <div class="fs">
         <div class="fs-head">
           <div class="fs-title">broadcast filter</div>
@@ -536,7 +538,11 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div id="team-include-bubbles" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;margin-bottom:8px"></div>
           <div style="font-family:var(--mono);font-size:10px;color:#993C1D;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">exclude</div>
           <select class="team-sel" id="team-exclude" onchange="addTeam('exclude',this)"><option value="">add a team...</option></select>
-          <div id="team-exclude-bubbles" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px"></div>
+          <div id="team-exclude-bubbles" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;margin-bottom:8px"></div>
+          <div id="div-filter-section" style="display:none;margin-top:8px">
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">conference</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px" id="div-pills"></div>
+          </div>
         </div>
       </div>
 
@@ -675,7 +681,18 @@ input:checked+.tog-track::after{transform:translateX(14px)}
             </div>
           </div>
 
-          <!-- STANDINGS — EPL only -->
+          <!-- RANKINGS — CFB only -->
+          <div class="bonus-section" id="ncaafb-bonuses-section" style="display:none">
+            <div class="bonus-section-head">
+              <div class="bonus-section-title">ap rankings</div>
+              <label class="tog tog-blue"><input type="checkbox" id="w-cfb-bon-on" checked onchange="toggleBonusSection('cfb-bon-nest',this)"/><span class="tog-track"></span></label>
+            </div>
+            <div id="cfb-bon-nest">
+              <div class="fw"><div class="fw-lbl">Top 5 clash<span class="fw-sub">both teams top 5</span></div><input type="number" class="fw-num" id="w-cfb-top5" value="300"/></div>
+              <div class="fw"><div class="fw-lbl">Top 10<span class="fw-sub">either team top 10</span></div><input type="number" class="fw-num" id="w-cfb-top10" value="200"/></div>
+              <div class="fw"><div class="fw-lbl">Top 25<span class="fw-sub">either team top 25</span></div><input type="number" class="fw-num" id="w-cfb-top25" value="100"/></div>
+            </div>
+          </div>
           <div class="bonus-section" id="epl-bonuses-section" style="display:none">
             <div class="bonus-section-head">
               <div class="bonus-section-title">champions league &amp; relegation</div>
@@ -871,7 +888,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.35', vdate: '2026-05-20',
+    title: 'ALL SPORTS', version: 'all.v2.38', vdate: '2026-05-20',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -938,7 +955,7 @@ var LEAGUE_CONFIGS = {
   },
 
   laliga: {
-    title: 'La Liga', version: 'laliga.v1.1', vdate: '2026-05-20',
+    title: 'La Liga', version: 'laliga.v1.2', vdate: '2026-05-20',
     icon: '⚽',
     storageKey: 'laliga',
     sport: 'soccer', league: 'esp.1',
@@ -977,7 +994,7 @@ var LEAGUE_CONFIGS = {
   },
 
   bundesliga: {
-    title: 'Bundesliga', version: 'bundesliga.v1.1', vdate: '2026-05-20',
+    title: 'Bundesliga', version: 'bundesliga.v1.2', vdate: '2026-05-20',
     icon: '⚽',
     storageKey: 'bundesliga',
     sport: 'soccer', league: 'ger.1',
@@ -1014,7 +1031,7 @@ var LEAGUE_CONFIGS = {
   },
 
   seriea: {
-    title: 'Serie A', version: 'seriea.v1.1', vdate: '2026-05-20',
+    title: 'Serie A', version: 'seriea.v1.2', vdate: '2026-05-20',
     icon: '⚽',
     storageKey: 'seriea',
     sport: 'soccer', league: 'ita.1',
@@ -1053,7 +1070,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ligue1: {
-    title: 'Ligue 1', version: 'ligue1.v1.1', vdate: '2026-05-20',
+    title: 'Ligue 1', version: 'ligue1.v1.2', vdate: '2026-05-20',
     icon: '⚽',
     storageKey: 'ligue1',
     sport: 'soccer', league: 'fra.1',
@@ -1324,6 +1341,102 @@ var LEAGUE_CONFIGS = {
     TMIN:900, TMAX:1500,
     CMIN:1920, CMAX:2931,
     chartMin:800, chartMax:1700,
+  },
+
+  ncaafb: {
+    title: 'CFB', version: 'ncaafb.v1.0', vdate: '2026-05-20',
+    icon: '🏈',
+    storageKey: 'ncaafb',
+    sport: 'football', league: 'college-football',
+    calDurH: 3.5, showLeaguePass: false,
+    showPlayoff: false, showWeekBar: false, showDateBar: true,
+    seriesMax: 0, showSweep: false, showIST: false,
+    networks: ['ESPN','ABC','Fox','FS1','CBS','SEC Network','Big Ten Network','ACC Network','ESPN+','ESPNU'],
+    logo: function(espn){ return 'https://a.espncdn.com/i/teamlogos/ncaa/500/'+espn+'.png'; },
+    teams: [
+      // SEC
+      {name:"Alabama",abbr:"BAMA",tierAbbr:"ncaafb_BAMA",espn:"333",div:"SEC"},
+      {name:"Arkansas",abbr:"ARK",tierAbbr:"ncaafb_ARK",espn:"8",div:"SEC"},
+      {name:"Auburn",abbr:"AUB",tierAbbr:"ncaafb_AUB",espn:"2",div:"SEC"},
+      {name:"Florida",abbr:"FLA",tierAbbr:"ncaafb_FLA",espn:"57",div:"SEC"},
+      {name:"Georgia",abbr:"UGA",tierAbbr:"ncaafb_UGA",espn:"61",div:"SEC"},
+      {name:"Kentucky",abbr:"UK",tierAbbr:"ncaafb_UK",espn:"96",div:"SEC"},
+      {name:"LSU",abbr:"LSU",tierAbbr:"ncaafb_LSU",espn:"99",div:"SEC"},
+      {name:"Mississippi State",abbr:"MSST",tierAbbr:"ncaafb_MSST",espn:"344",div:"SEC"},
+      {name:"Missouri",abbr:"MIZ",tierAbbr:"ncaafb_MIZ",espn:"142",div:"SEC"},
+      {name:"Oklahoma",abbr:"OU",tierAbbr:"ncaafb_OU",espn:"201",div:"SEC"},
+      {name:"Ole Miss",abbr:"MISS",tierAbbr:"ncaafb_MISS",espn:"145",div:"SEC"},
+      {name:"South Carolina",abbr:"SC",tierAbbr:"ncaafb_SC",espn:"2579",div:"SEC"},
+      {name:"Tennessee",abbr:"TENN",tierAbbr:"ncaafb_TENN",espn:"2633",div:"SEC"},
+      {name:"Texas",abbr:"TEX",tierAbbr:"ncaafb_TEX",espn:"251",div:"SEC"},
+      {name:"Texas A&M",abbr:"TAMU",tierAbbr:"ncaafb_TAMU",espn:"245",div:"SEC"},
+      {name:"Vanderbilt",abbr:"VAN",tierAbbr:"ncaafb_VAN",espn:"238",div:"SEC"},
+      // Big Ten
+      {name:"Illinois",abbr:"ILL",tierAbbr:"ncaafb_ILL",espn:"356",div:"Big Ten"},
+      {name:"Indiana",abbr:"IU",tierAbbr:"ncaafb_IU",espn:"84",div:"Big Ten"},
+      {name:"Iowa",abbr:"IOWA",tierAbbr:"ncaafb_IOWA",espn:"2294",div:"Big Ten"},
+      {name:"Maryland",abbr:"UMD",tierAbbr:"ncaafb_UMD",espn:"120",div:"Big Ten"},
+      {name:"Michigan",abbr:"MICH",tierAbbr:"ncaafb_MICH",espn:"130",div:"Big Ten"},
+      {name:"Michigan State",abbr:"MSU",tierAbbr:"ncaafb_MSU",espn:"127",div:"Big Ten"},
+      {name:"Minnesota",abbr:"MINN",tierAbbr:"ncaafb_MINN",espn:"135",div:"Big Ten"},
+      {name:"Nebraska",abbr:"NEB",tierAbbr:"ncaafb_NEB",espn:"158",div:"Big Ten"},
+      {name:"Northwestern",abbr:"NW",tierAbbr:"ncaafb_NW",espn:"77",div:"Big Ten"},
+      {name:"Ohio State",abbr:"OSU",tierAbbr:"ncaafb_OSU",espn:"194",div:"Big Ten"},
+      {name:"Oregon",abbr:"ORE",tierAbbr:"ncaafb_ORE",espn:"2483",div:"Big Ten"},
+      {name:"Penn State",abbr:"PSU",tierAbbr:"ncaafb_PSU",espn:"213",div:"Big Ten"},
+      {name:"Purdue",abbr:"PUR",tierAbbr:"ncaafb_PUR",espn:"2509",div:"Big Ten"},
+      {name:"Rutgers",abbr:"RUT",tierAbbr:"ncaafb_RUT",espn:"164",div:"Big Ten"},
+      {name:"UCLA",abbr:"UCLA",tierAbbr:"ncaafb_UCLA",espn:"26",div:"Big Ten"},
+      {name:"USC",abbr:"USC",tierAbbr:"ncaafb_USC",espn:"30",div:"Big Ten"},
+      {name:"Washington",abbr:"WASH",tierAbbr:"ncaafb_WASH",espn:"264",div:"Big Ten"},
+      {name:"Wisconsin",abbr:"WIS",tierAbbr:"ncaafb_WIS",espn:"275",div:"Big Ten"},
+      // Big 12
+      {name:"Arizona",abbr:"ARIZ",tierAbbr:"ncaafb_ARIZ",espn:"12",div:"Big 12"},
+      {name:"Arizona State",abbr:"ASU",tierAbbr:"ncaafb_ASU",espn:"9",div:"Big 12"},
+      {name:"Baylor",abbr:"BAY",tierAbbr:"ncaafb_BAY",espn:"239",div:"Big 12"},
+      {name:"BYU",abbr:"BYU",tierAbbr:"ncaafb_BYU",espn:"252",div:"Big 12"},
+      {name:"Cincinnati",abbr:"CIN",tierAbbr:"ncaafb_CIN",espn:"2132",div:"Big 12"},
+      {name:"Colorado",abbr:"COLO",tierAbbr:"ncaafb_COLO",espn:"38",div:"Big 12"},
+      {name:"Houston",abbr:"HOU",tierAbbr:"ncaafb_HOU",espn:"248",div:"Big 12"},
+      {name:"Iowa State",abbr:"ISU",tierAbbr:"ncaafb_ISU",espn:"66",div:"Big 12"},
+      {name:"Kansas",abbr:"KU",tierAbbr:"ncaafb_KU",espn:"2305",div:"Big 12"},
+      {name:"Kansas State",abbr:"KSU",tierAbbr:"ncaafb_KSU",espn:"2306",div:"Big 12"},
+      {name:"Oklahoma State",abbr:"OKST",tierAbbr:"ncaafb_OKST",espn:"197",div:"Big 12"},
+      {name:"TCU",abbr:"TCU",tierAbbr:"ncaafb_TCU",espn:"2628",div:"Big 12"},
+      {name:"Texas Tech",abbr:"TTU",tierAbbr:"ncaafb_TTU",espn:"2641",div:"Big 12"},
+      {name:"UCF",abbr:"UCF",tierAbbr:"ncaafb_UCF",espn:"2116",div:"Big 12"},
+      {name:"Utah",abbr:"UTAH",tierAbbr:"ncaafb_UTAH",espn:"254",div:"Big 12"},
+      {name:"West Virginia",abbr:"WVU",tierAbbr:"ncaafb_WVU",espn:"277",div:"Big 12"},
+      // ACC
+      {name:"Boston College",abbr:"BC",tierAbbr:"ncaafb_BC",espn:"103",div:"ACC"},
+      {name:"California",abbr:"CAL",tierAbbr:"ncaafb_CAL",espn:"25",div:"ACC"},
+      {name:"Clemson",abbr:"CLEM",tierAbbr:"ncaafb_CLEM",espn:"228",div:"ACC"},
+      {name:"Duke",abbr:"DUKE",tierAbbr:"ncaafb_DUKE",espn:"150",div:"ACC"},
+      {name:"Florida State",abbr:"FSU",tierAbbr:"ncaafb_FSU",espn:"52",div:"ACC"},
+      {name:"Georgia Tech",abbr:"GT",tierAbbr:"ncaafb_GT",espn:"59",div:"ACC"},
+      {name:"Louisville",abbr:"LOU",tierAbbr:"ncaafb_LOU",espn:"97",div:"ACC"},
+      {name:"Miami",abbr:"MIA",tierAbbr:"ncaafb_MIA",espn:"2390",div:"ACC"},
+      {name:"NC State",abbr:"NCST",tierAbbr:"ncaafb_NCST",espn:"152",div:"ACC"},
+      {name:"North Carolina",abbr:"UNC",tierAbbr:"ncaafb_UNC",espn:"153",div:"ACC"},
+      {name:"Notre Dame",abbr:"ND",tierAbbr:"ncaafb_ND",espn:"87",div:"ACC"},
+      {name:"Pittsburgh",abbr:"PITT",tierAbbr:"ncaafb_PITT",espn:"221",div:"ACC"},
+      {name:"SMU",abbr:"SMU",tierAbbr:"ncaafb_SMU",espn:"2567",div:"ACC"},
+      {name:"Stanford",abbr:"STAN",tierAbbr:"ncaafb_STAN",espn:"24",div:"ACC"},
+      {name:"Syracuse",abbr:"SYR",tierAbbr:"ncaafb_SYR",espn:"183",div:"ACC"},
+      {name:"Virginia",abbr:"UVA",tierAbbr:"ncaafb_UVA",espn:"258",div:"ACC"},
+      {name:"Virginia Tech",abbr:"VT",tierAbbr:"ncaafb_VT",espn:"259",div:"ACC"},
+      {name:"Wake Forest",abbr:"WAKE",tierAbbr:"ncaafb_WAKE",espn:"154",div:"ACC"},
+    ],
+    defaultElo: 1050,
+    TMIN:900, TMAX:1500,
+    CMIN:1820, CMAX:3000, chartMin:800, chartMax:1700,
+    scoreGame: function(g, v, em){
+      var combined=(em[g.awayAbbr]||1050)+(em[g.homeAbbr]||1050);
+      return combined+(g.lev||0)+(g.tvBonus||0);
+    },
+    parseExtra: function(){ return {}; },
+    extraBadges: function(){ return ''; },
+    extraVsInfo: function(){ return ''; },
   }
 };
 
@@ -1335,7 +1448,7 @@ var currentLeague = 'all';
 var currentTab = 'games';
 var LC = LEAGUE_CONFIGS.nba; // shorthand, updated on switch
 var DOT_TOP3=["#BA7517","#888780","#854F0B"]; // gold, silver, bronze
-var LEAGUE_DOT_COLORS={nba:'#C8102E',wnba:'#E8892A',epl:'#3D7A5C',mlb:'#A0603A',nhl:'#4E8A9E',nfl:'#3A5A8C',mls:'#5E9E72',laliga:'#2E7D4F',bundesliga:'#4A8C3F',seriea:'#3B7A55',ligue1:'#5A9E6A',all:'#BA7517'};
+var LEAGUE_DOT_COLORS={nba:'#C8102E',wnba:'#E8892A',epl:'#3D7A5C',mlb:'#A0603A',nhl:'#4E8A9E',nfl:'#3A5A8C',ncaafb:'#7E57C2',mls:'#5E9E72',laliga:'#2E7D4F',bundesliga:'#4A8C3F',seriea:'#3B7A55',ligue1:'#5A9E6A',all:'#BA7517'};
 function getDotColor(i,league){return LEAGUE_DOT_COLORS[league]||LEAGUE_DOT_COLORS.all;}
 function getMedalBorder(rank){if(rank===1)return'3px solid #BA7517';if(rank===2)return'3px solid #9A9A9A';if(rank===3)return'3px solid #7A5230';return'none';}
 function dotsHtml(n,color){var c=color||'#3B6D11';var h='';for(var i=0;i<5;i++)h+='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 1px;background:'+(i<n?c:'#D3D1C7')+'"></span>';return h;}
@@ -1426,7 +1539,7 @@ function getTierLabel(abbr){
 
 function getAllTeamTierRankings(){
   var all=[];
-  ['nba','wnba','mlb','nhl','nfl','epl','laliga','bundesliga','seriea','ligue1','mls'].forEach(function(lg){
+  ['nba','wnba','mlb','nhl','nfl','ncaafb','epl','laliga','bundesliga','seriea','ligue1','mls'].forEach(function(lg){
     LEAGUE_CONFIGS[lg].teams.forEach(function(t){
       var ta=t.tierAbbr||lg+'_'+t.abbr;
       all.push({abbr:t.abbr,tierAbbr:ta,name:t.name,league:lg,logo:LEAGUE_CONFIGS[lg].logo(t.espn),elo:tierElo[ta]||TIER_DEFAULT});
@@ -1466,7 +1579,7 @@ function tierBadgeHtml(abbr){
 function seedTierFromPercentile(){
   // Import each team's raw sport Elo directly into tier Elo
   // Read from in-memory ratingsStore first (most current), fall back to localStorage
-  ['nba','wnba','mlb','nhl','nfl','epl','laliga','bundesliga','seriea','ligue1','mls'].forEach(function(lg){
+  ['nba','wnba','mlb','nhl','nfl','ncaafb','epl','laliga','bundesliga','seriea','ligue1','mls'].forEach(function(lg){
     var cfg=LEAGUE_CONFIGS[lg];
     var ratings_lg=ratingsStore[cfg.storageKey]||null;
     if(!ratings_lg){
@@ -1582,7 +1695,7 @@ function renderTierRanker(){
   if(!done)assignTierButtons();
 }
 
-var tierSports={nba:true,wnba:true,mlb:true,nhl:true,nfl:true,epl:true,mls:true,laliga:true,bundesliga:true,seriea:true,ligue1:true};
+var tierSports={nba:true,wnba:true,mlb:true,nhl:true,nfl:true,ncaafb:true,epl:true,mls:true,laliga:true,bundesliga:true,seriea:true,ligue1:true};
 
 
 function syncTierSportPills(){
@@ -1592,10 +1705,11 @@ function syncTierSportPills(){
 }
 function setTierCat(cat){
   var presets={
-    all:{nba:true,wnba:true,mlb:true,nhl:true,nfl:true,epl:true,mls:true,laliga:true,bundesliga:true,seriea:true,ligue1:true},
-    big4:{nba:true,wnba:false,mlb:true,nhl:true,nfl:true,epl:false,mls:false,laliga:false,bundesliga:false,seriea:false,ligue1:false},
-    basketball:{nba:true,wnba:true,mlb:false,nhl:false,nfl:false,epl:false,mls:false,laliga:false,bundesliga:false,seriea:false,ligue1:false},
-    soccer:{nba:false,wnba:false,mlb:false,nhl:false,nfl:false,epl:true,mls:true,laliga:true,bundesliga:true,seriea:true,ligue1:true},
+    all:{nba:true,wnba:true,mlb:true,nhl:true,nfl:true,ncaafb:true,epl:true,mls:true,laliga:true,bundesliga:true,seriea:true,ligue1:true},
+    big4:{nba:true,wnba:false,mlb:true,nhl:true,nfl:true,ncaafb:false,epl:false,mls:false,laliga:false,bundesliga:false,seriea:false,ligue1:false},
+    basketball:{nba:true,wnba:true,mlb:false,nhl:false,nfl:false,ncaafb:false,epl:false,mls:false,laliga:false,bundesliga:false,seriea:false,ligue1:false},
+    football:{nba:false,wnba:false,mlb:false,nhl:false,nfl:true,ncaafb:true,epl:false,mls:false,laliga:false,bundesliga:false,seriea:false,ligue1:false},
+    soccer:{nba:false,wnba:false,mlb:false,nhl:false,nfl:false,ncaafb:false,epl:true,mls:true,laliga:true,bundesliga:true,seriea:true,ligue1:true},
   };
   if(presets[cat]){
     tierSports=Object.assign({},presets[cat]);
@@ -1613,7 +1727,7 @@ function setTierCat(cat){
   renderTierRankings();
 }
 function syncSportFilters(){
-  var ALL_SPORTS=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1'];
+  var ALL_SPORTS=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1','ncaafb'];
   includeSports=ALL_SPORTS.filter(function(s){return tierSports[s]!==false;});
   // Update games tab pills
   document.querySelectorAll('#sport-pill-wrap .sport-pill').forEach(function(el){
@@ -1640,7 +1754,7 @@ function renderTierRankings(){
   // Apply sport filter — show only selected sports
   var filtered=all.filter(function(t){return tierSports[t.league]!==false;});
   // Re-rank within filtered set for tier display
-  var lgIcons={nba:'🏀',wnba:'🏀',mlb:'⚾',nfl:'🏈',nhl:'🏒',epl:'⚽',mls:'⚽',laliga:'⚽',bundesliga:'⚽',seriea:'⚽',ligue1:'⚽'};
+  var lgIcons={nba:'🏀',wnba:'🏀',mlb:'⚾',nfl:'🏈',nhl:'🏒',ncaafb:'🏈',epl:'⚽',mls:'⚽',laliga:'⚽',bundesliga:'⚽',seriea:'⚽',ligue1:'⚽'};
   var html='';
   var lastTier='';
   filtered.forEach(function(t,i){
@@ -1795,6 +1909,39 @@ function confirmReset(){
 
 function rankByRecord(){
   document.getElementById('saved-note').textContent='fetching standings...';
+
+  // CFB: use AP poll rankings instead of standings
+  if(currentLeague==='ncaafb'){
+    fetch('https://site.api.espn.com/apis/v2/sports/football/college-football/rankings?group=80')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var polls=(data.rankings||[]);
+      var ap=polls.find(function(p){return p.name&&p.name.toLowerCase().indexOf('ap')>=0;})||polls[0];
+      var savedR={};
+      LC.teams.forEach(function(t){savedR[t.abbr]=LC.defaultElo;});
+      if(ap&&ap.ranks){
+        var top25=ap.ranks.slice(0,25);
+        top25.forEach(function(r){
+          var name=((r.team||{}).displayName||'').toLowerCase();
+          LC.teams.forEach(function(t){
+            if(t.name.toLowerCase()===name||name.indexOf(t.name.toLowerCase().split(' ')[0])>=0&&t.name.toLowerCase().indexOf(name.split(' ')[0])>=0){
+              var rank=r.current||r.previous||25;
+              savedR[t.abbr]=Math.round(1500-((rank-1)*12.5));
+              window.recordCache=window.recordCache||{};
+              window.recordCache['ncaafb_'+t.abbr]='#'+rank;
+            }
+          });
+        });
+      }
+      try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
+      if(ratingsStore)ratingsStore['ncaafb']=savedR;
+      ratings=savedR;
+      seedTierFromPercentile();
+      renderRankings();
+      document.getElementById('saved-note').textContent='sorted by AP rankings';
+    }).catch(function(){document.getElementById('saved-note').textContent='could not load rankings';});
+    return;
+  }
 
   var ESPN_ABBR_MAP={
     'NO':'NOP','GS':'GSW','SA':'SAS','NY':'NYK','UTAH':'UTA',
@@ -2300,9 +2447,44 @@ function toHr(t){var p=(t||'00:00').split(':');return+p[0]+(+p[1]/60);}
 var bcastVal='categories',dayVal='all',dateMode='single';
 var bcastCats={national:true,streaming:true,lp:true};
 var enabledNets={},enabledDows={0:true,1:true,2:true,3:true,4:true,5:true,6:true};
+var enabledDivs={}; // division filter for CFB (and future use)
+
+function buildDivPills(){
+  var container=document.getElementById('div-pills');
+  var section=document.getElementById('div-filter-section');
+  if(!container||!section)return;
+  container.innerHTML='';
+  // Only show for CFB
+  if(!LC||LC.storageKey!=='ncaafb'){section.style.display='none';return;}
+  var divs=[];
+  LC.teams.forEach(function(t){if(t.div&&divs.indexOf(t.div)<0)divs.push(t.div);});
+  if(!divs.length){section.style.display='none';return;}
+  section.style.display='';
+  divs.forEach(function(d){if(enabledDivs[d]===undefined)enabledDivs[d]=true;});
+  divs.forEach(function(d){
+    var pill=document.createElement('span');
+    pill.className='net-pill'+(enabledDivs[d]?' on':'');
+    pill.textContent=d;
+    pill.dataset.div=d;
+    pill.onclick=function(){toggleDiv(this);};
+    container.appendChild(pill);
+  });
+}
+function toggleDiv(el){
+  var d=el.dataset.div;
+  enabledDivs[d]=!enabledDivs[d];
+  el.classList.toggle('on',enabledDivs[d]);
+  // If all off, turn all on
+  var vals=Object.values(enabledDivs);
+  if(vals.length&&vals.every(function(v){return !v;})){
+    Object.keys(enabledDivs).forEach(function(k){enabledDivs[k]=true;});
+    document.querySelectorAll('#div-pills .net-pill').forEach(function(p){p.classList.add('on');});
+  }
+  updateStates();
+}
 
 // Shared networks across all sports
-var SHARED_NETS=['ABC','CBS','NBC','Fox','FS1','ESPN','ESPN+','ESPN2','ESPN Deportes','TNT','TBS','Prime Video','Peacock','Max','Apple TV+','USA Network','Paramount+','CBS Sports Network','CBS Sports Golazo','Fox Deportes','beIN Sports','beIN Sports en Español','beIN Sports Connect'];
+var SHARED_NETS=['ABC','CBS','NBC','Fox','FS1','ESPN','ESPN+','ESPN2','ESPN Deportes','TNT','TBS','Prime Video','Peacock','Max','Apple TV+','USA Network','Paramount+','CBS Sports Network','CBS Sports Golazo','Fox Deportes','beIN Sports','beIN Sports en Español','beIN Sports Connect','SEC Network','Big Ten Network','ACC Network','ESPNU'];
 var STREAM_CATS=['ESPN+','Prime Video','Peacock','Max','Apple TV+','Paramount+','beIN Sports Connect'];
 var LP_CATS_MAP={
   nba:['League Pass'],wnba:['League Pass'],mlb:['MLB.TV'],nhl:['NHL.TV'],
@@ -2334,7 +2516,7 @@ var SPORT_SPECIFIC_NETS={
   laliga:['ESPN2','ESPN Deportes'],
   bundesliga:['ESPN2','ESPN Deportes'],
   seriea:['CBS Sports Network','CBS Sports Golazo','Fox Deportes'],
-  ligue1:['beIN Sports','beIN Sports en Español','beIN Sports Connect'],
+  ncaafb:['SEC Network','Big Ten Network','ACC Network','ESPNU'],
 };
 function makePill(n,cat,on){
   var el=document.createElement('span');
@@ -2357,45 +2539,56 @@ function buildNetworkPills(){
   enabledNets={};
   var lk=currentLeague==='all'?'all':currentLeague;
   var lpNets=LP_CATS_MAP[lk]||[];
-  // Shared networks — rendered in SHARED_NETS order
+
+  // In all-sports mode, union all networks from all active leagues
+  // Exclude networks that only appear in a single euro league (too niche for all-sports view)
+  var EURO_ONLY=['beIN Sports','beIN Sports en Español','beIN Sports Connect',
+                 'CBS Sports Network','CBS Sports Golazo','Fox Deportes','ESPN Deportes'];
+  var activeNets=LC.networks.slice();
+  if(lk==='all'){
+    var ALL_LG_KEYS=['nba','wnba','mlb','nhl','nfl','ncaafb','epl','laliga','bundesliga','seriea','ligue1','mls'];
+    ALL_LG_KEYS.forEach(function(k){
+      if(LEAGUE_CONFIGS[k]){
+        LEAGUE_CONFIGS[k].networks.forEach(function(n){
+          if(activeNets.indexOf(n)<0&&EURO_ONLY.indexOf(n)<0)activeNets.push(n);
+        });
+      }
+    });
+  }
+
+  // Render all networks flat in SHARED_NETS order, then any remainder
+  var rendered=[];
   SHARED_NETS.forEach(function(n){
-    if(LC.networks.indexOf(n)<0)return; // only if sport uses it
+    if(activeNets.indexOf(n)<0)return;
     var isStream=STREAM_CATS.indexOf(n)>=0;
-    var isLP=lpNets.indexOf(n)>=0;
+    var isLP=(LP_CATS_MAP[lk]||[]).indexOf(n)>=0;
     var cat=isStream?'streaming':isLP?'lp':'national';
     sharedWrap.appendChild(makePill(n,cat,bcastCats[cat]!==false));
+    rendered.push(n);
   });
-  // Sport-specific: group by sport with label
-  var sportGroups=lk==='all'?
-    [{key:'nba',icon:'🏀',label:'NBA'},{key:'wnba',icon:'🏀',label:'WNBA'},
-     {key:'mlb',icon:'⚾',label:'MLB'},{key:'nhl',icon:'🏒',label:'NHL'},
-     {key:'nfl',icon:'🏈',label:'NFL'},{key:'epl',icon:'⚽',label:'EPL'},
-     {key:'laliga',icon:'⚽',label:'La Liga'},{key:'bundesliga',icon:'⚽',label:'Bundesliga'},
-     {key:'seriea',icon:'⚽',label:'Serie A'},{key:'ligue1',icon:'⚽',label:'Ligue 1'},
-     {key:'mls',icon:'⚽',label:'MLS'}]:
-    [{key:lk,icon:'',label:''}];
-  sportGroups.forEach(function(sg){
-    var nets=SPORT_SPECIFIC_NETS[sg.key]||[];
-    var validNets=nets.filter(function(n){return LC.networks.indexOf(n)>=0&&SHARED_NETS.indexOf(n)<0;});
-    if(!validNets.length)return;
-    // Row: label + pills on same line
-    var row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:4px;width:100%;flex-wrap:wrap;margin-top:4px;';
-    if(sg.label){
-      var lbl=document.createElement('span');
-      lbl.style.cssText='font-size:10px;font-family:var(--mono);color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;margin-right:2px;';
-      lbl.textContent=sg.icon+' '+sg.label;
-      row.appendChild(lbl);
-    }
-    validNets.forEach(function(n){
-      var lpNetsLocal=LP_CATS_MAP[sg.key]||[];
-      var isStream=STREAM_CATS.indexOf(n)>=0;
-      var isLP=lpNetsLocal.indexOf(n)>=0;
-      var cat=isStream?'streaming':isLP?'lp':'national';
-      row.appendChild(makePill(n,cat,bcastCats[cat]!==false));
+  // Any sport-specific nets not in SHARED_NETS
+  if(lk==='all'){
+    var ALL_LG_KEYS2=['nba','wnba','mlb','nhl','nfl','ncaafb','epl','laliga','bundesliga','seriea','ligue1','mls'];
+    ALL_LG_KEYS2.forEach(function(k){
+      (SPORT_SPECIFIC_NETS[k]||[]).forEach(function(n){
+        if(rendered.indexOf(n)>=0||EURO_ONLY.indexOf(n)>=0)return;
+        var isStream=STREAM_CATS.indexOf(n)>=0;
+        var isLP=(LP_CATS_MAP[k]||[]).indexOf(n)>=0;
+        var cat=isStream?'streaming':isLP?'lp':'national';
+        sharedWrap.appendChild(makePill(n,cat,bcastCats[cat]!==false));
+        rendered.push(n);
+      });
     });
-    sportWrap.appendChild(row);
-  });
+  } else {
+    // Per-league: sport-specific nets without labels
+    (SPORT_SPECIFIC_NETS[lk]||[]).forEach(function(n){
+      if(rendered.indexOf(n)>=0||activeNets.indexOf(n)<0)return;
+      var isStream=STREAM_CATS.indexOf(n)>=0;
+      var isLP=(LP_CATS_MAP[lk]||[]).indexOf(n)>=0;
+      var cat=isStream?'streaming':isLP?'lp':'national';
+      sportWrap.appendChild(makePill(n,cat,bcastCats[cat]!==false));
+    });
+  }
 }
 
 function setDateMode(mode){
@@ -2619,7 +2812,7 @@ function applyFilterState(s){
   includeTeams=s.includeTeams||[];excludeTeams=s.excludeTeams||[];renderTeamBubbles();
   if(s.includeSports&&currentLeague==='all'){
     includeSports=s.includeSports;
-    var ALL_S=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1'];
+    var ALL_S=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1','ncaafb'];
     ALL_S.forEach(function(sp){tierSports[sp]=includeSports.indexOf(sp)>=0;});
     document.querySelectorAll('#sport-pill-wrap .sport-pill').forEach(function(el){el.classList.toggle('on',includeSports.indexOf(el.dataset.sport)>=0);});
     document.querySelectorAll('#tier-sport-filter .sport-pill').forEach(function(el){el.classList.toggle('on',tierSports[el.dataset.ts]!==false);});
@@ -2850,6 +3043,10 @@ function processEvent(ev,tz){
     'BALLY':'NHL.TV','BALLY SPORTS':'NHL.TV',
     'MSGN':'NHL.TV','MSG':'NHL.TV',
     'NESN':'NHL.TV','KSBY':'NHL.TV',
+    'SEC NETWORK':'SEC Network','SECN':'SEC Network','SEC NET':'SEC Network',
+    'BIG TEN NETWORK':'Big Ten Network','BTN':'Big Ten Network','B1G':'Big Ten Network',
+    'ACC NETWORK':'ACC Network','ACCN':'ACC Network','ACC NET':'ACC Network',
+    'ESPNU':'ESPNU',
     'PARAMOUNT+':'Paramount+','PARAMOUNT PLUS':'Paramount+','PARAMOUNTPLUS':'Paramount+',
     'CBS SPORTS NETWORK':'CBS Sports Network','CBSSN':'CBS Sports Network','CBS SPORTS NET':'CBS Sports Network',
     'CBS SPORTS GOLAZO':'CBS Sports Golazo','CBS SPORTS GOLAZO NETWORK':'CBS Sports Golazo','GOLAZO':'CBS Sports Golazo',
@@ -2998,6 +3195,24 @@ function processEvent(ev,tz){
     } else if(awayTeamData&&homeTeamData&&awayTeamData.div&&homeTeamData.div&&awayIsAFC!==homeIsAFC&&nflInterVal){
       lev+=nflInterVal;levLbl=levLbl?levLbl+' + interconf':'interconference';
     }
+  }
+  if(gameLeague==='ncaafb'){
+    var cfbBonOn=document.getElementById('w-cfb-bon-on')?document.getElementById('w-cfb-bon-on').checked:true;
+    if(cfbBonOn){
+      // Get AP rank from Elo rating: rank≈ ceil((1500-elo)/12.5)+1
+      function cfbRank(abbr){
+        var e=ratings[abbr]||LEAGUE_CONFIGS.ncaafb.defaultElo;
+        if(e>=1200){return Math.round((1500-e)/12.5)+1;} // 1200→25, 1500→1
+        return 99; // unranked
+      }
+      var awayRank=cfbRank(ad.abbr), homeRank=cfbRank(hd.abbr);
+      var top5Val=+(document.getElementById('w-cfb-top5')||{value:300}).value||0;
+      var top10Val=+(document.getElementById('w-cfb-top10')||{value:200}).value||0;
+      var top25Val=+(document.getElementById('w-cfb-top25')||{value:100}).value||0;
+      if(awayRank<=5&&homeRank<=5&&top5Val){lev+=top5Val;levLbl='top 5 clash';}
+      else if((awayRank<=10||homeRank<=10)&&top10Val){lev+=top10Val;levLbl='top 10';}
+      else if((awayRank<=25||homeRank<=25)&&top25Val){lev+=top25Val;levLbl='top 25';}
+    }
   } else if(comp.series&&isPostseason){
     // NBA/WNBA playoff series
     var ser=comp.series;
@@ -3063,7 +3278,8 @@ function processEvent(ev,tz){
     }
   }
 
-  var tvBonus=(isNat&&document.getElementById('w-tv-on').checked)?+document.getElementById('w-tv-bonus').value||0:0;
+  var tvBonusAmt=currentLeague==='all'?(+(tvBonusStore[gameLeague]||100)):(+(document.getElementById('w-tv-bonus').value||100));
+  var tvBonus=(isNat&&document.getElementById('w-tv-on').checked)?tvBonusAmt:0;
   var total=combined+lev+tvBonus;
 
   function pad2(n){return String(n).padStart(2,'0');}
@@ -3099,6 +3315,15 @@ function processEvent(ev,tz){
 function applyFilters(games){
   if(includeTeams.length>0)games=games.filter(function(g){return includeTeams.indexOf(g.homeAbbr)>=0||includeTeams.indexOf(g.awayAbbr)>=0;});
   if(excludeTeams.length>0)games=games.filter(function(g){return excludeTeams.indexOf(g.homeAbbr)<0&&excludeTeams.indexOf(g.awayAbbr)<0;});
+  // Division/conference filter (CFB)
+  var divKeys=Object.keys(enabledDivs);
+  if(divKeys.length&&!divKeys.every(function(k){return enabledDivs[k];})){
+    games=games.filter(function(g){
+      function teamDiv(abbr){var t=LC.teams.find(function(t){return t.abbr===abbr;});return t?t.div:null;}
+      var ad=teamDiv(g.awayAbbr), hd=teamDiv(g.homeAbbr);
+      return (ad&&enabledDivs[ad])||(hd&&enabledDivs[hd]);
+    });
+  }
   var bcastOn=document.getElementById('w-bcast-on').checked;
   if(bcastOn){
     if(bcastVal==='categories'){
@@ -3243,6 +3468,7 @@ function loadAllGames(callback){
     {sport:'soccer',league:'usa.1',cfg:LEAGUE_CONFIGS.mls,key:'mls'},
     {sport:'hockey',league:'nhl',cfg:LEAGUE_CONFIGS.nhl,key:'nhl'},
     {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl,key:'nfl'},
+    {sport:'football',league:'college-football',cfg:LEAGUE_CONFIGS.ncaafb,key:'ncaafb'},
   ];
   // Only fetch sports that are currently included
   var sports=allSports.filter(function(sp){return includeSports.indexOf(sp.key)>=0;});
@@ -3535,6 +3761,7 @@ function loadRange(){
         {sport:'soccer',league:'usa.1',cfg:LEAGUE_CONFIGS.mls,key:'mls'},
         {sport:'hockey',league:'nhl',cfg:LEAGUE_CONFIGS.nhl,key:'nhl'},
         {sport:'football',league:'nfl',cfg:LEAGUE_CONFIGS.nfl,key:'nfl'},
+        {sport:'football',league:'college-football',cfg:LEAGUE_CONFIGS.ncaafb,key:'ncaafb'},
       ].filter(function(sp){return includeSports.indexOf(sp.key)>=0;});
       var sportPending=allSports.length;
       function onSportDone(){
@@ -3727,8 +3954,9 @@ function initPicker(id,attr,setFn){
 
 // ── TEAM FILTER ──
 var includeTeams=[],excludeTeams=[];
-var includeSports=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1']; // all on by default
+var includeSports=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1','ncaafb']; // all on by default
 var teamFilterStore={}; // saves team filters per league
+var tvBonusStore={}; // saves tv bonus amount per league
 function populateTeamDropdowns(){
   ['team-include','team-exclude'].forEach(function(id){
     var sel=document.getElementById(id);
@@ -3751,13 +3979,15 @@ function removeTeam(mode,abbr){
   renderTeamBubbles();
 }
 function setSportFilter(val){
-  var ALL_SPORTS=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1'];
+  var ALL_SPORTS=['nba','wnba','nfl','nhl','mlb','epl','mls','laliga','bundesliga','seriea','ligue1','ncaafb'];
   var BIG4=['nba','nfl','mlb','nhl'];
   var BBALL=['nba','wnba'];
   var SOCCER=['epl','mls','laliga','bundesliga','seriea','ligue1'];
+  var FOOTBALL=['nfl','ncaafb'];
   if(val==='all')includeSports=ALL_SPORTS.slice();
   else if(val==='big4')includeSports=BIG4.slice();
   else if(val==='basketball')includeSports=BBALL.slice();
+  else if(val==='football')includeSports=FOOTBALL.slice();
   else if(val==='soccer')includeSports=SOCCER.slice();
   // Sync to tierSports
   ALL_SPORTS.forEach(function(s){tierSports[s]=includeSports.indexOf(s)>=0;});
@@ -3863,7 +4093,7 @@ var SPORT_CATS={
     {lg:'ligue1',label:'Ligue 1',logo:'https://a.espncdn.com/i/leaguelogos/soccer/500/9.png'},
     {lg:'mls',label:'MLS',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png'}
   ],
-  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'}],
+  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'https://a.espncdn.com/i/leaguelogos/ncaa-football/500/100.png'}],
   baseball:[{lg:'mlb',label:'MLB',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png'}],
   hockey:[{lg:'nhl',label:'NHL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png'}],
 };
@@ -3927,6 +4157,7 @@ function switchLeague(lg){
     mlb:        {amber:'#A0603A', amberDark:'#7a4528'},
     nhl:        {amber:'#4E8A9E', amberDark:'#376478'},
     nfl:        {amber:'#3A5A8C', amberDark:'#274068'},
+    ncaafb:     {amber:'#7E57C2', amberDark:'#5c3d9e'},
     mls:        {amber:'#5E9E72', amberDark:'#3f7451'},
     all:        {amber:'#BA7517', amberDark:'#854F0B'},
   };
@@ -3974,6 +4205,7 @@ function switchLeague(lg){
   // NHL: hide IST (already handled by showIST), show sweep row
   $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   $sty('nfl-div-section','display',lg==='nfl'?'block':'none');
+  $sty('ncaafb-bonuses-section','display',lg==='ncaafb'?'block':'none');
   $sty('epl-bonuses-section','display',lg==='epl'?'block':'none');
   $sty('laliga-bonuses-section','display',lg==='laliga'?'block':'none');
   $sty('bundesliga-bonuses-section','display',lg==='bundesliga'?'block':'none');
@@ -3992,6 +4224,7 @@ function switchLeague(lg){
   $sty('tv-nest','display',lg!=='nfl'?'':'none');
   $sty('nfl-bonuses-section','display',lg==='nfl'?'block':'none');
   $sty('nfl-div-section','display',lg==='nfl'?'block':'none');
+  $sty('ncaafb-bonuses-section','display',lg==='ncaafb'?'block':'none');
   $sty('epl-bonuses-section','display',lg==='epl'?'block':'none');
   $sty('laliga-bonuses-section','display',lg==='laliga'?'block':'none');
   $sty('bundesliga-bonuses-section','display',lg==='bundesliga'?'block':'none');
@@ -4028,13 +4261,23 @@ function switchLeague(lg){
   switchTab(currentTab);
 
   // repopulate team dropdowns
-  // Save current league's team filters before switching
-  if(currentLeague)teamFilterStore[currentLeague]={inc:includeTeams.slice(),exc:excludeTeams.slice()};
+  // Save current league's team filters and tv bonus before switching
+  if(currentLeague){
+    teamFilterStore[currentLeague]={inc:includeTeams.slice(),exc:excludeTeams.slice()};
+    var tvBonusEl=document.getElementById('w-tv-bonus');
+    if(tvBonusEl)tvBonusStore[currentLeague]=tvBonusEl.value;
+  }
   // Restore new league's team filters (or empty if none saved)
   var saved=teamFilterStore[lg]||{inc:[],exc:[]};
   includeTeams=saved.inc.slice();excludeTeams=saved.exc.slice();
   populateTeamDropdowns();
   renderTeamBubbles();
+  // Restore new league's tv bonus (default 100)
+  var tvBonusEl2=document.getElementById('w-tv-bonus');
+  if(tvBonusEl2)tvBonusEl2.value=tvBonusStore[lg]||100;
+  // Build division filter pills (shown only when league has divs)
+  enabledDivs={};
+  buildDivPills();
 
   // reload filter profiles for this league
   filterProfiles=loadFilterProfiles();
@@ -4099,6 +4342,76 @@ var RECORD_NORM={
   mlb:{'WSH':'WSN','CWS':'CWS','CHW':'CWS','NYM':'NYM','NYY':'NYY','LAD':'LAD','LAA':'LAA','SF':'SF','SD':'SD','TB':'TB','KC':'KC','OAK':'OAK'},
   nhl:{'TB':'TBL','NJ':'NJD','LA':'LAK','SJ':'SJS','SEA':'SEK','WSH':'WSC','PHI':'PHF','CHI':'CHW','MIN':'MNW','DAL':'DLS','UTA':'UTA','UTAH':'UTA','UTH':'UTA','ARI':'UTA'},
   nfl:{'JAC':'JAX','LAR':'LAR','LA':'LAR','LAC':'LAC','WSH':'WSH','LV':'LV','NE':'NE','GB':'GB','KC':'KC','SF':'SF','TB':'TB','NO':'NO','BUF':'BUF','MIA':'MIA','NYJ':'NYJ','NYG':'NYG','BAL':'BAL','CIN':'CIN','CLE':'CLE','PIT':'PIT','HOU':'HOU','IND':'IND','TEN':'TEN','DEN':'DEN','DAL':'DAL','PHI':'PHI','CHI':'CHI','DET':'DET','MIN':'MIN','ATL':'ATL','CAR':'CAR','ARI':'ARI','SEA':'SEA','JAX':'JAX'},
+  ncaafb:{
+    'BAMA':'BAMA','ALA':'BAMA','ALAB':'BAMA',
+    'ARK':'ARK','ARKS':'ARK',
+    'AUB':'AUB',
+    'FLA':'FLA','UF':'FLA',
+    'UGA':'UGA','GEORGIA':'UGA',
+    'UK':'UK','KENT':'UK',
+    'LSU':'LSU',
+    'MSST':'MSST','MISS ST':'MSST','MSTATE':'MSST','MSU':'MSST',
+    'MIZ':'MIZ','MO':'MIZ','MIZZ':'MIZ',
+    'OU':'OU','OKLA':'OU',
+    'MISS':'MISS','OLEMISS':'MISS',
+    'SC':'SC','SCAR':'SC',
+    'TENN':'TENN','TENN.':'TENN',
+    'TEX':'TEX','UT':'TEX',
+    'TAMU':'TAMU','TXAM':'TAMU',
+    'VAN':'VAN','VANDY':'VAN',
+    'ILL':'ILL','ILLI':'ILL',
+    'IU':'IU','IND':'IU',
+    'IOWA':'IOWA',
+    'UMD':'UMD','MD':'UMD',
+    'MICH':'MICH','MICH.':'MICH',
+    'MSU':'MSU',
+    'MINN':'MINN','MN':'MINN',
+    'NEB':'NEB','NEBR':'NEB',
+    'NW':'NW','NU':'NW',
+    'OSU':'OSU','OHST':'OSU',
+    'ORE':'ORE','OREG':'ORE',
+    'PSU':'PSU','PENN':'PSU',
+    'PUR':'PUR','PURD':'PUR',
+    'RUT':'RUT','RUTG':'RUT',
+    'UCLA':'UCLA',
+    'USC':'USC',
+    'WASH':'WASH','UW':'WASH',
+    'WIS':'WIS','WISC':'WIS',
+    'ARIZ':'ARIZ','AZ':'ARIZ',
+    'ASU':'ASU','AZST':'ASU',
+    'BAY':'BAY','BAYL':'BAY',
+    'BYU':'BYU',
+    'CIN':'CIN','CINC':'CIN',
+    'COLO':'COLO','CU':'COLO',
+    'HOU':'HOU','HOUS':'HOU',
+    'ISU':'ISU','IAST':'ISU',
+    'KU':'KU','KAN':'KU',
+    'KSU':'KSU','KAST':'KSU',
+    'OKST':'OKST','OKLA ST':'OKST',
+    'TCU':'TCU',
+    'TTU':'TTU','TXTE':'TTU',
+    'UCF':'UCF',
+    'UTAH':'UTAH','UTH':'UTAH',
+    'WVU':'WVU','WV':'WVU',
+    'BC':'BC',
+    'CAL':'CAL',
+    'CLEM':'CLEM','CU':'CLEM',
+    'DUKE':'DUKE',
+    'FSU':'FSU',
+    'GT':'GT','GTECH':'GT',
+    'LOU':'LOU','LOUI':'LOU',
+    'MIA':'MIA','UM':'MIA',
+    'NCST':'NCST','NCSU':'NCST',
+    'UNC':'UNC',
+    'ND':'ND',
+    'PITT':'PITT','PITT.':'PITT',
+    'SMU':'SMU',
+    'STAN':'STAN',
+    'SYR':'SYR','SYRA':'SYR',
+    'UVA':'UVA','UVA.':'UVA',
+    'VT':'VT',
+    'WAKE':'WAKE',
+  },
   mls:{'ATL':'ATL','CLT':'CLT','CHI':'CHI','CIN':'CIN','MTL':'MTL','DC':'DC','MIA':'MIA','NSH':'NSH','NE':'NE','NYC':'NYCFC','NYCFC':'NYCFC','NYRB':'NYRB','NY':'NYRB','CLB':'CLB','CLU':'CLB','COL2':'CLB','ORL':'ORL','PHI':'PHI','TOR':'TOR','ATX':'ATX','COL':'COL','DAL':'DAL','HOU':'HOU','LA':'LA','LAFC':'LAFC','MIN':'MIN','POR':'POR','RSL':'RSL','SJ':'SJ','SEA':'SEA','SKC':'SKC','STL':'STL','VAN':'VAN','SD':'SD'},
   epl:{'ARS':'ARS','MNC':'MCI','MAN':'MUN','LIV':'LIV','AVL':'AVL','BOU':'BOU','BHA':'BHA','BRE':'BRE','CHE':'CHE','EVE':'EVE','FUL':'FUL','SUN':'SUN','NEW':'NEW','LEE':'LEE','CRY':'CRY','NFO':'NFO','TOT':'TOT','WHU':'WHU','BUR':'BUR','WOL':'WOL'},
   laliga:{
@@ -4331,6 +4644,69 @@ function normalizeRecordAbbr(sport,raw){
     }).catch(function(){});
   });
 })();
+// ── CFB: Seed from AP Rankings ──
+(function(){
+  // Only seed if no existing ratings saved
+  var existing=null;
+  try{var s=localStorage.getItem('ncaafb_elo_ratings');existing=s?JSON.parse(s):null;}catch(e){}
+  if(existing&&Object.keys(existing).length>10)return; // already seeded
+  fetch('https://site.api.espn.com/apis/v2/sports/football/college-football/rankings?group=80')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var polls=(data.rankings||[]);
+    var ap=polls.find(function(p){return p.name&&p.name.toLowerCase().indexOf('ap')>=0;})||polls[0];
+    if(!ap||!ap.ranks)return;
+    // Build abbr→rank map from AP poll
+    var rankMap={};
+    ap.ranks.forEach(function(r){
+      var abbr=(r.team||{}).abbreviation||'';
+      if(abbr&&r.current)rankMap[abbr.toUpperCase()]=r.current;
+    });
+    // Build NCAAFB abbreviation lookup
+    var abbrLookup={};
+    LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){abbrLookup[t.abbr]=t;});
+    // ESPN CFB abbreviations differ from our abbrs — build ESPN abbr map
+    var espnAbbrMap={};
+    ap.ranks.forEach(function(r){
+      var espnAbbr=((r.team||{}).abbreviation||'').toUpperCase();
+      var name=((r.team||{}).displayName||'').toLowerCase();
+      // Match by name to our team list
+      LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
+        if(t.name.toLowerCase()===name||t.name.toLowerCase().indexOf(name)>=0||name.indexOf(t.name.toLowerCase())>=0){
+          espnAbbrMap[espnAbbr]=t.abbr;
+        }
+      });
+    });
+    var savedR={};
+    LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
+      // Find AP rank for this team
+      var rank=null;
+      ap.ranks.forEach(function(r){
+        var name=((r.team||{}).displayName||'').toLowerCase();
+        if(t.name.toLowerCase()===name||t.name.toLowerCase().indexOf(name.split(' ')[0])>=0){
+          rank=r.current;
+        }
+      });
+      if(rank&&rank<=25){
+        // Ranked: 1→1500, 25→1200, linear
+        savedR[t.abbr]=Math.round(1500-((rank-1)*12.5));
+      } else {
+        savedR[t.abbr]=1050; // unranked default
+      }
+    });
+    try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
+    if(ratingsStore)ratingsStore['ncaafb']=savedR;
+    seedTierFromPercentile();
+    if(currentLeague==='ncaafb'){ratings=savedR;renderRankings();}
+    console.log('[CFB] Seeded from AP rankings');
+  }).catch(function(){
+    // No AP data — seed all at defaultElo
+    var savedR={};
+    LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){savedR[t.abbr]=1050;});
+    try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
+    if(ratingsStore)ratingsStore['ncaafb']=savedR;
+  });
+})();
 try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.parse(tp);}catch(e){}
 // Lock sport button widths so they don't resize when label changes
 (function(){var btns=document.querySelectorAll('.sport-nav-btn');btns.forEach(function(b){b.style.minWidth=b.offsetWidth+'px';});})();
@@ -4348,7 +4724,7 @@ function showWelcome(force){
     <div id="welcome-modal">
       <div id="welcome-title">👋 welcome to game ranker</div>
       <div id="welcome-body">
-        <p>Game Ranker helps you find the most watchable games across five sports: basketball (NBA, WNBA), soccer (EPL, La Liga, Ligue 1, Serie A, Bundesliga, MLS), football (NFL), baseball (MLB), and hockey (NHL).</p>
+        <p>Game Ranker helps you find the most watchable games across five sports: basketball (NBA, WNBA), soccer (EPL, La Liga, Ligue 1, Serie A, Bundesliga, MLS), football (NFL, CFB), baseball (MLB), and hockey (NHL).</p>
         <div class="welcome-section">
           <div class="welcome-section-title">📊 elo ratings</div>
           <p>Game Ranker is built around head-to-head Elo ratings within each sport. Every team has a score — higher means stronger — and games are ranked by how much combined strength is on the court, field, or pitch. Each sport starts ranked by current standings on a 900–1500 scale. You can refine rankings by clicking through matchups in the <strong>elo ratings</strong> tab, or hit <strong>sort by current record</strong> to reset to standings at any time.</p>
