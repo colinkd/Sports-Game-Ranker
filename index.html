@@ -2098,7 +2098,7 @@ function rankByRecord(){
           window.recordCache[currentLeague+'_'+e.abbr]=isSoccer?(e.wins+'-'+(e.draws||0)+'-'+e.losses):(e.wins+'-'+e.losses);
         }
       });
-      var n=entries.length, lo=900, hi=1500;
+      var n=entries.length, lo=1000, hi=1400;
       entries.forEach(function(e,idx){
         var t=null;for(var j=0;j<LC.teams.length;j++){if(LC.teams[j].abbr===e.abbr){t=LC.teams[j];break;}}
         if(!t)return;
@@ -3277,7 +3277,13 @@ function processEvent(ev,tz){
       }
     }
   }
-
+// Generic postseason bonus
+  if(isPostseason && levOn){
+    var postBonus = 300;
+    lev += postBonus;
+    if(!levLbl) levLbl = 'playoff';
+    else levLbl += ' + playoff';
+  }
   var tvBonusAmt=currentLeague==='all'?(+(tvBonusStore[gameLeague]||100)):(+(document.getElementById('w-tv-bonus').value||100));
   var tvBonus=(isNat&&document.getElementById('w-tv-on').checked)?tvBonusAmt:0;
   var total=combined+lev+tvBonus;
