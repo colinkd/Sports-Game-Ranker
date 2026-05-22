@@ -229,7 +229,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.76</div>
+          <div>v4.88</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -293,7 +293,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         <div class="sport-pill on" data-ts="ncaafb" onclick="toggleTierSport('ncaafb',this)">🏈 CFB</div>
         <div class="sport-pill on" data-ts="nhl" onclick="toggleTierSport('nhl',this)">🏒 NHL</div>
         <div class="sport-pill on" data-ts="mlb" onclick="toggleTierSport('mlb',this)">⚾ MLB</div>
-        <div class="sport-pill on" data-ts="championsleague" onclick="toggleTierSport('championsleague',this)">⭐ Champs Lg</div>
+        <div class="sport-pill on" data-ts="championsleague" onclick="toggleTierSport('championsleague',this)">⚽ Champs Lg</div>
         <div class="sport-pill on" data-ts="mls" onclick="toggleTierSport('mls',this)">⚽ MLS</div>
       </div>
     </div>
@@ -439,7 +439,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div class="sport-pill on" data-sport="ncaafb" onclick="toggleSport('ncaafb',this)">🏈 CFB</div>
           <div class="sport-pill on" data-sport="nhl" onclick="toggleSport('nhl',this)">🏒 NHL</div>
           <div class="sport-pill on" data-sport="mlb" onclick="toggleSport('mlb',this)">⚾ MLB</div>
-          <div class="sport-pill on" data-sport="championsleague" onclick="toggleSport('championsleague',this)">⭐ Champs Lg</div>
+          <div class="sport-pill on" data-sport="championsleague" onclick="toggleSport('championsleague',this)">⚽ Champs Lg</div>
           <div class="sport-pill on" data-sport="mls" onclick="toggleSport('mls',this)">⚽ MLS</div>
         </div>
       </div>
@@ -532,15 +532,13 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <select class="team-sel" id="team-exclude" onchange="addTeam('exclude',this)"><option value="">add a team...</option></select>
           <div id="team-exclude-bubbles" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;margin-bottom:8px"></div>
           <div id="div-filter-section" style="display:none;margin-top:8px">
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">division / conference</div>
+            <div id="div-filter-label" style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">division / conference</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px" id="div-cat-pills"></div>
-            <hr style="border:none;border-top:.5px solid var(--border-light);margin:0 0 6px"/>
+            <hr id="div-filter-hr" style="border:none;border-top:.5px solid var(--border-light);margin:0 0 6px"/>
             <div style="display:flex;flex-wrap:wrap;gap:4px" id="div-pills"></div>
           </div>
           <div id="euro-filter-section" style="display:none;margin-top:8px">
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">league</div>
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-bottom:6px;line-height:1.4">select individual euro league above</div>
-            <hr style="border:none;border-top:.5px solid var(--border-light);margin:0 0 6px"/>
+            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">league</div>
             <div style="display:flex;flex-wrap:wrap;gap:4px" id="euro-league-pills"></div>
           </div>
         </div>
@@ -756,6 +754,17 @@ input:checked+.tog-track::after{transform:translateX(14px)}
               <div class="fw"><div class="fw-lbl">Relegation<span class="fw-sub">both teams bottom 4</span></div><input type="number" class="fw-num" id="w-ligue1-rel" value="100"/></div>
             </div>
           </div>
+          <div class="bonus-section" id="euro-bonuses-section" style="display:none">
+            <div class="bonus-section-head">
+              <div class="bonus-section-title">champions league &amp; relegation</div>
+              <label class="tog tog-blue"><input type="checkbox" id="w-euro-bon-on" checked onchange="toggleBonusSection('euro-bon-nest',this)"/><span class="tog-track"></span></label>
+            </div>
+            <div id="euro-bon-nest">
+              <div class="fw"><div class="fw-lbl">Title race<span class="fw-sub">both teams top 3</span></div><input type="number" class="fw-num" id="w-euro-title" value="300"/></div>
+              <div class="fw"><div class="fw-lbl">Champions League<span class="fw-sub">both teams top 7</span></div><input type="number" class="fw-num" id="w-euro-top7" value="200"/></div>
+              <div class="fw"><div class="fw-lbl">Relegation<span class="fw-sub">both teams bottom 5</span></div><input type="number" class="fw-num" id="w-euro-rel" value="100"/></div>
+            </div>
+          </div>
 
         </div>
       <!-- ALL TAB NOTE -->
@@ -797,7 +806,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.18', vdate: '2026-05-21',
+    title: 'NBA', version: 'nba.v6.19', vdate: '2026-05-21',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -850,7 +859,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.12', vdate: '2026-05-21',
+    title: 'WNBA', version: 'wnba.v2.13', vdate: '2026-05-21',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -888,7 +897,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.46', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v2.66', vdate: '2026-05-21',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -906,7 +915,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.22', vdate: '2026-05-21',
+    title: 'EPL', version: 'epl.v3.23', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -955,7 +964,7 @@ var LEAGUE_CONFIGS = {
   },
 
   laliga: {
-    title: 'La Liga', version: 'laliga.v1.2', vdate: '2026-05-21',
+    title: 'La Liga', version: 'laliga.v1.3', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'laliga',
     sport: 'soccer', league: 'esp.1',
@@ -994,7 +1003,7 @@ var LEAGUE_CONFIGS = {
   },
 
   bundesliga: {
-    title: 'Bundesliga', version: 'bundesliga.v1.2', vdate: '2026-05-21',
+    title: 'Bundesliga', version: 'bundesliga.v1.3', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'bundesliga',
     sport: 'soccer', league: 'ger.1',
@@ -1031,7 +1040,7 @@ var LEAGUE_CONFIGS = {
   },
 
   seriea: {
-    title: 'Serie A', version: 'seriea.v1.2', vdate: '2026-05-21',
+    title: 'Serie A', version: 'seriea.v1.3', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'seriea',
     sport: 'soccer', league: 'ita.1',
@@ -1070,7 +1079,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ligue1: {
-    title: 'Ligue 1', version: 'ligue1.v1.2', vdate: '2026-05-21',
+    title: 'Ligue 1', version: 'ligue1.v1.3', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'ligue1',
     sport: 'soccer', league: 'fra.1',
@@ -1108,7 +1117,7 @@ var LEAGUE_CONFIGS = {
 
 
   championsleague: {
-    title: 'Champs Lg', version: 'championsleague.v1.3', vdate: '2026-05-21',
+    title: 'Champs Lg', version: 'championsleague.v1.6', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'championsleague',
     sport: 'soccer', league: null,
@@ -1120,7 +1129,7 @@ var LEAGUE_CONFIGS = {
                'Paramount+','CBS Sports Network','CBS Sports Golazo','Fox Deportes',
                'beIN Sports','beIN Sports en Español','beIN Sports Connect'],
     logo: function(espn){ if(espn&&espn.indexOf('data:')===0)return espn; return 'https://a.espncdn.com/i/teamlogos/soccer/500/'+espn+'.png'; },
-    uclLogo: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0iIzFCM0E2QiIvPjxwYXRoIGQ9Ik01MC4wMDAsMTAuNTAwIEw1Mi4wNTcsMTYuMTY4IEw1OC4wODQsMTYuMzczIEw1My4zMjksMjAuMDgyIEw1NC45OTYsMjUuODc3IEw1MC4wMDAsMjIuNTAwIEw0NS4wMDQsMjUuODc3IEw0Ni42NzEsMjAuMDgyIEw0MS45MTYsMTYuMzczIEw0Ny45NDMsMTYuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTcxLjkyMCwxOS41ODAgTDczLjk3OCwyNS4yNDggTDgwLjAwNCwyNS40NTMgTDc1LjI0OSwyOS4xNjEgTDc2LjkxNiwzNC45NTYgTDcxLjkyMCwzMS41ODAgTDY2LjkyNCwzNC45NTYgTDY4LjU5MiwyOS4xNjEgTDYzLjgzNiwyNS40NTMgTDY5Ljg2MywyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNODEuMDAwLDQxLjUwMCBMODMuMDU3LDQ3LjE2OCBMODkuMDg0LDQ3LjM3MyBMODQuMzI5LDUxLjA4MiBMODUuOTk2LDU2Ljg3NyBMODEuMDAwLDUzLjUwMCBMNzYuMDA0LDU2Ljg3NyBMNzcuNjcxLDUxLjA4MiBMNzIuOTE2LDQ3LjM3MyBMNzguOTQzLDQ3LjE2OCBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik03MS45MjAsNjMuNDIwIEw3My45NzgsNjkuMDg5IEw4MC4wMDQsNjkuMjk0IEw3NS4yNDksNzMuMDAyIEw3Ni45MTYsNzguNzk3IEw3MS45MjAsNzUuNDIwIEw2Ni45MjQsNzguNzk3IEw2OC41OTIsNzMuMDAyIEw2My44MzYsNjkuMjk0IEw2OS44NjMsNjkuMDg5IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTUwLjAwMCw3Mi41MDAgTDUyLjA1Nyw3OC4xNjggTDU4LjA4NCw3OC4zNzMgTDUzLjMyOSw4Mi4wODIgTDU0Ljk5Niw4Ny44NzcgTDUwLjAwMCw4NC41MDAgTDQ1LjAwNCw4Ny44NzcgTDQ2LjY3MSw4Mi4wODIgTDQxLjkxNiw3OC4zNzMgTDQ3Ljk0Myw3OC4xNjggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjguMDgwLDYzLjQyMCBMMzAuMTM3LDY5LjA4OSBMMzYuMTY0LDY5LjI5NCBMMzEuNDA4LDczLjAwMiBMMzMuMDc2LDc4Ljc5NyBMMjguMDgwLDc1LjQyMCBMMjMuMDg0LDc4Ljc5NyBMMjQuNzUxLDczLjAwMiBMMTkuOTk2LDY5LjI5NCBMMjYuMDIyLDY5LjA4OSBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik0xOS4wMDAsNDEuNTAwIEwyMS4wNTcsNDcuMTY4IEwyNy4wODQsNDcuMzczIEwyMi4zMjksNTEuMDgyIEwyMy45OTYsNTYuODc3IEwxOS4wMDAsNTMuNTAwIEwxNC4wMDQsNTYuODc3IEwxNS42NzEsNTEuMDgyIEwxMC45MTYsNDcuMzczIEwxNi45NDMsNDcuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI4LjA4MCwxOS41ODAgTDMwLjEzNywyNS4yNDggTDM2LjE2NCwyNS40NTMgTDMxLjQwOCwyOS4xNjEgTDMzLjA3NiwzNC45NTYgTDI4LjA4MCwzMS41ODAgTDIzLjA4NCwzNC45NTYgTDI0Ljc1MSwyOS4xNjEgTDE5Ljk5NiwyNS40NTMgTDI2LjAyMiwyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNTAuMDAwLDM3LjAwMCBMNTMuMjMzLDQ1LjU1MCBMNjIuMzY0LDQ1Ljk4MyBMNTUuMjMxLDUxLjcwMCBMNTcuNjQxLDYwLjUxNyBMNTAuMDAwLDU1LjUwMCBMNDIuMzU5LDYwLjUxNyBMNDQuNzY5LDUxLjcwMCBMMzcuNjM2LDQ1Ljk4MyBMNDYuNzY3LDQ1LjU1MCBaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg==',
+    uclLogo: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjIwLjUiIGhlaWdodD0iMjA5LjUiIGZpbGw9Im5vbmUiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDQ0MSA0MTkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiA8cGF0aCBkPSJtMjkzLjQ0IDEyMy40NGMtMC4yNDQgMC41LTAuNzI3IDAuODQ1LTEuMjgxIDAuOTA5LTEyLjYyOCAxLjQ2NS0yNi4wNDYtMC4yOTEtMzEuMjE5LTEuMTAzLTguNjM2LTguNjI4LTE3Ljk4NS0xOC4yMjUtMjQuODc3LTI2LjYxMi0wLjcwNy0wLjg1OS0wLjc0MS0yLjA4NzYtMC4wOTEtMi45OTI0IDkuODI5LTEzLjcwMyAxOC44My0yNC41NzYgMjIuNjM1LTI4Ljg4MSAxMC44NzItMi4zNjk1IDIxLjcxMy00LjQ2NzEgMjkuMDM0LTQuNzY2MiAwLjU1My0wLjAyMjIgMS4wNzkgMC4yMzI0IDEuNDAzIDAuNjgxMSA5LjQzNyAxMy4xMjYgMTYuMTg3IDI1LjcwMyAxOC4zNTMgMzAuMjk5LTQuMzMzIDExLjY0Mi05LjU0NiAyMy40MDMtMTMuOTU3IDMyLjQ2NnptLTEyLjA0OCAyMi4yMDhjLTYuOTYxIDExLjY1NC0xMi4yNDkgMTguNjgtMTMuOTQ0IDIwLjgxNi0yLjMgMy4yNDctOC4xNjMgMTEuNzA2LTE3LjI3MSAyMC4yNjItMC41ODEgMC41NDYtMS4zMzkgMC44Ni0yLjEzOCAwLjg5NS0xMS40MDYgMC40NzUtMjIuMDExLTAuMzI1LTI2LjE0MS0xLjIyNi0zLjQ5Ny0xLjQ0Ni0xMS42MzYtNS4xMDYtMjEuMjU2LTEwLjQyNS0wLjgzOS0wLjQ2My0xLjMzMy0xLjM2Ny0xLjI3LTIuMzIxIDAuNTAyLTcuNDU3IDIuODY4LTE4LjA3OSA0Ljk2MS0yOS4zMTIgNS4xNzUtOS4wODcgMTAuNTQtMTkuNDU1IDE2LjEwMy0yNy45NzEgMC41ODYtMC44OTYgMS42ODMtMS4zMTMgMi43MTgtMS4wMyAxNi42NTcgNC41NDcgMzEuMTExIDggMzYuOTc5IDkuMzIgOC4wMzUgOS4zMTcgMTUuODIxIDE1Ljg2OCAyMS4wNTkgMTkuOTI5IDAuMzI2IDAuMjUzIDAuNDEgMC43MDkgMC4yIDEuMDYzem0tMTAwLjc4IDE2LjE5NWMtMC44NDQgMC41MjMtMS45MTkgMC40OTUtMi43My0wLjA3OS03LjI1My01LjEzNC0xNS45MDctMTEuNjk1LTIzLjExNS0xOC40My00LjI1Mi03LjI2Ni03LjUzMS0xNi41NjUtOS44Mi0yNC40ODQtMC4xNDgtMC41MS0wLjAzNC0xLjA2MiAwLjMwMi0xLjQ3MyA4LjA4OC05Ljk0MyAxNy43OTUtMTcuODEgMjEuODUzLTIwLjgwNSA5LjE1NSAzLjk0OTIgMTkuNjYzIDcuNDMzMiAyOC44NTUgMTAuNDkgMC45NCAwLjMxMiAxLjYwNCAxLjE1NSAxLjY4MiAyLjE0IDEuMjk2IDE2LjM1MiA0LjI5MiAyOS41NzYgNS4wOTIgMzQuNjI5LTMuNDMyIDMuNjY3LTEyLjQgMTEuOTgtMjIuMTE5IDE4LjAxMnptLTQwLjI4Ni02NC4zNDJjLTEuMi03LjcxOTEtMS45ODktMTUuODI2LTIuMDc2LTE5LjUzOS0wLjE5OS04LjU3MzIgMS4xNjMtMTYuMTY2IDIuNzQ1LTIzLjE5NiAwLjI2LTEuMTUwOCAwLjg1Ny0yLjE5NCAxLjcyOC0yLjk5MTIgNC41OTUtNC4yMDg3IDEyLjkwNC0xMS42MzQgMTguMTQ4LTE0Ljk5NyA0Ljk0My0zLjE2OTIgMTguNjgxLTcuNjA0MSAyNC4zNDYtOS4yNDkzIDEuMDk4LTAuMzIwMSAyLjI2OCAwLjE2ODEgMi44MzMgMS4xNjA3IDAuNjgxIDEuMTk2NSAxLjM5MyAyLjM4NDMgMi4xNDggMy41NTM2IDQuNDYgNi45NDI4IDkuMzc1IDEyLjkyIDExLjQ0NSAxNS41MDktMi43NDQgMTAuODk0LTMuOTEgMjMuMTA5LTQuNDQxIDMzLjQxMy0wLjA1IDAuOTY2Ni0wLjY2NiAxLjgxMzMtMS41NjkgMi4xNjU1LTE0LjMzMyA1LjU5MDYtMjUuMTY2IDkuOTY1LTI4LjgwNiAxMS42NDUtOS44NDggMC40MTU0LTE5LjIyOCAyLjA5MzktMjUuNTU5IDMuMjAwMi0wLjQ0OSAwLjA3OTEtMC44NzItMC4yMjYzLTAuOTQyLTAuNjczN3ptNzIuMjU0LTc0LjgxNmMwLjM5Mi0wLjYwODEgMS4wMzQtMS4wMTM1IDEuNzUyLTEuMTA4NyAxNC43MzktMS45NDY4IDI4LjIyNC0yLjIzMzUgMzMuNDA3LTIuMDkwMiA5LjQzMiA2LjI3MTcgMTguNjQ5IDE0LjU0NyAyNi4wMDUgMjIuMzk1IDAuNTE1IDAuNTUgMC41OTIgMS4zNzgyIDAuMTg1IDIuMDEzNS01LjI0OSA4LjIwODUtMTIuODgzIDE2LjA5LTE2LjIzNiAxOS41MjItMTIuNDM2IDIuOTQzLTI1LjYyIDcuMjI3MS0zNi4zMjEgMTAuNzM5LTEuMDQxIDAuMzQxMS0yLjE4NS0wLjA0NTctMi44MDctMC45NDgtOC4xMi0xMS43OTQtMTMuMjgtMjEuOTA1LTE1LjMwMy0yNS42NTYgMi4xOTYtOS44MzI3IDUuMjY3LTE4LjU4OSA5LjMxOC0yNC44NjV6bTk4LjQ1NSA5Ni44MTdjLTAuMjY0IDAuMTE5LTAuNTY3LTAuMDY3LTAuNTgyLTAuMzU1LTAuNjE4LTEyLjEwNy0xLjczMi0yMy44NzEtMi4zMTUtMjguMTczIDAuMDQ3LTEwLjQ1Ni0xLjY4Ny0yMS4zMDYtMy40MTctMjkuMzA2LTAuMDYyLTAuMjg5MiAwLjE5NC0wLjU0NzYgMC40ODUtMC40ODk1IDkuODk0IDIuMDE5NyAxMy4wNyA1LjcyNDEgMTMuMDcgNS43MjQxLTUuMjM4LTExLjc0MS0xMi43ODUtMjAuNTg5LTIwLjk4OC0yNy4yNzYtNy4wMTMtMTQuNjgtMTUuMDg1LTIxLjQ3LTE1LjA4NS0yMS40NyAwLjY1MyAzLjI0NyAwLjIwMyA2LjkxOTMtMC45NTQgMTAuNzA5LTAuMDczIDAuMjQxLTAuMzQ5IDAuMzU2LTAuNTc2IDAuMjQ2LTEzLjQ0Mi02LjU3MDgtMjcuMzIyLTkuNTcxOS0zMi42OTEtMTAuMzIzLTguMDIzLTMuODk4NS0xNi43ODYtNi40NzgxLTIzLjkxMi04LjQzMzUtMC4xOS0wLjA1MTktMC4yNDItMC4yOTc5LTAuMDg5LTAuNDI1MjMgOS40NTgtNy44NDY0IDE4LjE1OC05Ljg0MzggMTguMTU4LTkuODQzOC0xNS40MDItMC42MTY3OC0yOC42NTkgMi4xNjgtMzkuNzQ0IDYuNDI2Mi0xNi41NjItMS4zMjYzLTI3LjExMiAxLjU1MjUtMjcuMTEyIDEuNTUyNXM0LjU3MyA1LjQ3MDcgNi4zNTEgOC41MTYzYzAuMjE0IDAuMzY4NCAwLjEwMiAwLjg0MDUtMC4yNDkgMS4wODI4LTEwLjQxNyA3LjIxODQtMTcuODkxIDE1LjE0OC0yMC44MzggMTguNDQ5LTMuMjgzIDAuNDQzNy04Ljk2OSAxLjIyODYtMTMuOTM1IDIuNDUyMy0wLjE5OCAwLjA0OTQtMC4zNjYtMC4xNDk2LTAuMjg2LTAuMzM3NCA0Ljk3My0xMS44MzggMTAuMzk0LTE4LjM5MSAxMC4zOTQtMTguMzkxcy0zMS45NjQgMjIuNjgxLTM4LjAyMyA2My40MzhjMCAwIDIuNjMyLTcuMjI0NiAxMS41MzItMTguMTc1IDAuMTE3LTAuMTQzNCAwLjM0NC0wLjExNSAwLjQyIDAuMDU0NCAyLjUyMiA1LjU3OTQgNS40MDUgMTAuNTM0IDYuODU0IDEyLjgwOC00Ljg5NSA3Ljg3MzYtOC4yNzQgMTYuNDU5LTEwLjM1NSAyMy40ODUtMC4wNzIgMC4yNDQtMC4yNTYgMC40NC0wLjQ5NiAwLjUzLTcuNDAzIDIuODA4LTkuMjg5IDUuNDg3LTkuMjg5IDUuNDg3IDEuMTUxIDMuOTI4IDMuNDExIDcuNzU3IDYuMjY2IDExLjM2NiAwLjI0OCAwLjMxMiAwLjM3NCAwLjcwMiAwLjM1NyAxLjEtMC43ODYgMTcuMzk0IDQuODMgMjguODQzIDQuODMgMjguODQzIDEuMjY4LTYuMDc1IDMuNzUxLTExLjk3NiA2Ljg4Ny0xNy41MTQgMC4xMjUtMC4yMjEgMC40MTktMC4yNzYgMC42MTctMC4xMTkgNy4zMDYgNS43OTggMTQuODc0IDEwLjg2NyAxNy44NzcgMTIuNjY3IDEuNTQ5IDMuOTUyIDUuOTg0IDE0LjIwNyAxMS45MSAyNC43MjggMC4xMjQgMC4yMjIgMC4wMjMgMC41MDMtMC4yMTYgMC41OS03LjA5NiAyLjU4My0xNC4zNzYgMy43NTItMjEuMDUxIDIuMTI4IDAgMCA4LjA1IDEwLjAyIDMyLjg4MiAxNC4yOTMgNi44ODkgOC4xMzQgMTUuMjczIDE0Ljg3IDI1LjA2NCAxNy4yMSAwIDAtMi44Ny0zLjE1Mi0zLjU3OS0xNC44OTgtMC4wMTUtMC4yMzggMC4xNzYtMC40NDEgMC40MTUtMC40MzcgNi4xMzEgMC4wOTIgMTQuNDQ4IDAuMjI1IDIyLjA2MS0wLjMyNyAyLjY5OCAyLjEyNSA4LjU4NiA2Ljc5IDE0LjMyOSA5Ljc2MyAwLjI4NiAwLjE0OCAwLjMwNCAwLjU1IDAuMDI5IDAuNzE3LTEwLjA5NSA2LjA5Ny0xNi44MTIgNi42MjgtMTYuODEyIDYuNjI4IDQ1LjcyNyAwLjk3MyA3My4xODItMjguODE1IDczLjE4Mi0yOC44MTUtNy41MzIgNC45NDktMTYuMjMgOC4wMjYtMjQuODg4IDkuODU5LTAuMjkyIDAuMDYyLTAuNTQ4LTAuMTk2LTAuNDg3LTAuNDg4IDEuNjA4LTcuNzY5IDEuMTU3LTE1LjI4MSAxLjA0NC0xNy45MjggMTAuODQ5LTIuNjg4IDIwLjMxMy03LjUzIDI3LjMyLTEyLjQ4IDAuMTQxLTAuMSAwLjMzLTAuMTAxIDAuNDczLTJlLTMgMi45MTcgMi4wMjcgNS40MTMgNC4zMDEgNy45MDQgOC4wODcgMCAwIDQuNzQ0LTYuNzA0IDYuMzc2LTIyLjIzNyAxMS43NDYtMTUuMzE2IDEzLjQ5Mi0zMC45OTMgMTMuNDkyLTMwLjk5My0yLjk0NyA0LjYwMy03LjM5NyA3LjkyLTEyLjYxIDEwLjI5N3ptLTkwLjUzIDE1MS4yM2MtMTkuNjEzIDAtMzcuNDA3IDguNzU3LTQ4LjI2MSAyMS43MDVsMy40NDMgNC4yNDJjOS44NTctMTIuMjQgMjYuNjI2LTIwLjY1NiA0NC44MTgtMjAuNjU2IDE4LjE5NCAwIDM0Ljk2MiA4LjQxNiA0NC44MTkgMjAuNjU2bDMuNDQzLTQuMjQyYy0xMC44NTUtMTIuOTQ4LTI4LjY0OC0yMS43MDUtNDguMjYyLTIxLjcwNXptLTQ1Ljg3NyAyLjc0OWMtMS4yOSAxLjA0Ny0yLjc5IDEuNTU4LTQuMTE0IDEuNDAxLTEuNjc4LTAuMTkyLTIuNjk3LTAuODc4LTQuMzY3LTIuOTM1bC05LjYxOC0xMS43OTktNS4xODYgNC4yMDYgMTAuNDc1IDEyLjg2YzIuMjI2IDIuNzIzIDQuNzY0IDQuMTgxIDcuNzU1IDQuNDU1IDAuMzU0IDAuMDMzIDAuNzA0IDAuMDUxIDEuMDUgMC4wNTQgMi45IDAuMDI1IDUuNTkzLTAuOTk1IDguMjAzLTMuMTAyIDIuOTA3LTIuMzcgNC41MDMtNS4xMjEgNC44NzctOC40MTEgMC4zNC0yLjk4MS0wLjU3MS01Ljc1OC0yLjc5MS04LjQ4OGwtMTAuNDczLTEyLjg1Ni01LjE4NiA0LjIwNiA5LjYxNCAxMS44MDV2MmUtM2MxLjY3NiAyLjA0OSAyLjEzOSAzLjE4NiAxLjk4NCA0Ljg2Ny0wLjExNiAxLjMyMy0wLjkyNiAyLjY4NS0yLjIyMyAzLjczNXptMzUuNDctMzcuMTcyLTE2LjggMy40MDNjLTAuNzY3IDAuMTU1LTEuMzc0IDAuNTM4LTEuNzUxIDEuMTEtMC4zODEgMC41NzEtMC40OTggMS4yNzYtMC4zNDMgMi4wNDFsMy4zNDggMTYuNDYxYzAuNTQ1IDIuNjc3IDEuNzQ4IDQuNjA1IDMuNTc2IDUuNzMxIDEuMjA5IDAuNzQ0IDIuNjU5IDEuMTE2IDQuMzMgMS4xMTUgMC44NTEtMWUtMyAxLjc2LTAuMDk5IDIuNzIyLTAuMjk0bDEwLjUtMi4xMjYtMS4yNjMtNi4yMTQtMTAuMjE1IDIuMDdjLTIuMDkxIDAuNDIyLTIuNzcgMC4xOTEtMy4yNDctMi4xNTFsLTAuMzU5LTEuNzY2IDExLjgxNS0yLjM5My0xLjI0OS02LjE0My0xMS44MTYgMi4zOTItMC44OTctNC40MDcgMTIuOTEzLTIuNjE2LTEuMjY0LTYuMjEzem0zMi42NjggOC45ODIgMTAuMDY3IDIuNjAyIDEuNTkxLTYuMTI2LTEwLjM1Mi0yLjY3NmMtNS42NzQtMS40NjctOS41NiAwLjY1My0xMC45NCA1Ljk2OGwtNC4yMjcgMTYuMjc4Yy0wLjE5NSAwLjc1Ni0wLjExNiAxLjQ2NSAwLjIzMSAyLjA1NSAwLjM0NyAwLjU4OSAwLjkzIDEuMDAzIDEuNjg3IDEuMTk5bDMuODQzIDAuOTkzIDIuNzI0LTEwLjUyOCAxMS42NTEgMy4wMTIgMS41NzQtNi4wNTUtMTEuNjU1LTMuMDE0IDAuNDUzLTEuNzRjMC41OTktMi4zMDggMS4yODktMi41MDIgMy4zNTMtMS45Njh6bTUyLjIzNyAxNC44NjcgMy41NTQtNC4zNzljLTEuNzY1LTEuNzYyLTMuNjAyLTMuNDcyLTUuNTE2LTUuMTItMTkuODg3LTE3LjEzMS00NS42NDgtMjYuNTY0LTcyLjUzNi0yNi41NjQtMjYuODg3IDAtNTIuNjQ3IDkuNDMzLTcyLjUzNiAyNi41NjQtMS45MTMgMS42NDgtMy43NTEgMy4zNTctNS41MTYgNS4xMTlsMy41NTQgNC4zNzljMS43OTUtMS44MTIgMy42NzEtMy41NjkgNS42My01LjI1OCAxOC44Ny0xNi4yNTIgNDMuMzI3LTI1LjIwMiA2OC44NjgtMjUuMjAyczQ5Ljk5OCA4Ljk1IDY4Ljg2NyAyNS4yMDJjMS45NjEgMS42ODkgMy44MzYgMy40NDYgNS42MzEgNS4yNTl6bS0yNy4xMyAyMS43MzIgMS4xNTMtMy45NjktNC45Ni0zLjY5OCAzLjk5NC0yLjg1NSAyLjMxMyAxLjczNCAyLjYyNy04LjgzOS0xNS4yNDQgOS44MzYtNi4yNDktMy41MjggMjMuOTExLTE1LjQ0MWMwLjkyMi0wLjU5NiAyLjE4My0xLjEyMSAzLjc3OSAwLjEwNGwxLjAyMiAwLjc4NmMxLjYxMSAxLjIzOCAxLjM4MSAyLjY1NiAxLjA2NiAzLjYxNWwtNy45MzcgMjcuMjU2LTUuNDc1LTUuMDAxem0tMTEyLjUzIDEyOS4wOGgtMTcuNjM0di0xMy41MTNoMTAuNTA5bDQuMzAyIDMuNjYxaDAuMTQ0di0xMy43OTVoLTAuMTQ0bC00LjMwMiAzLjY2MWgtMTAuNTA5di0xMS43NTVoMTdsNC45MzggNS4yOGgwLjE0bC0wLjU2NC0xMS42ODZoLTM2LjI1OHYwLjE0M2wzLjMxOSA0LjAxMXYzNi4zMTdsLTMuMzE5IDQuMDF2MC4xNDFoMzcuODFsMC45MTctMTMuNDQyaC0wLjE0M2wtNi4yMDYgNi45Njd6bTYuNjYyLTg5LjgxNiAxMi40ODcgMzEuODEzaDYuOTgzbDExLjU2OS0zMi4xNjMgMS45NzMgMjguMDA4LTQuMzc0IDQuMDExdjAuMTQ0aDE4Ljk3NHYtMC4xNDRsLTMuNjY1LTQuMDExLTIuNjg0LTM2LjMxNyAyLjg5NC00LjAxMXYtMC4xMzloLTE1Ljc5OWwtMTAuNzIzIDI5Ljc2OC0xMS41NjktMjkuNzY4aC0xNi4wMTF2MC4xMzlsMy4yNDYgNC4wMTEtMS45MDcgMzYuMzE3LTMuODc2IDQuMDExdjAuMTQ0aDE1LjU4NXYtMC4xNDRsLTMuODc3LTQuMDExIDAuNzc0LTI3LjY1OHptLTUyLjUwNCA4OS43NDVoLTE1LjMwNXYtMzMuOTIybDQuMTYzNS00LjAxMXYtMC4xNDNoLTE4LjkwN3YwLjE0M2wzLjMxODYgNC4wMTF2MzYuMzE3bC0zLjMxODYgMy45Mzl2MC4yMTJoMzUuNDhsMS42OTUtMTQuMDAzaC0wLjE0NGwtNi45ODMgNy40NTd6bS0zNC4xNy01OC4wNzZ2MC4xNDRoMTcuOTg5di0wLjE0NGwtMy4zMTg2LTQuMDExdi0zNi4zMTdsMy4zMTg2LTQuMDExdi0wLjEzOWgtMTcuOTg5djAuMTM5bDMuMjQ1NiA0LjAxMXYxMy41MTRoLTE2LjAxMXYtMTMuNTE0bDMuMjQ1Ni00LjAxMXYtMC4xMzloLTE3Ljk4OHYwLjEzOWwzLjMxNjIgNC4wMTF2MzYuMzE3bC0zLjMxNjIgNC4wMTF2MC4xNDRoMTcuOTg4di0wLjE0NGwtMy4yNDU2LTQuMDExdi0xNS42OTRoMTYuMDExdjE1LjY5NGwtMy4yNDU2IDQuMDExem0yODAuOTQgNTguMTQ3aC0xNy42MzV2LTEzLjUxM2gxMC41MDhsNC4zMDMgMy42NjFoMC4xNDN2LTEzLjc5NWgtMC4xNDNsLTQuMzAzIDMuNjYxaC0xMC41MDh2LTExLjc1NWgxNy4wMDFsNC45MzYgNS4yOGgwLjE0bC0wLjU2Mi0xMS42ODZoLTM2LjI1OHYwLjE0M2wzLjMxOCA0LjAxMXYzNi4zMTdsLTMuMzE4IDQuMDF2MC4xNDFoMzcuODA5bDAuOTE4LTEzLjQ0MmgtMC4xNDRsLTYuMjA1IDYuOTY3em0tMTYxLjg4LTExLjMzMi01LjI4OC0xNy43MzItNi4yMDkgMTcuNzMyaDExLjQ5N3ptMTUuOCAxMy42NTYgMy42NjggNC4wMXYwLjE0MWgtMTkuMTEzdi0wLjE0MWwzLjY2OC00LjAxLTIuMDQ1LTYuOTY3aC0xNS44bC0yLjQwMSA2Ljk2NyAzLjQ1NyA0LjAxdjAuMTQxaC0xNC45NTN2LTAuMTQxbDMuNTI4LTQuMDEgMTMuNzU0LTM2LjMxNy0yLjYxMS00LjAxMXYtMC4xNDNoMTUuMTY1bDEzLjY4MyA0MC40NzF6bS0xODMuMjQtNjYuMjRjLTkuMTcxOCAwLTE1LjAyNi05LjI5Mi0xNS4wMjYtMTcuMzE3IDAtOS44NTIgNS4zNjAxLTE2LjI1NSAxMy4wNDktMTYuMjU1IDIuMDQ1MiAwIDQuMDIyMyAwLjIxMSA1Ljc4NjMgMC43bDYuOTExMSA4LjUxOWgwLjE0MjRsLTAuNDk0Mi0xNC4wNzdjLTEuOTc3MS0wLjc3My02LjI3NjktMS44MzEtMTEuNTY5LTEuODMxLTE2LjM2MiAwLTI1Ljc0NSAxMS4xMjItMjUuNzQ1IDIzLjkzMSAwIDEyLjY3IDkuMDI4MSAyMy43ODcgMjQuNTQ2IDIzLjc4NyA0LjE2MjMgMCAxMC4yOTktMS40MDUgMTQuNTMxLTQuNTcybDAuNjM0My03LjM5aC0wLjE0Yy0zLjU5NjIgMi44MTQtOC43NDk0IDQuNTA1LTEyLjYyNiA0LjUwNXptMjU2Ljg1IDUuNzY5LTMuMjQ1LTQuMDExdi0zNi4zMTdsMy4yNDUtNC4wMTF2LTAuMTM5aC0xNy45ODh2MC4xMzlsMy4zMTYgNC4wMTF2MzYuMzE3bC0zLjMxNiA0LjAxMXYwLjE0NGgxNy45ODh2LTAuMTQ0em0tMzkuNDU4IDQzLjcxOSA0LjQ0MiA0LjAxNXY4LjM3NWMtMS40MTIgMS42MTctMy44OCAyLjk1My03LjE5MyAyLjk1My03LjkwMSAwLTEyLjA2My05LjY0MS0xMi4wNjMtMTcuNzM1IDAtOC43OTggNC40NDYtMTYuMTg3IDEzLjYxNC0xNi4xODcgMi41MzkgMCA1LjIyIDAuMjEyIDcuNDA1IDAuOTgzbDcuMDU1IDcuNmgwLjE0bC0wLjQyNC0xMi4yNDRjLTQuMDktMi4xMTItOS4wMjgtMy4wMjMtMTQuMDM2LTMuMDIzLTE1LjAyMyAwLTI1LjY3NSA5LjIxOS0yNS42NzUgMjQuNDIgMCAxMi43MzYgOC4xODMgMjMuMjk3IDIwLjk0OSAyMy4yOTcgNS41NzQgMCAxMC42NTEtMS4yNjkgMTUuMzc3LTQuNzE1bDUuNTcgNC43MTVoMC4xNDR2LTE4LjQzOWwzLjUyNS00LjAxNXYtMC4xNGgtMTguODN2MC4xNHptLTExLjY3NS02NS4yNTNjMS40MTIgMC40MjIgMy4wMzIgMC42MzIgNC43MjYgMC42MzIgNi4yMDkgMCA4Ljg4OS0zLjM3OCA4Ljg4OS04LjM3NiAwLTUuOTEzLTMuNDU3LTguNzI2LTkuODc4LTguNzI2aC0zLjczN3YxNi40N3ptLTExLjQyNSAxNy41MjN2LTM2LjMxN2wtMy4zMTgtNC4wMTF2LTAuMTM5aDIxLjE2M2MxMi44MzggMCAxOC42OTIgNS44MzcgMTguNjkyIDE0LjcxMSAwIDkuMjE4LTYuOTgzIDE0LjkxOC0xNi41MDUgMTQuOTE4LTMuMTAzIDAtNi4yNzgtMC4yMTItOC42MDctMC43NzN2MTEuNjExbDQuNjU1IDQuMDExdjAuMTQ0aC0xOS4zOTh2LTAuMTQ0bDMuMzE4LTQuMDExem0xMDYuNTctMTQuOTIxYzAtNy43NC0yLjg5MS0yMC4wNTgtMTIuNzY5LTIwLjA1OC03LjkgMC0xMC4xNTcgNy44ODItMTAuMTU3IDEzLjIzIDAgNy44MTQgMy4yNDYgMjAuNDEyIDEyLjc3IDIwLjQxMiA2LjgzOSAwIDEwLjE1Ni02LjQ3NyAxMC4xNTYtMTMuNTg0em0tMTEuODUxIDIwLjYyYy0xMy45NjYgMC0yMi45OTQtMTEuNDcyLTIyLjk5NC0yNC40ODggMC0xMy40NDUgMTAuMzY4LTIzLjIzIDIzLjM0OC0yMy4yMyAxNC4zMTcgMCAyMy40ODggMTEuMTkzIDIzLjQ4OCAyNC4wMDIgMCAxNC42MzktMTEuMDc0IDIzLjcxNi0yMy44NDIgMjMuNzE2em0tMTQuOTE3IDE4LjQ1NSAzLjY2OSA0LjAxMXYyNS40MWMwIDcuMzE4LTMuNTk3IDkuMTQ4LTkuNDUyIDkuMTQ4LTUuOTI2IDAtOS41MjItMS42OTEtOS41MjItOS4xNDh2LTI1LjQxbDMuNjY4LTQuMDExdi0wLjE0M2gtMTguNDEydjAuMTQzbDMuMzE3IDQuMDExdjI1LjQxYzAgMTIuMTcyIDYuMjA3IDE2LjYwOSAxOS40NjYgMTYuNjA5IDEyLjA2MyAwIDE4LjItNC4xNTQgMTguMi0xNi4yNTl2LTI1Ljc2bDMuMjQyLTQuMDExdi0wLjE0M2gtMTQuMTc2djAuMTQzem04NS4xOTEgNS40ODNjMC0zLjE3Mi0yLjQxMS01LjU3LTUuNDUzLTUuNTctMy4wNzUgMC01LjQ4MiAyLjM5OC01LjQ4MiA1LjU3IDAgMy4yMzcgMi40MDcgNS42MTkgNS40ODIgNS42MTkgMy4wNDIgMCA1LjQ1My0yLjM4MiA1LjQ1My01LjYxOXptMS4zNTMgMGMwIDMuODk0LTMuMTQzIDYuNzM0LTYuODA2IDYuNzM0LTMuNjk1IDAtNi44MzMtMi44NC02LjgzMy02LjczNCAwLTMuODQ3IDMuMTM4LTYuNjkxIDYuODMzLTYuNjkxIDMuNjYzIDAgNi44MDYgMi44NDQgNi44MDYgNi42OTF6bS02LjgxNi0wLjQ2NGMwLjk5MiAwIDEuODg1LTAuMDU0IDEuODg1LTEuMjQ5IDAtMC45NjMtMC44NzItMS4xMzctMS42OTktMS4xMzdoLTEuNjAzdjIuMzg2aDEuNDE3em0xLjEwMiAwLjk0NyAyLjE5IDMuNDFoLTEuMzA2bC0yLjAzOS0zLjM1NWgtMS4zNjR2My4zNTVoLTEuMTY3di03Ljc0aDIuOTU0YzEuODM0IDAgMi43MzcgMC42NzUgMi43MzcgMi4xOTkgMCAxLjM4Ni0wLjg3MiAxLjk4NC0yLjAwNSAyLjEzMXptLTIuOTMyLTcwLjQ0OCA0LjMwNCA0LjAxMXYyMy42NDhsLTE4LjEzLTI3Ljc5OGgtMTYuMjk0djAuMTM5bDMuMzE3IDQuMDExdjM2LjMxN2wtMy4zMTcgNC4wMTF2MC4xNDRoMTQuODgzdi0wLjE0NGwtNC4zNzEtNC4wMTF2LTI5LjU2MWwyMi42MzkgMzMuNzE2aDguNDY2di00MC40NzJsMy4zMTQtNC4wMTF2LTAuMTM5aC0xNC44MTF2MC4xMzl6bTQ1LjQ4NCAxNy4wMzRjLTguMTEyLTIuMjUyLTEwLjU4LTMuMjM4LTEwLjU4LTYuOTY3IDAtNC4yOTMgNS41NzQtNS4xNCA5LjEtNS4xNCAyLjk2MyAwIDUuNzE0IDAuMzUgOC4xODMgMS4xMjZsNi43NzEgNy4zMjFoMC4xNGwtMC41NjMtMTIuNjAxYy00LjIzNS0xLjYxNi04LjY3Ny0yLjQ2NC0xMy43NTQtMi40NjQtMTAuNjUyIDAtMjAuODggMy42NjEtMjAuODggMTQuMjIxIDAgNi44MjUgNC43MjYgMTAuOTA3IDE0Ljk1NCAxMy43MjQgNy45MDEgMi4xODEgMTEuNzgxIDMuNTg3IDExLjc4MSA3LjYgMCA0LjY0NC01LjkyNiA1LjYyOC05Ljg3OCA1LjYyOC0zLjMxNCAwLTYuMjc3LTAuNDkxLTguODE4LTEuMjY2bC02LjgzOS04LjQ0NWgtMC4xNDNsMC40OTQgMTMuMzcxYzQuNjU4IDIuMTEyIDEwLjMgMi44ODUgMTUuNTg4IDIuODg1IDExLjQyNyAwIDIxLjAyMS00Ljc4MyAyMS4wMjEtMTQuNDI1IDAtOS4wOC02LjI3Ny0xMS42ODMtMTYuNTc3LTE0LjU2OHptLTMwOS42OCA5LjY0MWgxMS40OTdsLTUuMjg4LTE3LjczNy02LjIwOSAxNy43Mzd6bS0xLjI2OCAxNy44MDhoLTE0Ljk1NHYtMC4xNDRsMy41Mjk0LTQuMDExIDEzLjc1NC0zNi4zMTctMi42MTEtNC4wMTF2LTAuMTM5aDE1LjE2NGwxMy42ODQgNDAuNDY3IDMuNjY4IDQuMDExdjAuMTQ0aC0xOS4xMTR2LTAuMTQ0bDMuNjY5LTQuMDExLTIuMDQ2LTYuOTY3aC0xNS44bC0yLjQgNi45NjcgMy40NTcgNC4wMTF2MC4xNDR6IiBmaWxsPSIjMDAwMDRiIi8+Cjwvc3ZnPgo=',
     teams: [],
     defaultElo: 1200, TMIN: 900, TMAX: 1500, CMIN: 1820, CMAX: 3000, chartMin: 800, chartMax: 1700,
     scoreGame: function(g, v, em){ var combined=(em[g.awayAbbr]||1200)+(em[g.homeAbbr]||1200); return combined+(g.lev||0)+(g.tvBonus||0); },
@@ -1130,7 +1139,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mls: {
-    title: 'MLS', version: 'mls.v1.6', vdate: '2026-05-21',
+    title: 'MLS', version: 'mls.v1.7', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'mls',
     sport: 'soccer', league: 'usa.1',
@@ -1180,7 +1189,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.13', vdate: '2026-05-21',
+    title: 'MLB', version: 'mlb.v1.14', vdate: '2026-05-21',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -1246,7 +1255,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.11', vdate: '2026-05-21',
+    title: 'NHL', version: 'nhl.v1.12', vdate: '2026-05-21',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -1312,7 +1321,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.13', vdate: '2026-05-21',
+    title: 'NFL', version: 'nfl.v3.14', vdate: '2026-05-21',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1366,7 +1375,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.9', vdate: '2026-05-21',
+    title: 'CFB', version: 'ncaafb.v1.10', vdate: '2026-05-21',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -1470,7 +1479,7 @@ var currentLeague = 'all';
 var currentTab = 'games';
 var LC = LEAGUE_CONFIGS.nba; // shorthand, updated on switch
 var DOT_TOP3=["#BA7517","#888780","#854F0B"]; // gold, silver, bronze
-var LEAGUE_DOT_COLORS={nba:'#C8102E',wnba:'#E8892A',championsleague:'#1B3D6E',mlb:'#A0603A',nhl:'#4E8A9E',nfl:'#3A5A8C',ncaafb:'#7E57C2',mls:'#5E9E72',all:'#BA7517'};
+var LEAGUE_DOT_COLORS={nba:'#C8102E',wnba:'#E8892A',championsleague:'#1a6b3c',mlb:'#A0603A',nhl:'#4E8A9E',nfl:'#3A5A8C',ncaafb:'#7E57C2',mls:'#5E9E72',all:'#BA7517'};
 function getDotColor(i,league){return LEAGUE_DOT_COLORS[league]||LEAGUE_DOT_COLORS.all;}
 function getMedalBorder(rank){if(rank===1)return'3px solid #BA7517';if(rank===2)return'3px solid #9A9A9A';if(rank===3)return'3px solid #7A5230';return'none';}
 function dotsHtml(n,color){var c=color||'#3B6D11';var h='';for(var i=0;i<5;i++)h+='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;margin:0 1px;background:'+(i<n?c:'#D3D1C7')+'"></span>';return h;}
@@ -1564,7 +1573,7 @@ function getAllTeamTierRankings(){
   ['nba','wnba','mlb','nhl','nfl','ncaafb','championsleague','mls'].forEach(function(lg){
     LEAGUE_CONFIGS[lg].teams.forEach(function(t){
       var ta=t.tierAbbr||lg+'_'+t.abbr;
-      all.push({abbr:t.abbr,tierAbbr:ta,name:t.name,league:lg,logo:LEAGUE_CONFIGS[lg].logo(t.espn),elo:tierElo[ta]||TIER_DEFAULT});
+      all.push({abbr:t.abbr,tierAbbr:ta,name:t.name,league:lg,_league:t._league||null,logo:LEAGUE_CONFIGS[lg].logo(t.espn),elo:tierElo[ta]||TIER_DEFAULT});
     });
   });
   // Sort by elo to establish percentile
@@ -1717,6 +1726,18 @@ function renderTierRanker(){
   if(!done)assignTierButtons();
 }
 
+// Populate championsleague.teams from 5 euro league configs
+(function(){
+  var euroLeagues=['epl','laliga','bundesliga','seriea','ligue1'];
+  euroLeagues.forEach(function(lg){
+    LEAGUE_CONFIGS[lg].teams.forEach(function(t){
+      var ct=Object.assign({},t,{_league:lg});
+      ct.tierAbbr=ct.tierAbbr||lg+'_'+t.abbr;
+      LEAGUE_CONFIGS.championsleague.teams.push(ct);
+    });
+  });
+})();
+
 var tierSports={nba:true,wnba:true,mlb:true,nhl:true,nfl:true,ncaafb:true,championsleague:true,mls:true};
 
 
@@ -1797,7 +1818,7 @@ function renderTierRankings(){
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
       '<div class="rank-name">'+t.name+(rec?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+rec+'</span>':'')+'</div>'+
-      '<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:6px;flex-shrink:0;white-space:nowrap">'+(lgIcons[t.league]||'')+' '+({'nba':'NBA','wnba':'WNBA','mlb':'MLB','nfl':'NFL','nhl':'NHL','ncaafb':'CFB','championsleague':'','mls':'MLS'}[t.league]||'')+'</span>'+
+      '<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:6px;flex-shrink:0;white-space:nowrap">'+(lgIcons[t.league]||'')+(t.league==='championsleague'?' '+({'epl':'Premier Lg','laliga':'La Liga','bundesliga':'Bundesliga','seriea':'Serie A','ligue1':'Ligue 1'}[t._league]||'Euro'):((' '+({'nba':'NBA','wnba':'WNBA','mlb':'MLB','nfl':'NFL','nhl':'NHL','ncaafb':'CFB','mls':'MLS'}[t.league]||'')).trimEnd()))+'</span>'+
       '<div class="rank-elo" style="margin-right:4px">'+t.elo+'</div>'+
       '<span class="tier-badge tier-'+tier+'">'+tier+'</span>'+
     '</div>';
@@ -2177,11 +2198,10 @@ function renderRankings(){
   var _divCfg=DIV_CONFIGS[currentLeague];
   if(_divCfg&&Object.keys(enabledDivs).length){
     var _anyOff=Object.values(enabledDivs).some(function(v){return !v;});
+    var _rrConfPills=_divCfg.pills&&_divCfg.pills.length&&(!_divCfg.confMap||!Object.keys(_divCfg.confMap).length);
     if(_anyOff)allTeams=allTeams.filter(function(t){
-      var key=t.conf||t.div;
-      // For sports with sub-divisions, check div; for conf-only, check conf
-      var divKey=(_divCfg.pills&&_divCfg.pills.length)?t.div:t.conf;
-      return enabledDivs[divKey||key]!==false;
+      var divKey=_rrConfPills?(t.conf||t.div):(_divCfg.pills&&_divCfg.pills.length?t.div:t.conf);
+      return enabledDivs[divKey]!==false;
     });
   }
   var sorted=allTeams.slice().sort(function(a,b){return (ratings[b.abbr]||LC.defaultElo)-(ratings[a.abbr]||LC.defaultElo);});
@@ -2200,6 +2220,10 @@ function renderRankings(){
       (currentLeague==='ncaafb'&&t.conf?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+(t.conf==='Big Ten'?'B1G':t.conf==='Big 12'?'B12':t.conf)+'</span>':'')+
       (currentLeague==='mlb'&&t.div?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.div.replace('AL ','AL-').replace('NL ','NL-')+'</span>':'')+
       (currentLeague==='nfl'&&t.div?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.div.replace('AFC ','AFC-').replace('NFC ','NFC-')+'</span>':'')+
+      (currentLeague==='mls'&&t.conf?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.conf+'</span>':'')+
+      (currentLeague==='nhl'&&t.div?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.div+'</span>':'')+
+      (currentLeague==='nba'&&t.div?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.div+'</span>':'')+
+      (currentLeague==='wnba'&&t.conf?'<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+t.conf+'</span>':'')+
       '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
       '<div class="rank-elo">'+(ratings[t.abbr]||LC.defaultElo)+'</div></div>';
     if(qdivs.indexOf(i)>=0)html+='<hr class="quintile-divider"/>';
@@ -2523,27 +2547,29 @@ var DIV_CONFIGS={
     confMap:{East:['Atlantic','Central','Southeast'],West:['Northwest','Pacific','Southwest']},
     pills:['Atlantic','Central','Southeast','Northwest','Pacific','Southwest'],
   },
-  wnba:{cats:['All','East','West'],confMap:{East:['East'],West:['West']},pills:[]},
+  wnba:{cats:[],confMap:{},pills:['East','West']},
   nfl:{
     cats:['All','AFC','NFC'],
     confMap:{AFC:['AFC East','AFC North','AFC South','AFC West'],NFC:['NFC East','NFC North','NFC South','NFC West']},
-    pills:['AFC East','AFC North','AFC South','AFC West','NFC East','NFC North','NFC South','NFC West'],
+    pills:['AFC East','AFC North','AFC South','AFC West',null,'NFC East','NFC North','NFC South','NFC West'],
   },
   mlb:{
     cats:['All','AL','NL'],
     confMap:{AL:['AL East','AL Central','AL West'],NL:['NL East','NL Central','NL West']},
-    pills:['AL East','AL Central','AL West','NL East','NL Central','NL West'],
+    pills:['AL East','AL Central','AL West',null,'NL East','NL Central','NL West'],
   },
   nhl:{
     cats:['All','East','West'],
     confMap:{East:['Atlantic','Metropolitan'],West:['Central','Pacific']},
     pills:['Atlantic','Metropolitan','Central','Pacific'],
   },
-  mls:{cats:['All','East','West'],confMap:{Eastern:['Eastern'],Western:['Western']},pills:[]},
-  ncaafb:{cats:['All','SEC','B1G','B12','ACC','Misc'],confMap:{SEC:['SEC'],'B1G':['Big Ten'],'B12':['Big 12'],ACC:['ACC'],Misc:['Misc']},pills:[]},
+  mls:{cats:[],confMap:{},pills:['Eastern','Western']},
+  ncaafb:{cats:[],confMap:{},pills:['SEC','B1G','B12','ACC','Misc']},
 };
 
 var DIV_PILL_LABELS={
+  'Eastern':'Eastern','Western':'Western','East':'East','West':'West',
+  'B1G':'B1G','B12':'B12',
   'AFC East':'AFC E','AFC North':'AFC N','AFC South':'AFC S','AFC West':'AFC W',
   'NFC East':'NFC E','NFC North':'NFC N','NFC South':'NFC S','NFC West':'NFC W',
   'AL East':'AL E','AL Central':'AL C','AL West':'AL W',
@@ -2555,34 +2581,47 @@ var DIV_PILL_LABELS={
 function buildDivPills(){
   var container=document.getElementById('div-pills');
   var catWrap=document.getElementById('div-cat-pills');
+  var hrEl=document.getElementById('div-filter-hr');
   var section=document.getElementById('div-filter-section');
   if(!container||!section)return;
   container.innerHTML='';
+  if(catWrap)catWrap.innerHTML='';
   var lg=currentLeague;
   var cfg=DIV_CONFIGS[lg];
   if(!cfg){section.style.display='none';return;}
   section.style.display='';
 
+  var isTwoLevel=cfg.pills&&cfg.pills.length>0&&cfg.cats&&cfg.cats.length>0;
+  var _lbl=document.getElementById('div-filter-label');
+  if(_lbl)_lbl.textContent=isTwoLevel?'division / conference':'conference';
+
   // Category buttons
-  if(catWrap){
-    catWrap.innerHTML='';
-    if(cfg.cats&&cfg.cats.length>1){
-      cfg.cats.forEach(function(cat){
-        var isAll=cat==='All';
-        var btn=document.createElement('div');
-        var curCat=divCatState[lg]||'All';
-        btn.className='sport-pill'+(curCat===cat?' on':'');
-        btn.textContent=cat;
-        btn.dataset.divcat=cat;
-        btn.onclick=function(){setDivCat(cat);};
-        catWrap.appendChild(btn);
-      });
-    }
+  if(catWrap&&cfg.cats&&cfg.cats.length>1){
+    var curCat=divCatState[lg]||'All';
+    cfg.cats.forEach(function(cat){
+      var btn=document.createElement('div');
+      // Two-level: small theme .pill; one-level: blue sport-pill
+      btn.className=(isTwoLevel?'pill':'sport-pill')+(curCat===cat?' on':'');
+      btn.textContent=cat;
+      btn.dataset.divcat=cat;
+      btn.onclick=function(){setDivCat(cat);};
+      catWrap.appendChild(btn);
+    });
   }
 
-  // Individual division pills (only for sports with sub-divisions)
+  // Show/hide hr separator
+  if(hrEl)hrEl.style.display=isTwoLevel?'':'none';
+
+  // Individual division pills
   if(cfg.pills&&cfg.pills.length){
     cfg.pills.forEach(function(div){
+      if(div===null){
+        // Row break
+        var br=document.createElement('div');
+        br.style.cssText='width:100%;height:0;flex-basis:100%';
+        container.appendChild(br);
+        return;
+      }
       if(enabledDivs[div]===undefined)enabledDivs[div]=true;
       var pill=document.createElement('span');
       pill.className='sport-pill'+(enabledDivs[div]?' on':'');
@@ -2590,13 +2629,6 @@ function buildDivPills(){
       pill.dataset.div=div;
       pill.onclick=function(){toggleDiv(this);};
       container.appendChild(pill);
-    });
-  } else {
-    // No pills — just use conf for filtering (WNBA, MLS, CFB, ncaafb cats)
-    var confs=Object.keys(cfg.confMap);
-    confs.forEach(function(c){
-      var divKeys=cfg.confMap[c];
-      divKeys.forEach(function(d){if(enabledDivs[d]===undefined)enabledDivs[d]=true;});
     });
   }
 }
@@ -2607,7 +2639,8 @@ function setDivCat(cat){
   if(!cfg)return;
   divCatState[lg]=cat;
   // Update pill classes
-  document.querySelectorAll('#div-cat-pills .pill').forEach(function(el){
+  var _catCls=DIV_CONFIGS[lg]&&DIV_CONFIGS[lg].pills&&DIV_CONFIGS[lg].pills.length?'pill':'sport-pill';
+  document.querySelectorAll('#div-cat-pills .'+_catCls).forEach(function(el){
     el.classList.toggle('on',el.dataset.divcat===cat);
   });
   // Enable/disable individual div pills based on cat
@@ -3445,7 +3478,7 @@ function processEvent(ev,tz){
     isCup:isCup,isPrimetime:isPrimetime,isDivisional:isDivisional,
     gcalUrl:gcalUrl,total:total,score:total+Math.random()*10,
     cfbConfTag:(function(){
-      if(gameLeague!=='ncaafb')return'';
+      if(gameLeague!=='ncaafb'&&currentLeague!=='ncaafb')return'';
       var CS={'SEC':'SEC','Big Ten':'B1G','Big 12':'B12','ACC':'ACC','Misc':'CFB'};
       function gc(abbr){var t=LEAGUE_CONFIGS.ncaafb.teams.find(function(t){return t.abbr===abbr;});return t&&t.conf?CS[t.conf]||'CFB':null;}
       var ac=gc(ad.abbr),hc=gc(hd.abbr);
@@ -3464,11 +3497,13 @@ function applyFilters(games){
   if(divKeys.length&&!divKeys.every(function(k){return enabledDivs[k];})){
     var _afDivCfg=DIV_CONFIGS[currentLeague];
     var _hasPills=_afDivCfg&&_afDivCfg.pills&&_afDivCfg.pills.length>0;
+    var _confPills=_hasPills&&_afDivCfg&&(!_afDivCfg.confMap||!Object.keys(_afDivCfg.confMap).length);
     games=games.filter(function(g){
       function teamDivKey(abbr){
         var t=LC.teams.find(function(t){return t.abbr===abbr;});
         if(!t)return null;
-        return _hasPills?t.div:(t.conf||t.div);
+        // conf-only pills (WNBA, MLS, CFB): use conf; two-level: use div
+        return _confPills?(t.conf||t.div):(_hasPills?t.div:(t.conf||t.div));
       }
       var ak=teamDivKey(g.awayAbbr),hk=teamDivKey(g.homeAbbr);
       var acOn=!ak||enabledDivs[ak]!==false;
@@ -3567,7 +3602,7 @@ function renderCards(games){
       '<div class="game-card-header">'+
         '<span class="rank-dot" style="background:'+g.dotColor+';border:'+getMedalBorder(rank)+'"></span>'+
         '<span class="game-rank-num" style="background:'+rc+';">#'+rank+'</span>'+
-        (g.cfbConfTag?'<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text-3);margin-left:4px">'+g.cfbConfTag+'</span>':'')+
+        (g.cfbConfTag&&(currentLeague==='ncaafb'||currentLeague==='all')?'<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text-3);margin-left:4px">'+g.cfbConfTag+'</span>':'')+
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
@@ -3758,7 +3793,7 @@ function renderAllCard(g,i){
   else if(['League Pass','NHL.TV','MLB.TV','NFL Network'].indexOf(g.watch)>=0)badge='<span class="g-badge badge-lp">'+g.watch+'</span>';
   else if(g.isNat)badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
   else badge='<span class="g-badge badge-lp">Local</span>';
-  var lgColors={nba:'#BA7517',wnba:'#E85D04',nfl:'#185FA5',mls:'#C8102E',championsleague:'#1B3D6E'};
+  var lgColors={nba:'#BA7517',wnba:'#E85D04',nfl:'#185FA5',mls:'#C8102E',championsleague:'#1a6b3c'};
   var sportTag='<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:'+(lgColors[g._league]||'#888')+';margin-left:6px">'+(g._league||'').toUpperCase()+'</span>';
   var bonuses='';
   if(g.lev!==0)bonuses+='<div class="g-bonuses">'+(g.lev>0?'+':'')+g.lev+' '+g.levLbl+'</div>';
@@ -4015,7 +4050,7 @@ function finishCLLoad(games,callback){
     if(b.totalStars!==a.totalStars)return b.totalStars-a.totalStars;
     return(a.utcMs||0)-(b.utcMs||0);
   });
-  games.forEach(function(g,i){g.dotColor='#1B3D6E';g._rank=i+1;});
+  games.forEach(function(g,i){g.dotColor='#1a6b3c';g._rank=i+1;});
   lastGames=games;
   var el=document.getElementById('games-content');
   if(!games.length){
@@ -4033,7 +4068,7 @@ function finishCLLoad(games,callback){
       var leagueTag='<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:#C8A951;margin-left:4px">'+(g._euroLabel||'')+'</span>';
       return'<div class="game-card">'+
         '<div class="game-card-header">'+
-          '<span class="rank-dot" style="background:#1B3D6E;border:'+getMedalBorder(rank)+'"></span>'+
+          '<span class="rank-dot" style="background:#1a6b3c;border:'+getMedalBorder(rank)+'"></span>'+
           '<span class="game-rank-num" style="background:'+rc+';">#'+rank+'</span>'+
           leagueTag+
           (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn">📅 add to gcal</a>':'')+
@@ -4042,7 +4077,7 @@ function finishCLLoad(games,callback){
           '<div class="g-team"><div class="logo-wrap"><img src="'+g.awayLogo+'" alt="'+g.awayAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
             '<div class="g-abbr">'+g.awayAbbr+'</div>'+
             (g.awayRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.awayRec+'</div>':'')+
-            '<div class="g-dots">'+dotsHtml(g.awayDots,'#1B3D6E')+'</div>'+
+            '<div class="g-dots">'+dotsHtml(g.awayDots,'#1a6b3c')+'</div>'+
             '<div class="g-elo">'+g.awayElo+'</div></div>'+
           '<div class="g-mid">'+
             '<div style="font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text);text-align:center;margin:2px 0">'+g.dateLabel+'</div>'+
@@ -4056,7 +4091,7 @@ function finishCLLoad(games,callback){
           '<div class="g-team"><div class="logo-wrap"><img src="'+g.homeLogo+'" alt="'+g.homeAbbr+'" style="width:62px;height:62px;object-fit:contain;display:block"/></div>'+
             '<div class="g-abbr">'+g.homeAbbr+'</div>'+
             (g.homeRec?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:1px">'+g.homeRec+'</div>':'')+
-            '<div class="g-dots">'+dotsHtml(g.homeDots,'#1B3D6E')+'</div>'+
+            '<div class="g-dots">'+dotsHtml(g.homeDots,'#1a6b3c')+'</div>'+
             '<div class="g-elo">'+g.homeElo+'</div></div>'+
         '</div>'+
       '</div>';
@@ -4087,11 +4122,12 @@ function loadGames(callback){
 
   if(LC.showWeekBar){
     if(nflWeekMode==='week'&&nflWeeks.length){
-      var wk=nflWeeks[nflWeekIdx];
+      var wk=nflWeeks[nflWeekIdx]||nflWeeks[0];
+      if(!wk){el.innerHTML='<div class="no-games">loading weeks...</div>';return;}
       if(currentLeague==='ncaafb'){
         url='https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?week='+wk.weekNum+'&seasontype='+wk.seasontype+'&year='+(currentSeason||new Date().getFullYear())+'&limit=100&groups=80';
       } else {
-        url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+dstr(wk.start)+'-'+dstr(wk.end)+'&limit=50';
+        url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+(wk.start?dstr(wk.start):'')+'-'+(wk.end?dstr(wk.end):'')+'&limit=50';
       }
     } else if(nflWeekMode==='single'){
       var sd=document.getElementById('nfl-single-date').value.replace(/-/g,'');
@@ -4523,10 +4559,10 @@ var SPORT_CATS={
     {lg:'wnba',label:'WNBA',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/wnba.png'}
   ],
   soccer:[
-    {lg:'championsleague',label:'Champs Lg',logo:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OSIgZmlsbD0iIzFCM0E2QiIvPjxwYXRoIGQ9Ik01MC4wMDAsMTAuNTAwIEw1Mi4wNTcsMTYuMTY4IEw1OC4wODQsMTYuMzczIEw1My4zMjksMjAuMDgyIEw1NC45OTYsMjUuODc3IEw1MC4wMDAsMjIuNTAwIEw0NS4wMDQsMjUuODc3IEw0Ni42NzEsMjAuMDgyIEw0MS45MTYsMTYuMzczIEw0Ny45NDMsMTYuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTcxLjkyMCwxOS41ODAgTDczLjk3OCwyNS4yNDggTDgwLjAwNCwyNS40NTMgTDc1LjI0OSwyOS4xNjEgTDc2LjkxNiwzNC45NTYgTDcxLjkyMCwzMS41ODAgTDY2LjkyNCwzNC45NTYgTDY4LjU5MiwyOS4xNjEgTDYzLjgzNiwyNS40NTMgTDY5Ljg2MywyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNODEuMDAwLDQxLjUwMCBMODMuMDU3LDQ3LjE2OCBMODkuMDg0LDQ3LjM3MyBMODQuMzI5LDUxLjA4MiBMODUuOTk2LDU2Ljg3NyBMODEuMDAwLDUzLjUwMCBMNzYuMDA0LDU2Ljg3NyBMNzcuNjcxLDUxLjA4MiBMNzIuOTE2LDQ3LjM3MyBMNzguOTQzLDQ3LjE2OCBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik03MS45MjAsNjMuNDIwIEw3My45NzgsNjkuMDg5IEw4MC4wMDQsNjkuMjk0IEw3NS4yNDksNzMuMDAyIEw3Ni45MTYsNzguNzk3IEw3MS45MjAsNzUuNDIwIEw2Ni45MjQsNzguNzk3IEw2OC41OTIsNzMuMDAyIEw2My44MzYsNjkuMjk0IEw2OS44NjMsNjkuMDg5IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTUwLjAwMCw3Mi41MDAgTDUyLjA1Nyw3OC4xNjggTDU4LjA4NCw3OC4zNzMgTDUzLjMyOSw4Mi4wODIgTDU0Ljk5Niw4Ny44NzcgTDUwLjAwMCw4NC41MDAgTDQ1LjAwNCw4Ny44NzcgTDQ2LjY3MSw4Mi4wODIgTDQxLjkxNiw3OC4zNzMgTDQ3Ljk0Myw3OC4xNjggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNMjguMDgwLDYzLjQyMCBMMzAuMTM3LDY5LjA4OSBMMzYuMTY0LDY5LjI5NCBMMzEuNDA4LDczLjAwMiBMMzMuMDc2LDc4Ljc5NyBMMjguMDgwLDc1LjQyMCBMMjMuMDg0LDc4Ljc5NyBMMjQuNzUxLDczLjAwMiBMMTkuOTk2LDY5LjI5NCBMMjYuMDIyLDY5LjA4OSBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGQ9Ik0xOS4wMDAsNDEuNTAwIEwyMS4wNTcsNDcuMTY4IEwyNy4wODQsNDcuMzczIEwyMi4zMjksNTEuMDgyIEwyMy45OTYsNTYuODc3IEwxOS4wMDAsNTMuNTAwIEwxNC4wMDQsNTYuODc3IEwxNS42NzEsNTEuMDgyIEwxMC45MTYsNDcuMzczIEwxNi45NDMsNDcuMTY4IFoiIGZpbGw9IndoaXRlIi8+PHBhdGggZD0iTTI4LjA4MCwxOS41ODAgTDMwLjEzNywyNS4yNDggTDM2LjE2NCwyNS40NTMgTDMxLjQwOCwyOS4xNjEgTDMzLjA3NiwzNC45NTYgTDI4LjA4MCwzMS41ODAgTDIzLjA4NCwzNC45NTYgTDI0Ljc1MSwyOS4xNjEgTDE5Ljk5NiwyNS40NTMgTDI2LjAyMiwyNS4yNDggWiIgZmlsbD0id2hpdGUiLz48cGF0aCBkPSJNNTAuMDAwLDM3LjAwMCBMNTMuMjMzLDQ1LjU1MCBMNjIuMzY0LDQ1Ljk4MyBMNTUuMjMxLDUxLjcwMCBMNTcuNjQxLDYwLjUxNyBMNTAuMDAwLDU1LjUwMCBMNDIuMzU5LDYwLjUxNyBMNDQuNzY5LDUxLjcwMCBMMzcuNjM2LDQ1Ljk4MyBMNDYuNzY3LDQ1LjU1MCBaIiBmaWxsPSJ3aGl0ZSIvPjwvc3ZnPg=='},
+    {lg:'championsleague',label:'Champs Lg',logo:'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjIwLjUiIGhlaWdodD0iMjA5LjUiIGZpbGw9Im5vbmUiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDQ0MSA0MTkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiA8cGF0aCBkPSJtMjkzLjQ0IDEyMy40NGMtMC4yNDQgMC41LTAuNzI3IDAuODQ1LTEuMjgxIDAuOTA5LTEyLjYyOCAxLjQ2NS0yNi4wNDYtMC4yOTEtMzEuMjE5LTEuMTAzLTguNjM2LTguNjI4LTE3Ljk4NS0xOC4yMjUtMjQuODc3LTI2LjYxMi0wLjcwNy0wLjg1OS0wLjc0MS0yLjA4NzYtMC4wOTEtMi45OTI0IDkuODI5LTEzLjcwMyAxOC44My0yNC41NzYgMjIuNjM1LTI4Ljg4MSAxMC44NzItMi4zNjk1IDIxLjcxMy00LjQ2NzEgMjkuMDM0LTQuNzY2MiAwLjU1My0wLjAyMjIgMS4wNzkgMC4yMzI0IDEuNDAzIDAuNjgxMSA5LjQzNyAxMy4xMjYgMTYuMTg3IDI1LjcwMyAxOC4zNTMgMzAuMjk5LTQuMzMzIDExLjY0Mi05LjU0NiAyMy40MDMtMTMuOTU3IDMyLjQ2NnptLTEyLjA0OCAyMi4yMDhjLTYuOTYxIDExLjY1NC0xMi4yNDkgMTguNjgtMTMuOTQ0IDIwLjgxNi0yLjMgMy4yNDctOC4xNjMgMTEuNzA2LTE3LjI3MSAyMC4yNjItMC41ODEgMC41NDYtMS4zMzkgMC44Ni0yLjEzOCAwLjg5NS0xMS40MDYgMC40NzUtMjIuMDExLTAuMzI1LTI2LjE0MS0xLjIyNi0zLjQ5Ny0xLjQ0Ni0xMS42MzYtNS4xMDYtMjEuMjU2LTEwLjQyNS0wLjgzOS0wLjQ2My0xLjMzMy0xLjM2Ny0xLjI3LTIuMzIxIDAuNTAyLTcuNDU3IDIuODY4LTE4LjA3OSA0Ljk2MS0yOS4zMTIgNS4xNzUtOS4wODcgMTAuNTQtMTkuNDU1IDE2LjEwMy0yNy45NzEgMC41ODYtMC44OTYgMS42ODMtMS4zMTMgMi43MTgtMS4wMyAxNi42NTcgNC41NDcgMzEuMTExIDggMzYuOTc5IDkuMzIgOC4wMzUgOS4zMTcgMTUuODIxIDE1Ljg2OCAyMS4wNTkgMTkuOTI5IDAuMzI2IDAuMjUzIDAuNDEgMC43MDkgMC4yIDEuMDYzem0tMTAwLjc4IDE2LjE5NWMtMC44NDQgMC41MjMtMS45MTkgMC40OTUtMi43My0wLjA3OS03LjI1My01LjEzNC0xNS45MDctMTEuNjk1LTIzLjExNS0xOC40My00LjI1Mi03LjI2Ni03LjUzMS0xNi41NjUtOS44Mi0yNC40ODQtMC4xNDgtMC41MS0wLjAzNC0xLjA2MiAwLjMwMi0xLjQ3MyA4LjA4OC05Ljk0MyAxNy43OTUtMTcuODEgMjEuODUzLTIwLjgwNSA5LjE1NSAzLjk0OTIgMTkuNjYzIDcuNDMzMiAyOC44NTUgMTAuNDkgMC45NCAwLjMxMiAxLjYwNCAxLjE1NSAxLjY4MiAyLjE0IDEuMjk2IDE2LjM1MiA0LjI5MiAyOS41NzYgNS4wOTIgMzQuNjI5LTMuNDMyIDMuNjY3LTEyLjQgMTEuOTgtMjIuMTE5IDE4LjAxMnptLTQwLjI4Ni02NC4zNDJjLTEuMi03LjcxOTEtMS45ODktMTUuODI2LTIuMDc2LTE5LjUzOS0wLjE5OS04LjU3MzIgMS4xNjMtMTYuMTY2IDIuNzQ1LTIzLjE5NiAwLjI2LTEuMTUwOCAwLjg1Ny0yLjE5NCAxLjcyOC0yLjk5MTIgNC41OTUtNC4yMDg3IDEyLjkwNC0xMS42MzQgMTguMTQ4LTE0Ljk5NyA0Ljk0My0zLjE2OTIgMTguNjgxLTcuNjA0MSAyNC4zNDYtOS4yNDkzIDEuMDk4LTAuMzIwMSAyLjI2OCAwLjE2ODEgMi44MzMgMS4xNjA3IDAuNjgxIDEuMTk2NSAxLjM5MyAyLjM4NDMgMi4xNDggMy41NTM2IDQuNDYgNi45NDI4IDkuMzc1IDEyLjkyIDExLjQ0NSAxNS41MDktMi43NDQgMTAuODk0LTMuOTEgMjMuMTA5LTQuNDQxIDMzLjQxMy0wLjA1IDAuOTY2Ni0wLjY2NiAxLjgxMzMtMS41NjkgMi4xNjU1LTE0LjMzMyA1LjU5MDYtMjUuMTY2IDkuOTY1LTI4LjgwNiAxMS42NDUtOS44NDggMC40MTU0LTE5LjIyOCAyLjA5MzktMjUuNTU5IDMuMjAwMi0wLjQ0OSAwLjA3OTEtMC44NzItMC4yMjYzLTAuOTQyLTAuNjczN3ptNzIuMjU0LTc0LjgxNmMwLjM5Mi0wLjYwODEgMS4wMzQtMS4wMTM1IDEuNzUyLTEuMTA4NyAxNC43MzktMS45NDY4IDI4LjIyNC0yLjIzMzUgMzMuNDA3LTIuMDkwMiA5LjQzMiA2LjI3MTcgMTguNjQ5IDE0LjU0NyAyNi4wMDUgMjIuMzk1IDAuNTE1IDAuNTUgMC41OTIgMS4zNzgyIDAuMTg1IDIuMDEzNS01LjI0OSA4LjIwODUtMTIuODgzIDE2LjA5LTE2LjIzNiAxOS41MjItMTIuNDM2IDIuOTQzLTI1LjYyIDcuMjI3MS0zNi4zMjEgMTAuNzM5LTEuMDQxIDAuMzQxMS0yLjE4NS0wLjA0NTctMi44MDctMC45NDgtOC4xMi0xMS43OTQtMTMuMjgtMjEuOTA1LTE1LjMwMy0yNS42NTYgMi4xOTYtOS44MzI3IDUuMjY3LTE4LjU4OSA5LjMxOC0yNC44NjV6bTk4LjQ1NSA5Ni44MTdjLTAuMjY0IDAuMTE5LTAuNTY3LTAuMDY3LTAuNTgyLTAuMzU1LTAuNjE4LTEyLjEwNy0xLjczMi0yMy44NzEtMi4zMTUtMjguMTczIDAuMDQ3LTEwLjQ1Ni0xLjY4Ny0yMS4zMDYtMy40MTctMjkuMzA2LTAuMDYyLTAuMjg5MiAwLjE5NC0wLjU0NzYgMC40ODUtMC40ODk1IDkuODk0IDIuMDE5NyAxMy4wNyA1LjcyNDEgMTMuMDcgNS43MjQxLTUuMjM4LTExLjc0MS0xMi43ODUtMjAuNTg5LTIwLjk4OC0yNy4yNzYtNy4wMTMtMTQuNjgtMTUuMDg1LTIxLjQ3LTE1LjA4NS0yMS40NyAwLjY1MyAzLjI0NyAwLjIwMyA2LjkxOTMtMC45NTQgMTAuNzA5LTAuMDczIDAuMjQxLTAuMzQ5IDAuMzU2LTAuNTc2IDAuMjQ2LTEzLjQ0Mi02LjU3MDgtMjcuMzIyLTkuNTcxOS0zMi42OTEtMTAuMzIzLTguMDIzLTMuODk4NS0xNi43ODYtNi40NzgxLTIzLjkxMi04LjQzMzUtMC4xOS0wLjA1MTktMC4yNDItMC4yOTc5LTAuMDg5LTAuNDI1MjMgOS40NTgtNy44NDY0IDE4LjE1OC05Ljg0MzggMTguMTU4LTkuODQzOC0xNS40MDItMC42MTY3OC0yOC42NTkgMi4xNjgtMzkuNzQ0IDYuNDI2Mi0xNi41NjItMS4zMjYzLTI3LjExMiAxLjU1MjUtMjcuMTEyIDEuNTUyNXM0LjU3MyA1LjQ3MDcgNi4zNTEgOC41MTYzYzAuMjE0IDAuMzY4NCAwLjEwMiAwLjg0MDUtMC4yNDkgMS4wODI4LTEwLjQxNyA3LjIxODQtMTcuODkxIDE1LjE0OC0yMC44MzggMTguNDQ5LTMuMjgzIDAuNDQzNy04Ljk2OSAxLjIyODYtMTMuOTM1IDIuNDUyMy0wLjE5OCAwLjA0OTQtMC4zNjYtMC4xNDk2LTAuMjg2LTAuMzM3NCA0Ljk3My0xMS44MzggMTAuMzk0LTE4LjM5MSAxMC4zOTQtMTguMzkxcy0zMS45NjQgMjIuNjgxLTM4LjAyMyA2My40MzhjMCAwIDIuNjMyLTcuMjI0NiAxMS41MzItMTguMTc1IDAuMTE3LTAuMTQzNCAwLjM0NC0wLjExNSAwLjQyIDAuMDU0NCAyLjUyMiA1LjU3OTQgNS40MDUgMTAuNTM0IDYuODU0IDEyLjgwOC00Ljg5NSA3Ljg3MzYtOC4yNzQgMTYuNDU5LTEwLjM1NSAyMy40ODUtMC4wNzIgMC4yNDQtMC4yNTYgMC40NC0wLjQ5NiAwLjUzLTcuNDAzIDIuODA4LTkuMjg5IDUuNDg3LTkuMjg5IDUuNDg3IDEuMTUxIDMuOTI4IDMuNDExIDcuNzU3IDYuMjY2IDExLjM2NiAwLjI0OCAwLjMxMiAwLjM3NCAwLjcwMiAwLjM1NyAxLjEtMC43ODYgMTcuMzk0IDQuODMgMjguODQzIDQuODMgMjguODQzIDEuMjY4LTYuMDc1IDMuNzUxLTExLjk3NiA2Ljg4Ny0xNy41MTQgMC4xMjUtMC4yMjEgMC40MTktMC4yNzYgMC42MTctMC4xMTkgNy4zMDYgNS43OTggMTQuODc0IDEwLjg2NyAxNy44NzcgMTIuNjY3IDEuNTQ5IDMuOTUyIDUuOTg0IDE0LjIwNyAxMS45MSAyNC43MjggMC4xMjQgMC4yMjIgMC4wMjMgMC41MDMtMC4yMTYgMC41OS03LjA5NiAyLjU4My0xNC4zNzYgMy43NTItMjEuMDUxIDIuMTI4IDAgMCA4LjA1IDEwLjAyIDMyLjg4MiAxNC4yOTMgNi44ODkgOC4xMzQgMTUuMjczIDE0Ljg3IDI1LjA2NCAxNy4yMSAwIDAtMi44Ny0zLjE1Mi0zLjU3OS0xNC44OTgtMC4wMTUtMC4yMzggMC4xNzYtMC40NDEgMC40MTUtMC40MzcgNi4xMzEgMC4wOTIgMTQuNDQ4IDAuMjI1IDIyLjA2MS0wLjMyNyAyLjY5OCAyLjEyNSA4LjU4NiA2Ljc5IDE0LjMyOSA5Ljc2MyAwLjI4NiAwLjE0OCAwLjMwNCAwLjU1IDAuMDI5IDAuNzE3LTEwLjA5NSA2LjA5Ny0xNi44MTIgNi42MjgtMTYuODEyIDYuNjI4IDQ1LjcyNyAwLjk3MyA3My4xODItMjguODE1IDczLjE4Mi0yOC44MTUtNy41MzIgNC45NDktMTYuMjMgOC4wMjYtMjQuODg4IDkuODU5LTAuMjkyIDAuMDYyLTAuNTQ4LTAuMTk2LTAuNDg3LTAuNDg4IDEuNjA4LTcuNzY5IDEuMTU3LTE1LjI4MSAxLjA0NC0xNy45MjggMTAuODQ5LTIuNjg4IDIwLjMxMy03LjUzIDI3LjMyLTEyLjQ4IDAuMTQxLTAuMSAwLjMzLTAuMTAxIDAuNDczLTJlLTMgMi45MTcgMi4wMjcgNS40MTMgNC4zMDEgNy45MDQgOC4wODcgMCAwIDQuNzQ0LTYuNzA0IDYuMzc2LTIyLjIzNyAxMS43NDYtMTUuMzE2IDEzLjQ5Mi0zMC45OTMgMTMuNDkyLTMwLjk5My0yLjk0NyA0LjYwMy03LjM5NyA3LjkyLTEyLjYxIDEwLjI5N3ptLTkwLjUzIDE1MS4yM2MtMTkuNjEzIDAtMzcuNDA3IDguNzU3LTQ4LjI2MSAyMS43MDVsMy40NDMgNC4yNDJjOS44NTctMTIuMjQgMjYuNjI2LTIwLjY1NiA0NC44MTgtMjAuNjU2IDE4LjE5NCAwIDM0Ljk2MiA4LjQxNiA0NC44MTkgMjAuNjU2bDMuNDQzLTQuMjQyYy0xMC44NTUtMTIuOTQ4LTI4LjY0OC0yMS43MDUtNDguMjYyLTIxLjcwNXptLTQ1Ljg3NyAyLjc0OWMtMS4yOSAxLjA0Ny0yLjc5IDEuNTU4LTQuMTE0IDEuNDAxLTEuNjc4LTAuMTkyLTIuNjk3LTAuODc4LTQuMzY3LTIuOTM1bC05LjYxOC0xMS43OTktNS4xODYgNC4yMDYgMTAuNDc1IDEyLjg2YzIuMjI2IDIuNzIzIDQuNzY0IDQuMTgxIDcuNzU1IDQuNDU1IDAuMzU0IDAuMDMzIDAuNzA0IDAuMDUxIDEuMDUgMC4wNTQgMi45IDAuMDI1IDUuNTkzLTAuOTk1IDguMjAzLTMuMTAyIDIuOTA3LTIuMzcgNC41MDMtNS4xMjEgNC44NzctOC40MTEgMC4zNC0yLjk4MS0wLjU3MS01Ljc1OC0yLjc5MS04LjQ4OGwtMTAuNDczLTEyLjg1Ni01LjE4NiA0LjIwNiA5LjYxNCAxMS44MDV2MmUtM2MxLjY3NiAyLjA0OSAyLjEzOSAzLjE4NiAxLjk4NCA0Ljg2Ny0wLjExNiAxLjMyMy0wLjkyNiAyLjY4NS0yLjIyMyAzLjczNXptMzUuNDctMzcuMTcyLTE2LjggMy40MDNjLTAuNzY3IDAuMTU1LTEuMzc0IDAuNTM4LTEuNzUxIDEuMTEtMC4zODEgMC41NzEtMC40OTggMS4yNzYtMC4zNDMgMi4wNDFsMy4zNDggMTYuNDYxYzAuNTQ1IDIuNjc3IDEuNzQ4IDQuNjA1IDMuNTc2IDUuNzMxIDEuMjA5IDAuNzQ0IDIuNjU5IDEuMTE2IDQuMzMgMS4xMTUgMC44NTEtMWUtMyAxLjc2LTAuMDk5IDIuNzIyLTAuMjk0bDEwLjUtMi4xMjYtMS4yNjMtNi4yMTQtMTAuMjE1IDIuMDdjLTIuMDkxIDAuNDIyLTIuNzcgMC4xOTEtMy4yNDctMi4xNTFsLTAuMzU5LTEuNzY2IDExLjgxNS0yLjM5My0xLjI0OS02LjE0My0xMS44MTYgMi4zOTItMC44OTctNC40MDcgMTIuOTEzLTIuNjE2LTEuMjY0LTYuMjEzem0zMi42NjggOC45ODIgMTAuMDY3IDIuNjAyIDEuNTkxLTYuMTI2LTEwLjM1Mi0yLjY3NmMtNS42NzQtMS40NjctOS41NiAwLjY1My0xMC45NCA1Ljk2OGwtNC4yMjcgMTYuMjc4Yy0wLjE5NSAwLjc1Ni0wLjExNiAxLjQ2NSAwLjIzMSAyLjA1NSAwLjM0NyAwLjU4OSAwLjkzIDEuMDAzIDEuNjg3IDEuMTk5bDMuODQzIDAuOTkzIDIuNzI0LTEwLjUyOCAxMS42NTEgMy4wMTIgMS41NzQtNi4wNTUtMTEuNjU1LTMuMDE0IDAuNDUzLTEuNzRjMC41OTktMi4zMDggMS4yODktMi41MDIgMy4zNTMtMS45Njh6bTUyLjIzNyAxNC44NjcgMy41NTQtNC4zNzljLTEuNzY1LTEuNzYyLTMuNjAyLTMuNDcyLTUuNTE2LTUuMTItMTkuODg3LTE3LjEzMS00NS42NDgtMjYuNTY0LTcyLjUzNi0yNi41NjQtMjYuODg3IDAtNTIuNjQ3IDkuNDMzLTcyLjUzNiAyNi41NjQtMS45MTMgMS42NDgtMy43NTEgMy4zNTctNS41MTYgNS4xMTlsMy41NTQgNC4zNzljMS43OTUtMS44MTIgMy42NzEtMy41NjkgNS42My01LjI1OCAxOC44Ny0xNi4yNTIgNDMuMzI3LTI1LjIwMiA2OC44NjgtMjUuMjAyczQ5Ljk5OCA4Ljk1IDY4Ljg2NyAyNS4yMDJjMS45NjEgMS42ODkgMy44MzYgMy40NDYgNS42MzEgNS4yNTl6bS0yNy4xMyAyMS43MzIgMS4xNTMtMy45NjktNC45Ni0zLjY5OCAzLjk5NC0yLjg1NSAyLjMxMyAxLjczNCAyLjYyNy04LjgzOS0xNS4yNDQgOS44MzYtNi4yNDktMy41MjggMjMuOTExLTE1LjQ0MWMwLjkyMi0wLjU5NiAyLjE4My0xLjEyMSAzLjc3OSAwLjEwNGwxLjAyMiAwLjc4NmMxLjYxMSAxLjIzOCAxLjM4MSAyLjY1NiAxLjA2NiAzLjYxNWwtNy45MzcgMjcuMjU2LTUuNDc1LTUuMDAxem0tMTEyLjUzIDEyOS4wOGgtMTcuNjM0di0xMy41MTNoMTAuNTA5bDQuMzAyIDMuNjYxaDAuMTQ0di0xMy43OTVoLTAuMTQ0bC00LjMwMiAzLjY2MWgtMTAuNTA5di0xMS43NTVoMTdsNC45MzggNS4yOGgwLjE0bC0wLjU2NC0xMS42ODZoLTM2LjI1OHYwLjE0M2wzLjMxOSA0LjAxMXYzNi4zMTdsLTMuMzE5IDQuMDF2MC4xNDFoMzcuODFsMC45MTctMTMuNDQyaC0wLjE0M2wtNi4yMDYgNi45Njd6bTYuNjYyLTg5LjgxNiAxMi40ODcgMzEuODEzaDYuOTgzbDExLjU2OS0zMi4xNjMgMS45NzMgMjguMDA4LTQuMzc0IDQuMDExdjAuMTQ0aDE4Ljk3NHYtMC4xNDRsLTMuNjY1LTQuMDExLTIuNjg0LTM2LjMxNyAyLjg5NC00LjAxMXYtMC4xMzloLTE1Ljc5OWwtMTAuNzIzIDI5Ljc2OC0xMS41NjktMjkuNzY4aC0xNi4wMTF2MC4xMzlsMy4yNDYgNC4wMTEtMS45MDcgMzYuMzE3LTMuODc2IDQuMDExdjAuMTQ0aDE1LjU4NXYtMC4xNDRsLTMuODc3LTQuMDExIDAuNzc0LTI3LjY1OHptLTUyLjUwNCA4OS43NDVoLTE1LjMwNXYtMzMuOTIybDQuMTYzNS00LjAxMXYtMC4xNDNoLTE4LjkwN3YwLjE0M2wzLjMxODYgNC4wMTF2MzYuMzE3bC0zLjMxODYgMy45Mzl2MC4yMTJoMzUuNDhsMS42OTUtMTQuMDAzaC0wLjE0NGwtNi45ODMgNy40NTd6bS0zNC4xNy01OC4wNzZ2MC4xNDRoMTcuOTg5di0wLjE0NGwtMy4zMTg2LTQuMDExdi0zNi4zMTdsMy4zMTg2LTQuMDExdi0wLjEzOWgtMTcuOTg5djAuMTM5bDMuMjQ1NiA0LjAxMXYxMy41MTRoLTE2LjAxMXYtMTMuNTE0bDMuMjQ1Ni00LjAxMXYtMC4xMzloLTE3Ljk4OHYwLjEzOWwzLjMxNjIgNC4wMTF2MzYuMzE3bC0zLjMxNjIgNC4wMTF2MC4xNDRoMTcuOTg4di0wLjE0NGwtMy4yNDU2LTQuMDExdi0xNS42OTRoMTYuMDExdjE1LjY5NGwtMy4yNDU2IDQuMDExem0yODAuOTQgNTguMTQ3aC0xNy42MzV2LTEzLjUxM2gxMC41MDhsNC4zMDMgMy42NjFoMC4xNDN2LTEzLjc5NWgtMC4xNDNsLTQuMzAzIDMuNjYxaC0xMC41MDh2LTExLjc1NWgxNy4wMDFsNC45MzYgNS4yOGgwLjE0bC0wLjU2Mi0xMS42ODZoLTM2LjI1OHYwLjE0M2wzLjMxOCA0LjAxMXYzNi4zMTdsLTMuMzE4IDQuMDF2MC4xNDFoMzcuODA5bDAuOTE4LTEzLjQ0MmgtMC4xNDRsLTYuMjA1IDYuOTY3em0tMTYxLjg4LTExLjMzMi01LjI4OC0xNy43MzItNi4yMDkgMTcuNzMyaDExLjQ5N3ptMTUuOCAxMy42NTYgMy42NjggNC4wMXYwLjE0MWgtMTkuMTEzdi0wLjE0MWwzLjY2OC00LjAxLTIuMDQ1LTYuOTY3aC0xNS44bC0yLjQwMSA2Ljk2NyAzLjQ1NyA0LjAxdjAuMTQxaC0xNC45NTN2LTAuMTQxbDMuNTI4LTQuMDEgMTMuNzU0LTM2LjMxNy0yLjYxMS00LjAxMXYtMC4xNDNoMTUuMTY1bDEzLjY4MyA0MC40NzF6bS0xODMuMjQtNjYuMjRjLTkuMTcxOCAwLTE1LjAyNi05LjI5Mi0xNS4wMjYtMTcuMzE3IDAtOS44NTIgNS4zNjAxLTE2LjI1NSAxMy4wNDktMTYuMjU1IDIuMDQ1MiAwIDQuMDIyMyAwLjIxMSA1Ljc4NjMgMC43bDYuOTExMSA4LjUxOWgwLjE0MjRsLTAuNDk0Mi0xNC4wNzdjLTEuOTc3MS0wLjc3My02LjI3NjktMS44MzEtMTEuNTY5LTEuODMxLTE2LjM2MiAwLTI1Ljc0NSAxMS4xMjItMjUuNzQ1IDIzLjkzMSAwIDEyLjY3IDkuMDI4MSAyMy43ODcgMjQuNTQ2IDIzLjc4NyA0LjE2MjMgMCAxMC4yOTktMS40MDUgMTQuNTMxLTQuNTcybDAuNjM0My03LjM5aC0wLjE0Yy0zLjU5NjIgMi44MTQtOC43NDk0IDQuNTA1LTEyLjYyNiA0LjUwNXptMjU2Ljg1IDUuNzY5LTMuMjQ1LTQuMDExdi0zNi4zMTdsMy4yNDUtNC4wMTF2LTAuMTM5aC0xNy45ODh2MC4xMzlsMy4zMTYgNC4wMTF2MzYuMzE3bC0zLjMxNiA0LjAxMXYwLjE0NGgxNy45ODh2LTAuMTQ0em0tMzkuNDU4IDQzLjcxOSA0LjQ0MiA0LjAxNXY4LjM3NWMtMS40MTIgMS42MTctMy44OCAyLjk1My03LjE5MyAyLjk1My03LjkwMSAwLTEyLjA2My05LjY0MS0xMi4wNjMtMTcuNzM1IDAtOC43OTggNC40NDYtMTYuMTg3IDEzLjYxNC0xNi4xODcgMi41MzkgMCA1LjIyIDAuMjEyIDcuNDA1IDAuOTgzbDcuMDU1IDcuNmgwLjE0bC0wLjQyNC0xMi4yNDRjLTQuMDktMi4xMTItOS4wMjgtMy4wMjMtMTQuMDM2LTMuMDIzLTE1LjAyMyAwLTI1LjY3NSA5LjIxOS0yNS42NzUgMjQuNDIgMCAxMi43MzYgOC4xODMgMjMuMjk3IDIwLjk0OSAyMy4yOTcgNS41NzQgMCAxMC42NTEtMS4yNjkgMTUuMzc3LTQuNzE1bDUuNTcgNC43MTVoMC4xNDR2LTE4LjQzOWwzLjUyNS00LjAxNXYtMC4xNGgtMTguODN2MC4xNHptLTExLjY3NS02NS4yNTNjMS40MTIgMC40MjIgMy4wMzIgMC42MzIgNC43MjYgMC42MzIgNi4yMDkgMCA4Ljg4OS0zLjM3OCA4Ljg4OS04LjM3NiAwLTUuOTEzLTMuNDU3LTguNzI2LTkuODc4LTguNzI2aC0zLjczN3YxNi40N3ptLTExLjQyNSAxNy41MjN2LTM2LjMxN2wtMy4zMTgtNC4wMTF2LTAuMTM5aDIxLjE2M2MxMi44MzggMCAxOC42OTIgNS44MzcgMTguNjkyIDE0LjcxMSAwIDkuMjE4LTYuOTgzIDE0LjkxOC0xNi41MDUgMTQuOTE4LTMuMTAzIDAtNi4yNzgtMC4yMTItOC42MDctMC43NzN2MTEuNjExbDQuNjU1IDQuMDExdjAuMTQ0aC0xOS4zOTh2LTAuMTQ0bDMuMzE4LTQuMDExem0xMDYuNTctMTQuOTIxYzAtNy43NC0yLjg5MS0yMC4wNTgtMTIuNzY5LTIwLjA1OC03LjkgMC0xMC4xNTcgNy44ODItMTAuMTU3IDEzLjIzIDAgNy44MTQgMy4yNDYgMjAuNDEyIDEyLjc3IDIwLjQxMiA2LjgzOSAwIDEwLjE1Ni02LjQ3NyAxMC4xNTYtMTMuNTg0em0tMTEuODUxIDIwLjYyYy0xMy45NjYgMC0yMi45OTQtMTEuNDcyLTIyLjk5NC0yNC40ODggMC0xMy40NDUgMTAuMzY4LTIzLjIzIDIzLjM0OC0yMy4yMyAxNC4zMTcgMCAyMy40ODggMTEuMTkzIDIzLjQ4OCAyNC4wMDIgMCAxNC42MzktMTEuMDc0IDIzLjcxNi0yMy44NDIgMjMuNzE2em0tMTQuOTE3IDE4LjQ1NSAzLjY2OSA0LjAxMXYyNS40MWMwIDcuMzE4LTMuNTk3IDkuMTQ4LTkuNDUyIDkuMTQ4LTUuOTI2IDAtOS41MjItMS42OTEtOS41MjItOS4xNDh2LTI1LjQxbDMuNjY4LTQuMDExdi0wLjE0M2gtMTguNDEydjAuMTQzbDMuMzE3IDQuMDExdjI1LjQxYzAgMTIuMTcyIDYuMjA3IDE2LjYwOSAxOS40NjYgMTYuNjA5IDEyLjA2MyAwIDE4LjItNC4xNTQgMTguMi0xNi4yNTl2LTI1Ljc2bDMuMjQyLTQuMDExdi0wLjE0M2gtMTQuMTc2djAuMTQzem04NS4xOTEgNS40ODNjMC0zLjE3Mi0yLjQxMS01LjU3LTUuNDUzLTUuNTctMy4wNzUgMC01LjQ4MiAyLjM5OC01LjQ4MiA1LjU3IDAgMy4yMzcgMi40MDcgNS42MTkgNS40ODIgNS42MTkgMy4wNDIgMCA1LjQ1My0yLjM4MiA1LjQ1My01LjYxOXptMS4zNTMgMGMwIDMuODk0LTMuMTQzIDYuNzM0LTYuODA2IDYuNzM0LTMuNjk1IDAtNi44MzMtMi44NC02LjgzMy02LjczNCAwLTMuODQ3IDMuMTM4LTYuNjkxIDYuODMzLTYuNjkxIDMuNjYzIDAgNi44MDYgMi44NDQgNi44MDYgNi42OTF6bS02LjgxNi0wLjQ2NGMwLjk5MiAwIDEuODg1LTAuMDU0IDEuODg1LTEuMjQ5IDAtMC45NjMtMC44NzItMS4xMzctMS42OTktMS4xMzdoLTEuNjAzdjIuMzg2aDEuNDE3em0xLjEwMiAwLjk0NyAyLjE5IDMuNDFoLTEuMzA2bC0yLjAzOS0zLjM1NWgtMS4zNjR2My4zNTVoLTEuMTY3di03Ljc0aDIuOTU0YzEuODM0IDAgMi43MzcgMC42NzUgMi43MzcgMi4xOTkgMCAxLjM4Ni0wLjg3MiAxLjk4NC0yLjAwNSAyLjEzMXptLTIuOTMyLTcwLjQ0OCA0LjMwNCA0LjAxMXYyMy42NDhsLTE4LjEzLTI3Ljc5OGgtMTYuMjk0djAuMTM5bDMuMzE3IDQuMDExdjM2LjMxN2wtMy4zMTcgNC4wMTF2MC4xNDRoMTQuODgzdi0wLjE0NGwtNC4zNzEtNC4wMTF2LTI5LjU2MWwyMi42MzkgMzMuNzE2aDguNDY2di00MC40NzJsMy4zMTQtNC4wMTF2LTAuMTM5aC0xNC44MTF2MC4xMzl6bTQ1LjQ4NCAxNy4wMzRjLTguMTEyLTIuMjUyLTEwLjU4LTMuMjM4LTEwLjU4LTYuOTY3IDAtNC4yOTMgNS41NzQtNS4xNCA5LjEtNS4xNCAyLjk2MyAwIDUuNzE0IDAuMzUgOC4xODMgMS4xMjZsNi43NzEgNy4zMjFoMC4xNGwtMC41NjMtMTIuNjAxYy00LjIzNS0xLjYxNi04LjY3Ny0yLjQ2NC0xMy43NTQtMi40NjQtMTAuNjUyIDAtMjAuODggMy42NjEtMjAuODggMTQuMjIxIDAgNi44MjUgNC43MjYgMTAuOTA3IDE0Ljk1NCAxMy43MjQgNy45MDEgMi4xODEgMTEuNzgxIDMuNTg3IDExLjc4MSA3LjYgMCA0LjY0NC01LjkyNiA1LjYyOC05Ljg3OCA1LjYyOC0zLjMxNCAwLTYuMjc3LTAuNDkxLTguODE4LTEuMjY2bC02LjgzOS04LjQ0NWgtMC4xNDNsMC40OTQgMTMuMzcxYzQuNjU4IDIuMTEyIDEwLjMgMi44ODUgMTUuNTg4IDIuODg1IDExLjQyNyAwIDIxLjAyMS00Ljc4MyAyMS4wMjEtMTQuNDI1IDAtOS4wOC02LjI3Ny0xMS42ODMtMTYuNTc3LTE0LjU2OHptLTMwOS42OCA5LjY0MWgxMS40OTdsLTUuMjg4LTE3LjczNy02LjIwOSAxNy43Mzd6bS0xLjI2OCAxNy44MDhoLTE0Ljk1NHYtMC4xNDRsMy41Mjk0LTQuMDExIDEzLjc1NC0zNi4zMTctMi42MTEtNC4wMTF2LTAuMTM5aDE1LjE2NGwxMy42ODQgNDAuNDY3IDMuNjY4IDQuMDExdjAuMTQ0aC0xOS4xMTR2LTAuMTQ0bDMuNjY5LTQuMDExLTIuMDQ2LTYuOTY3aC0xNS44bC0yLjQgNi45NjcgMy40NTcgNC4wMTF2MC4xNDR6IiBmaWxsPSIjMDAwMDRiIi8+Cjwvc3ZnPgo='},
     {lg:'mls',label:'MLS',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png'}
   ],
-  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'data:image/png;base64,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'}],
+  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAeUElEQVR42uV8d3xcxbn2M+Wcs1W9WpKFbLlhwNgGAsSJbJJAKMlNuFmR0BMcO4Cpab6UrNaQ0LFxCMHAJXAhCaxI4AZDSCFCtJhiio3lXiXLRVZZSVvOnpl5vz9WAieXjg22v/ev1W/naHae87x1Zl7gU5Z4BIIIfPjvaV89vHTBnNrLHo2VrX70+jHq2ksPOQIAi0bfGTP8+eLZE8bEfzHB/cct1c/dNLvispOnnV44PIYIPB6B+LTXwz5N4CJxGMZAAPCTs6uPGl+jv1sZSp9SXeyr7kvAXdNl3bR2oOBWp2x5IhYDAbmxABgRcN5/jAtNrkh8f8xoRCtLRF5Pr7d2e5/951fX+X93y0NrXxoGsrERrLkZ+oAAMBoFb2oCGIMBgOis2q9OqqVZYZn8RmkBMcklOnrtJ57sqL1g4cIXtnyY/3nslyeP+P7UHXdPGpM9ya85Onql6fPs/121rXDB1Xe8/uwwkE1NQCyWm3d/BJBRHJw15phww/mjZ9QWuvMqSvW0kJWB1ECPF/S29Pqbzv35+l8ABhSPCNbY/L7MaYlCzohBAUD03Lorjqx3m6qKByxSEgk3hC5XPLGi3dwau3PLP3Ybr3dj874PYDwO0TgE3FXfPWjSUXXqysIARfzBDNyUztoO2V0quKF9a+XM2TctbfmobNmd1bNOqppxwudwz8iS9Ki0q718h1sJF9iWCjYvX1d4zbX3LV8+bEIa94Ja71EAicDQnGNdQ0ND6JxjNlxfW+KdVxwgXyJtDCfXC4VsZ9V6p+3p5f4T7nlqXUdLtEHOiLWqjzPfMBuPHB8uvvzbxXfWl2e+5SZVFjwrQ36H70qLwY3dzq/nP3rUvLa25kGKQzQ1gmLYc2rN9qSTGH7DP7+s+vTDK/i8kSF3dLfyILyssuBABi25ujPwwBnXWBcCqwei0QYZ+5jg7T7vac3QBGDBZVV3HzWaZopMWme1JO640u846OgT61dusqM/XbTlt3uajWzP2LoIZ43N+oQTplZe9OX+q4udgfMteEh5GQ3t49JyjbTD4qW1wdsvWrDuIs6Aq38GvqcMfDQK3jQRjDVC33n5QRdNqE0vlCxjPNeB5FkT5n45YGXRlSq869f30U1/bVu/bsjemk9qG9kn/eHXzIMxBFx3Rv2ZB493F1SXDxRn+8lokvA4sQAzRouweHE9v/ZHCzdfvTfUaHgtLdEGMSPWqm778cgzJpXTg45MkKsYIBQJY1Oe3xHrdyDxekf+Wdf89+rHOQeuvvqTvciPDWC0ATLWCgVUBhZebM+fUqdm2TwF12WaBBMGRD4w49l+8eoa64eX/XLjrUP2bq95xJxdzNnUBefXRw6uT/8+LNMsmwWDIEZEKmgJmdQ2Xl8r7rrsDnEJsDnzSVT6YwEYj0dEY2OzPv30aYUnjtr0+GEj1OcHvEHleZZwiDPFiCyhFYmg9dJG3yWXzd+wcNGiqdbs2Uu9TyO4XbQI1uzZ8ObPGXPqpLr0I2HebwYJXJDDNGXJL7j2O365ols8+dslBWc+8cTy3mgUMjYUHn0UER/9DUOeMqdNz4qUTvvOpOTiUWWpw/syWY8bsgRs5gkDyTLKcfKtlzfI6CXzN92YW9C2TwU8AFi8GGbRrKnWnF+/teKw8cUdpaX0jbAHraA5ZxbziHFPZ7yqAhpfX6xPdYoLn7vtjkTnollTrcVLt5m9BuBw2DBv5shTvjCBP1UVdksGU1obzqU0EoZrCBgVDBRaL2/Mu/3CW9bPzTFvm8KnLIuXbjOLFk21Lrq67dXD6sp4TY2ZYXTG40YKwzXAlKCUowrz3dK6CvvUmoMKl829a+XaRbNgLV764W0i+6i25ZZL6iKH1qjfFcqkSCpjmIDghoOYgSaui/xcvNUZeuqMazedSAQ+lPsSPhth1NIg2IxWtejHo+879qDBc7ozaS3IERwuNOdQxHSeRaIvla+Xdjjf+untax77KLEp//DMa1U3zCqbOXlUKh6SSZH0DARjghsGgECGTL7NxOru/DW//Ls6Yzi7+AzBy809o1UTEZt905Tzlu8ILMn3C8GVNIZZMJBwCCLpcpPv6+GTRyX/cOMlVZEZsVbVEoXcIwDm3gbUvDkjzzxmvHV3WDGdVQqCv8NeQyC/BO1M2WrJRvXtJUs6epobwfZ2Iv8hVYyamhhjrFm/vN45tTORt8sKJaBIEUDgpCG4xxNaoJglMbkWD101q/b0GTGolmiD/EQ2MBptkN+NtapfzK496ZhRptln9VNac2aBOA3pJgMgGTT5/PLZt+wrr7t38yMt0QZ5yh2bNfYRaW0FRaOQN/xyV/+o2rL26nIr4lDWMENcCYBBwjaSJZGhkOCsPGyfWlkdemXWbctXR6OQra3vTQTxfinSnDs260u/N+6IY8dnnsh3UlY2Y8NnMa4FwRAAxsGNp4OBoGzbbj9+yYLNF36S3HYvg2haog3yvAWvLZs8LjChrtI5lFKkDWecwYDBB8tizFWuKXAYKy2QX6saaT36iwXprmgUvLX13U0Rf68M49uPQH/zm6PKpo8djJf6vWA2RSYY9PimPqTbNvFuny0gFBnbIWxIiPRfn7LmEoE9g1aDfVSeibUaIvDHX+AXdnbyThH2AMONbQGruzLu5g7pBf1cJFxlKsPJvGPq+JPfPKa87Jp5MLtXyD8IQNY0EcwQ7FMPzTxUl5+pyySN8jmcdSvpvrkmdHdNhRCaFDHGjJYhsXqbvPK3L69ra27ec/nt3pAYYJqbwZ5+pbN7WXd2jlIBwXiWXG1odAkXK7byB7el8voKbC36U0zVldGor39BPGQIdtNEsHeLWvi72D3BGqHnX1Ydm1TOZvSnPI/LNKQvxF9YEYyNO0hUjiwyBa4nvKBPyvYdbPl/Ldw4P5edQGMfl8ZG6Hg8Iq761c7HVm+TLU7QJ7TiqijA5OGHmVGtbzk/daUPPkHoH1TeIaOzM34xa3SMNUK3RBvE+wIYj0DEYq0qev7oYw+v0T9JeWllAFbg98sVnfyhHV2Zp0ePGIwMDBjtIy36SeOtVfLnAIDmZuwv0tzcDMZAK7rMpf0JQX4B0eWm9Ki8QMOI/EzHyo78a0NBSxIUMymuptSrn1x0Wumxx8VaVeTfNq74vwfVpaWloYkVg78plpqntEbQcvi6nry+s67hP5gx1bkyLF14ZJTfb4n2ROBv8x5ufzge3zvV3r0HIPTDD0fEzf+9ddmmLudRn8/HGWMaKkmjijH/vOvXXLtyu93m9/ukl/WoMpjgk+vtewlTrXj87eDjXwFsieZAuHamnDO2RIztUa7ykWSGSf5mZ/p7d80MFY0I8K8nXG0kpOzPSmzpdG5kAFb86tPb3dvDLMSqnXZsR5Jpv7Fl0kvrqmIae/P51Se+tjL7nX5PGGFrPpDi6tAqM+72n/SezxhMdDdV5sNed3oT9AWnTqitKpJXuF7WMM0Q9DOxvtv/p+ivtj0qKhLXFPrSMEZ6Pp8R2xPWq//167UtJgqeK2vtbwBCP/wwxM3/s2bZlj72dyeoOTOW5tyjujL70use2rlsXZfv9oAdFIQsKZ02tfmIfTdyeGlTU6uODmHHAWDixAhjDDR1dLqpKpwOu8ozQQHemRbea5ucH53xhZGVef7st1I6AWkMd7mDtV38fwDoZ9DAsZ9LR8K5uVdJ4oxJN+MiL5T9wuVnjZj86N+DsU27AgnH4TLlaT2qIFnwxbqeKxkDNcVzWsejUfDGxmYzNzK6vqooe2Y2rQ0xgAds3r4z7/6b7lu59qgj5Tfq8uF4bsDzSSV39Ymd/3yr+PcA2IzYvhv3fQiPbIjAYref/Y+eXXlrHJ8RiphXmJfh48rFuX9d0tbT1qdv5jLEfFqyAS9J5SF+/uyTq6tYYy425NNzDKJRY8yc6rCSKUNaCCl2JZBc32ddA0AU+zKNXKRhGDO242Pdg+Ivi1uX7mqJQgAw+zH56JkmCCBmEv3mMUgORgIsq1HsFydXVx/t/+dLzm2bd/Iun81FirSqLjL2URMCFwCg6Wjg/LhYqzrmmPKygjCdnfY4cZZB0OHoGvA/csNdbVsikTEVoRAdoVI2wLVIKIlNO8wTANgz2P+lqy2Xom3pEo/0DAYNk550PW0K8rKjvtWw9Yg/vbh6YEc/7hWWZFKHyDMJKihJnXnwwQeHpje1ak4A++ZRvpNGhdOFGXI1h08MpARbtcn8lgD2+XJ1bEmYBbXJKm4ZuavXHliytPgfAKgptv+ELu+pxs3QRGCxB9JtfX2sQ9qCa8NVUUCx0SViBgC2bkPo3o5eqW2urYwLUxV0R37/K/o4xkAcANWF6FRLuKRIUVA6vLOPrfvfB7MvMoCKg/5pYWFYljEdkAzpDJY+9cYbu4jA2Wdb69uDLjnCgW2p/jQ97+MWQIzACXkW/xIA3PrYqrW9LvtryLYYgSmfpakyL/UtAOCR448vCvnxuZQyTIKRkBpJz4kvw44kAGb7+46CzoKYBCcLA1n2bM527P/edzcEAQBJhj8rxYkYcU9lURCmutKDDw4CoO19YnGGLBimuOcK5ljqhGnT8gv556rWnRAKeGVZxY0gLntdC1t26lYArGHSpPywz6vNGgMGVyY9C4MeezFnO1rpQIGvaUVOk7b2JFb0pBljnEnlEfkct6rxcFEHACvWpp/bniTFpZA6y0w4aMqmjbOO4bVl2UODdoY0cWMLzvtTvOfVNbWvAKDpR4RHOhSsdDVIcuJ9KZgVu/rbAWDFwThgABw6i4i/Px9oT2u5wxJgZGDyAh6vKvFqAeC+P5esdlNyjWNZTLGUDvo4VefzaVz5/UczzRgjTcKSSLlq4xPPiwEA8Ont44J+AwWufUwyxgObfvPb69YOTWoOHBUGMQYsXbNj10A/H3A4YBi0JYFC0X1obkhb1vXSy20IGMbJIo85lu9oDpM5VBEBMGBCQ2msBHIVZeb0jLVECoAyTAj0JFIEzPYYwwEn5mEIwDCfheWQHARmLMZRXhZ+O+/tSzqrPQ5wI5gxhKJ8u5gHbLfE0xKCBCPiaN+B/uEHamt8WckBRiDGBdKuSQCAMTjgIHxmBRgA8gneaTjBgDNmgM1b+6cPj3HyCpa7pCHAmFEMWXfgMB72czJQYBwgcjBm4kHPDj9Q5PMxEgRB3IAT6kYEXwKAXPR+YEpnwrVgODgxaKaRHxBv78yt3Nxra48DHPCYhyKfIc4YDYVzBGOAwUTq7fBEgOcqX5Tb+1VKcRzgks54xMDAc4jAkfbbzrK7L0lGMzAGEAg+Kdm/AkKAIf1OsfDf4NLGsAMdQPM+rlHrdxIvohztOAgg5EjIuUFxYf7bh4AMeG4Iyz0Y8NnegQ6gz2IgUA4c4lBGv83AgnCQMU4gMAgAnjbEs1kCIABG4Exh1cr2Y4cfGHSJcvu/hoEIPYlMBQBMn3jgxID/LmV5DoERCAacGHoGXHv4u/F1IzxLMmgiWOAYyBjGu5M8awmCJgYOQkW+VzL8QHtHv9QGMExwMgZ9yewUABCn7f9FhPcSf8C2JXEwZsgIjpKi8MvD3wWQLvcxDgVFXAh4FG7nlu17wxIEAiciQl5YlgNRDgA7d4peTzsEJkBGo7womAUE6ADk35fm5bYluhKZo0kTGDGmyYCM2j40hBnT+zmLAMOJOONQhm/kiYS3EYxBErE0eQDZk6dOfSEMALyq6NVklpgwXHqaETeq5tQvhUYRhq40HEjOg4BaNPiK8nnQNQROkmslaVWvtzM3okEELXFohqdgKZuBE3oTiTV8IB1qcbUP4MSUx0w4mC0+buLKKQDwj6Xrdrh6sFcKcM+Agn4dOGpSsCKXgR84AA4f2zjx5FX1nNRITxsiRrI/wxkXRW8CwLnHJyvDfrs+64E4MzzpWehN+Z/h/1zrvNDXD0WSBNNCFwYzrKZMTgeA557LdCSTgU5LEjQjFXI82Cb0OQA4EDaThmViW44Mh4wtry4KG2Y0GWkTS2Wz3c8t2bUNABs7YdexZeHBICmhmc1Fbz9Lv74i+DyP/23ZymSavx4UfmjmwhiGCj87CUMntzJuaAkXDFJJgmAo9aWOyXnisgPGEpYe3MAAgGTPiSHBAKaUJTkGld3W+krXdgBUE2D/adkujOE6IAWlPP78H/+5cjMHoHel5aOcE4hzZFxFxWE95dqZYw4FgEHlPpMxDJLAsxooCNCU2toGHyLNB0w1ZnpTqwZghYLedCIDYTjAGXYN0GsA2KxZY0vyw5njM1kbhntcEbHOAfsPwNC+8IurE49t6+eekLaAJl2Ul+LVRd5sALRsjf1az6CTIVtJ7WodDIrR35u24UjGQJ/FBee9Yf8YA3331JE1ZT4+PqmyxCFkv+uYwTR/CgCNDfSfW1acydcuKcsiuS3hT/zjpexiAOAUh3jgyZ6VvT3WXxyHcSKbVEZTUYF7+sVfO6R80Z/OWNWfpLccWzJopsKhQZSWoDFH/f3fkUwHOAMwpQonV4aVrTTzuAOxq0/0PPbqiBerq+GvzbdnccWJmGsClo/t6MZTTyzp2NoSheTDh6pW9QRvTg6GIMWgSGnoiiLKGzMq/VMgZnYmrceZcWDAuNIGxYV0CurrneNysRPbvwGMGgJ4WUh8m4HBMI9sS9BAgj3z8ssv919+0uizRpaYMWlXayaM1T1gmxWDznXIbesa3tgMTdEov+buVc+u36H/GfD5OIOCSMGMLE+df9rxhTU9ifC9nYPck5ay+KCtKwv1QdH/MJ8nAuIR7LfeOBKBYLGY+cF/1k7KKx44JuN6hsORSVewzV3e/QDkQeW4UiBJXIF8AT/bMiD/OH/R2jeJcofoOQA0t8UYANqwnc/tyYRhQ7KUSZvaQuU7YXLRdbF7lnd0JWiJ9AtSRCpkuxgdyFyY+xX7L/viQ799ap2aWRFkTGumAjaJbYPO6tgDnYvvuLjmRzWV3sikl9XSMry7L6BXdjlXEcAaG3OaJ3IAguJxiIuv6tv05SmFYypLaVJGZQ2yksKFNKkqL681BdVSU2qfy00SrjHMEc6YyvIR8Uuv7t7V1gbR1rZ/FRiiUfDpF4K2LR5fediUzN1BoWylQX6fECvb+S+CTtGm6Yfrx30yRdrjCISEXLbJvv/K2zfcOzEOERs6VPC2+q1YASIC+/PL5mcdu2SyiDGWIYUgz9Lh4+SDVy/a8WrnTvmm3wkI5nGvNI+s2pF9V+S8cWQ/tH0NnDHQIV9JzRxZrMPpLFOOzxMdu+TgnAVb7/3GF/i9NfmedLOuCfgk39qTv/ml3sLLKQq+YsU7ZHk7DGltBU2cGBE/u/GfPUeMLu+rqrRPAQ0Yz7VQU5rNP3hsuGj5Gue+Q0ar0zwNgnHhOPyQiqL6h0+MteyKRPYfFkYBvmn6ZirT00q+OGn7fQGuAtooEwwG5Rtb/HM/f5hz2LET3IvcQU+RFEwLv2hb7517/T3r3gQgYve/U436FwfQ2NhsWqKQP7x73R2vb838JRTwScM1DQx6+og6+wfBAhPevJ09FwwxmVFQ1UHIurrEzURAZD9iYVM8wmIxmOM+3zm3JuyUZbJcBXywOnaK9mXbrA3T6+WNKTdl0swgz7Hkyo34/SV3bPtTPA4Ra/3XUt6/e1B6BjBE4M++4Hx3Y8LeEPZpmVUOuHbp6HHqtrfa7ed7U1ZGcmYlM2k9sUJ9LXp2/fGNjc06Ht/3A+toFJyf1qyvunjCmDHF+vy012cEgXsImDc24rETDxu8KRhQjko7Jj/A5JodofV/faHmPCKwSCP+T4uA/xOCxGIwzY1gv31uy7blb8lzdmX8SgY0XNelirzBvPGV7Hub23WvbQuWIaBEDphxo9yFAJwhDu7LcSGbjgZOBFYfTv53WcD1ewrG72ixczvrrBihjxtdSGMGUkkdtiXvHAilnlqrT2tesiTd1AS822Gqd2VMcxuoJQp5zsL+TeNGl+yoKzNfBzcqk2G8NGxCwaAXVgRYJHlaw5QVs9Ipoypx5I96nm6JNsj7WzebfZN9ubt/Td8b+eMv1puZfbpfWdovFTSExcM1Ybds0JXGb2kaYI5oeYufs/CB9r/G4xBz5rz7SYz3VLn7h+6WnXPzm69MqS+2aiqc6UIndcYwZnMCA7Fc5M4YV4oK8sTR42pr/nL2ra90xCMQzfuYQ4lGwefN26zPPLn6kOMm08N5PIMMPCGJMwMBS3hMKUZSwDArKJdu8F161Z2b71k0C9Y5c9/7EP37ZhEzYq2K4hExZ+GWq15bKe7y+0LS5uQpCAaw3DE6EPM0Q9A/6NRXdf9x2qH5hZE4TBT7VIYypLrEvjrZd+/Iwj6732gGZjFOBtIYpDkhwLVyfJZ8cb38+aULNtzWEm2Qs+/C++5EfuAiWWOzoTjE+Qs3zm5dxx/0OwGbcaV25zNjxDNJS4+tSFXPOiW8iDHQ9FyVd5+wh8PtUO6cWz//4KrkkYODTHNmcUs58HKJKwUMtAn4refa5K8un7/pqqFL5h+4efZhWEKsEYYoyi+5tfOs1k1yUdgKSoeY8cBIkAYjDm2nxWBKqIOrKbJgzqjo0IVlsQ+AJ2fEWtWNF4z+/uEjBi9Jp9MKsIVlFBg0FAxZwiPLckTrsvCCy25vn0PxiBhqcPaBZuijMIQRgTEGc8ec2usnj3V/CuOatOawQZwbBsU4HK5VSnL50lr7tLm/7IwvmgXrg9Rgb8nw3D89o+TkhsnW46UyqdOKBLhgBAvGGBOUCmlm8zfagxdfcvOmX37Ubm8fxU4RY6BFs2BdcPvmuc9usM5Pew4v5Bb3iLQWWXBmkNVMBA30pJHs9z/5TvUJs++Ct2gWrM/AacjZd8G7+Oy6w6ZPkg+UWVmklMUdwxlBgtGgyrc93pUu4EvWhk/PgdcgPyzzPtALv5csXgrTEoU884b+l8dOKHs+P198sdSvilSWK4+DG0GMFEPI8VhFqfW10orKp6/6TXfHpxneDIUd+qzTaid8/TD+5xH+VHnK1cQ551nGiTFP5wVtubW3dNOTy6xvXfebdX+ieETUzXnyIx8Y+Fg2KhfiQJ59Y+/6mqklv8MgfWVEKY0wntHQFrjI8qzilOcnf1meaSwu8rdceMeK9o/ak+Xjxnpz5mzWMyMj6742SbSMzO+vTma0NtISGso4wvCQz8c39xb94cE3Qt+4P77irXg8Ig75gMaPe8IGvqua5NolFebffJF929RRgXNCVg+ySa61ZMIQdNgxYnvSTry8NHRKrHnD83uzBdSiWVOt2Xct9X40q370F+oGnh4dMLU9WaW1YMKijPL5fDLh+rLd/eGfNDatvm2oJviJruqyPWBr+Lx5META9Rcf8pVDa/vnVwVTE5MpbYwGFBMUtrXodgP9z78VOP2a+9c+8WFafX5c8ObOHD91en1ycWUwWdHnkjaMM0t4vMD2YV1P0Yq2ruB5V9y29KWhTsLDzUfwmQH4toce6pf6vWN/HD7mi80L68uT5+bZCqm0MZqI/A4XA+kCtabLOeeCm1f/juIQaITZA5d13u5feOXM8d+ZPjZ1R4mvv6DXFcpmmvmDED2ZUGZje/Ce/7p/1xXd3d0Du/dh/cQL38Ml8ne6WF5U3zCxNHFLRbFvqjC9yKTJE1aAMybFis3mmpnzd/yMAXj4E6hQJALxyCPQRMD9Px73g1Gl6V8zfy88l3lh22cR41i33XptY0b+4IpbNr7CGGB+Bs5i+2AL0LdjHYBhKF4EIuLOy9/8wUFFySsqit0Rg1kXmpjrl3nO9m724MI/Dc75+9LexMfpNTP8TGHhqPxbL8jcPq7SO1PrTNbWPtt2gM6kf+WqbXr+D+dvvReA3lvdfPdaqrU7Oxqmji056zj9w+oi7/sV4WzxoFLw2wbt3QUrX1nvn/nz+1a8+GEbaO/ewffM/xh57ImTzD2TSrITBsmFsPzo3iG7OzL+G2Y+NOKX2Nya2dPtRj81AHePyYbboZx98qSq4w5PzS7OG/h+eUBXhB0Pnf0i295VOvfcG1bPBwjR6Psulg2TfOEFIy8bV4Pra0oTdpcrkUwENrXvYA/c/6zvzhdfX93573PvtSrFpxHYEsAwZOgB4KvTDi9tnJE5rchKza4szBxSEGZo32o/+ffnUk3XP9X9ylDK+C+qRgTWxMD0WbXjjhpPN4+tVCf1DWjsTNBL25Ly/tseH/NAW1vrYA64iGjcAw1m9zkhAqN4ZLfgfZZ1+9VHfukPN9Yv+ttN5fTUDWPo4tPqTyGA7d6fJRoFJ4BdftZhYx+OTqCnb6lKN19Tvei6OXVfHj5NCwAUhyDggL9JAAJYPA6x+0q/fVxZ+W9i074UOb666L20IxKJiDsum3L06SdPK3ynlJYL6PH/A3DvZkLicYgP2+zwX70w5NDpsM8UuP8H1LQnilgF7q8AAAAASUVORK5CYII='}],
   baseball:[{lg:'mlb',label:'MLB',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png'}],
   hockey:[{lg:'nhl',label:'NHL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png'}],
 };
@@ -4581,7 +4617,7 @@ function switchLeague(lg){
   var themes={
     nba:        {amber:'#C8102E', amberDark:'#9a0c23'},
     wnba:       {amber:'#E8892A', amberDark:'#b56616'},
-    championsleague: {amber:'#1B3D6E', amberDark:'#112548'},
+    championsleague: {amber:'#1a6b3c', amberDark:'#124d2b'},
     mlb:        {amber:'#A0603A', amberDark:'#7a4528'},
     nhl:        {amber:'#4E8A9E', amberDark:'#376478'},
     nfl:        {amber:'#3A5A8C', amberDark:'#274068'},
@@ -4725,7 +4761,7 @@ function switchLeague(lg){
         sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
         sel.value=nflWeekIdx;
         var nflSingle=document.getElementById('nfl-single-date');
-        if(nflSingle&&nflWeeks[nflWeekIdx])nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
+        if(nflSingle&&nflWeeks[nflWeekIdx]&&nflWeeks[nflWeekIdx].start)nflSingle.value=ival(nflWeeks[nflWeekIdx].start);
       }
     }
   }
@@ -4733,7 +4769,7 @@ function switchLeague(lg){
   if(lg==='all')renderTierRanker();
 
   updateStates();
-  loadGames();
+  if(lg!=='ncaafb')loadGames(); // ncaafb calls loadGames() inside week init
 }
 
 // ── INIT ──
