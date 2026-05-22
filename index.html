@@ -232,7 +232,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.89</div>
+          <div>v4.90</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -900,7 +900,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.68', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v2.69', vdate: '2026-05-21',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -3689,13 +3689,12 @@ function loadAllGames(callback){
     fetch(url).then(function(r){return r.json();})
       .then(function(data){
         // Capture league logo from scoreboard response for soccer leagues
-        if((sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls')||sp.key==='ncaafb'){
+        if(sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls'&&sp.key!=='championsleague'){
           var lgData=(data.leagues&&data.leagues[0])||{};
           var lgLogos=lgData.logos||[];
           var lgLogo=lgLogos[0]&&lgLogos[0].href;
-          if(lgLogo){
+          if(lgLogo&&sp.key!=='championsleague'){
             console.log('[leaguelogo] '+sp.key+' = '+lgLogo);
-            // Update SPORT_CATS for both soccer and football categories
             ['soccer','football'].forEach(function(cat){
               (SPORT_CATS[cat]||[]).forEach(function(entry){
                 if(entry.lg===sp.key)entry.logo=lgLogo;
