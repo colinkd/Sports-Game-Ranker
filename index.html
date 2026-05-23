@@ -232,7 +232,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v4.90</div>
+          <div>v5.23</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -332,6 +332,13 @@ input:checked+.tog-track::after{transform:translateX(14px)}
   <div id="prof-bar-wrap" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:7px 10px;margin-bottom:.5rem">
     <div style="font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">saved profiles</div>
     <div class="prof-bar" id="prof-bar" style="margin-bottom:0"></div>
+  </div>
+  <div id="ranker-div-filter" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:7px 12px;margin-bottom:12px">
+    <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center" id="ranker-filter-row">
+      <div id="ranker-cat-pills" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"></div>
+      <div id="ranker-div-sep" style="display:none;width:1px;height:16px;background:var(--border);margin:0 4px;flex-shrink:0"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center" id="ranker-div-pills"></div>
+    </div>
   </div>
   <div class="rank-list" id="rankings"></div>
   <div class="saved-note" id="saved-note"></div>
@@ -447,11 +454,29 @@ input:checked+.tog-track::after{transform:translateX(14px)}
         </div>
       </div>
 
+      <!-- DIVISION / CONFERENCE FILTER -->
+      <div class="fs" id="div-filter-card" style="display:none">
+        <div class="fs-head"><div class="fs-title" id="div-filter-label">conference</div></div>
+        <div class="fs-body">
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="div-cat-pills"></div>
+          <hr id="div-filter-hr" style="display:none;border:none;border-top:.5px solid var(--border);margin:6px 0"/>
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="div-pills"></div>
+        </div>
+      </div>
+
+      <!-- EURO LEAGUE FILTER -->
+      <div class="fs" id="euro-filter-card" style="display:none">
+        <div class="fs-head"><div class="fs-title">league</div></div>
+        <div class="fs-body">
+          <div style="display:flex;flex-wrap:wrap;gap:4px" id="euro-league-pills"></div>
+        </div>
+      </div>
+
       <!-- DAY & TIME -->
       <div class="fs">
         <div class="fs-head">
           <div class="fs-title">day &amp; time filter</div>
-          <label class="tog"><input type="checkbox" id="w-dt-on" onchange="updateStates()"/><span class="tog-track"></span></label>
+          <label class="tog"><input type="checkbox" id="w-dt-on" onchange="updateStates()" checked/><span class="tog-track"></span></label>
         </div>
         <div class="fs-body" id="dt-body">
           <div class="fw" style="margin-top:0">
@@ -526,7 +551,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
       <!-- TEAM FILTER -->
 
       <div class="fs" id="team-filter-card">
-        <div class="fs-head"><div class="fs-title">team &amp; division filter</div><label class="tog"><input type="checkbox" id="w-team-on" checked onchange="updateStates()"/><span class="tog-track"></span></label></div>
+        <div class="fs-head"><div class="fs-title">team filter</div><label class="tog"><input type="checkbox" id="w-team-on" checked onchange="updateStates()"/><span class="tog-track"></span></label></div>
         <div class="fs-body" id="team-body">
           <div style="font-family:var(--mono);font-size:10px;color:var(--green);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">include</div>
           <select class="team-sel" id="team-include" onchange="addTeam('include',this)"><option value="">add a team...</option></select>
@@ -534,16 +559,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
           <div style="font-family:var(--mono);font-size:10px;color:#993C1D;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">exclude</div>
           <select class="team-sel" id="team-exclude" onchange="addTeam('exclude',this)"><option value="">add a team...</option></select>
           <div id="team-exclude-bubbles" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;margin-bottom:8px"></div>
-          <div id="div-filter-section" style="display:none;margin-top:8px">
-            <div id="div-filter-label" style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">division / conference</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px" id="div-cat-pills"></div>
-            <hr id="div-filter-hr" style="border:none;border-top:.5px solid var(--border-light);margin:0 0 6px"/>
-            <div style="display:flex;flex-wrap:wrap;gap:4px" id="div-pills"></div>
-          </div>
-          <div id="euro-filter-section" style="display:none;margin-top:8px">
-            <div style="font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">league</div>
-            <div style="display:flex;flex-wrap:wrap;gap:4px" id="euro-league-pills"></div>
-          </div>
+
         </div>
       </div>
 
@@ -883,15 +899,15 @@ var LEAGUE_CONFIGS = {
       {name:"Chicago Sky",abbr:"SKY",tierAbbr:"nba_SKY",espn:"chi",conf:"East"},
       {name:"Atlanta Dream",abbr:"DRM",tierAbbr:"nba_DRM",espn:"atl",conf:"East"},
       {name:"Washington Mystics",abbr:"MYS",tierAbbr:"nba_MYS",espn:"wsh",conf:"East"},
-      {name:"Toronto Tempo",abbr:"TMP",tierAbbr:"nba_TMP",espn:"tor",expansion:true,conf:"East"},
+      {name:"Toronto Tempo",abbr:"TMP",tierAbbr:"nba_TMP",espn:"tor",conf:"East"},
       {name:"Minnesota Lynx",abbr:"LNX",tierAbbr:"nba_LNX",espn:"min",conf:"West"},
       {name:"Las Vegas Aces",abbr:"LVA",tierAbbr:"nba_LVA",espn:"lv",conf:"West"},
       {name:"Seattle Storm",abbr:"SEA",tierAbbr:"nba_SEA",espn:"sea",conf:"West"},
       {name:"Phoenix Mercury",abbr:"PHO",tierAbbr:"nba_PHO",espn:"phx",conf:"West"},
       {name:"Los Angeles Sparks",abbr:"LAS",tierAbbr:"nba_LAS",espn:"la",conf:"West"},
       {name:"Dallas Wings",abbr:"WNG",tierAbbr:"nba_WNG",espn:"dal",conf:"West"},
-      {name:"Golden State Valkyries",abbr:"GSV",tierAbbr:"nba_GSV",espn:"gsv",expansion:true,conf:"West"},
-      {name:"Portland Fire",abbr:"PDX",tierAbbr:"wnba_PDX",espn:"por",expansion:true},
+      {name:"Golden State Valkyries",abbr:"GSV",tierAbbr:"nba_GSV",espn:"gsv",conf:"West"},
+      {name:"Portland Fire",abbr:"PDX",tierAbbr:"wnba_PDX",espn:"por",conf:"West"},
     ],
     defaultElo: 1200,
     quintileDividers: [2,5,8,11],
@@ -900,7 +916,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v2.69', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v3.10', vdate: '2026-05-21',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -1120,7 +1136,7 @@ var LEAGUE_CONFIGS = {
 
 
   championsleague: {
-    title: 'Champs Lg', version: 'championsleague.v1.7', vdate: '2026-05-21',
+    title: 'Champs Lg', version: 'championsleague.v1.8', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'championsleague',
     sport: 'soccer', league: null,
@@ -1378,7 +1394,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.11', vdate: '2026-05-21',
+    title: 'CFB', version: 'ncaafb.v1.13', vdate: '2026-05-21',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -1615,12 +1631,13 @@ function seedTierFromPercentile(){
   // Read from in-memory ratingsStore first (most current), fall back to localStorage
   ['nba','wnba','mlb','nhl','nfl','ncaafb','championsleague','mls'].forEach(function(lg){
     var cfg=LEAGUE_CONFIGS[lg];
-    var ratings_lg=ratingsStore[cfg.storageKey]||null;
-    if(!ratings_lg){
-      try{var s=localStorage.getItem(cfg.storageKey+'_elo_ratings');ratings_lg=s?JSON.parse(s):null;}catch(e){}
-    }
     cfg.teams.forEach(function(t){
       var ta=t.tierAbbr||lg+'_'+t.abbr;
+      // For championsleague, read from the team's actual sub-league ratingsStore
+      var subLg=t._league||lg;
+      var subCfg=LEAGUE_CONFIGS[subLg]||cfg;
+      var ratings_lg=ratingsStore[subCfg.storageKey]||null;
+      if(!ratings_lg){try{var s=localStorage.getItem(subCfg.storageKey+'_elo_ratings');ratings_lg=s?JSON.parse(s):null;}catch(e){}}
       tierElo[ta]=(ratings_lg&&ratings_lg[t.abbr])||cfg.defaultElo;
     });
   });
@@ -1741,6 +1758,39 @@ function renderTierRanker(){
   });
 })();
 
+
+// Per-league filter open/closed state (in-memory)
+var filterOpenState = {}; // {leagueKey: {dt:bool, bcast:bool, team:bool, stars:bool, bonuses:bool}}
+var FILTER_KEYS = ['dt','bcast','team','stars','bonuses'];
+var FILTER_TOGGLE_IDS = {dt:'w-dt-on',bcast:'w-bcast-on',team:'w-team-on',stars:'w-stars-on',bonuses:'w-lev-on'};
+var FILTER_BODY_IDS = {dt:'dt-body',bcast:'bcast-body',team:'team-body',stars:'stars-nest',bonuses:'bonuses-body'};
+
+function saveFilterState(lg){
+  filterOpenState[lg]={};
+  FILTER_KEYS.forEach(function(k){
+    var el=document.getElementById(FILTER_TOGGLE_IDS[k]);
+    filterOpenState[lg][k]=el?el.checked:false;
+  });
+}
+
+function restoreFilterState(lg){
+  var state=filterOpenState[lg];
+  if(!state){
+    // Default: bonuses open, rest closed
+    FILTER_KEYS.forEach(function(k){
+      var isBonus=k==='bonuses';
+      var el=document.getElementById(FILTER_TOGGLE_IDS[k]);
+      if(el){el.checked=isBonus;}
+      collapseBody(FILTER_BODY_IDS[k],isBonus);
+    });
+    return;
+  }
+  FILTER_KEYS.forEach(function(k){
+    var el=document.getElementById(FILTER_TOGGLE_IDS[k]);
+    if(el){el.checked=!!state[k];}
+    collapseBody(FILTER_BODY_IDS[k],!!state[k]);
+  });
+}
 var tierSports={nba:true,wnba:true,mlb:true,nhl:true,nfl:true,ncaafb:true,championsleague:true,mls:true};
 
 
@@ -1861,6 +1911,7 @@ function renderAllRatingProfiles(){
  // keyed by league storageKey
 var ratings = {};
 var matchups=[], current=0, roundSeed=null, flipMap={};
+var matchupIdx=0, matchupSeason=null;
 var K=32;
 
 function storageKey(suffix){ return currentLeague+'_'+suffix; }
@@ -1924,10 +1975,10 @@ function assignButtons(){
   var L=LC.teams[flip?p[1]:p[0]],R=LC.teams[flip?p[0]:p[1]];
   document.getElementById('logo-a').src=LC.logo(L.espn);
   var nameEl_a=document.getElementById('name-a');
-  if(nameEl_a){nameEl_a.innerHTML=L.name+((function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+L.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
+  if(nameEl_a){nameEl_a.innerHTML=L.name+(function(){var d=getTeamDivLabel(L.abbr);return d?'<div style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:2px">'+d+'</div>':'';})()+((function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+L.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">'+r+'</div>':'';})() );}
   document.getElementById('logo-b').src=LC.logo(R.espn);
   var nameEl_b=document.getElementById('name-b');
-  if(nameEl_b){nameEl_b.innerHTML=R.name+((function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+R.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:3px">'+r+'</div>':'';})() );}
+  if(nameEl_b){nameEl_b.innerHTML=R.name+(function(){var d=getTeamDivLabel(R.abbr);return d?'<div style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:2px">'+d+'</div>':'';})()+((function(){var r=window.recordCache&&window.recordCache[currentLeague+'_'+R.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">'+r+'</div>':'';})() );}
   (function(l,r){
     document.getElementById('btn-a').onclick=function(){updateElo(l.abbr,r.abbr);current++;saveRoundState();render();};
     document.getElementById('btn-b').onclick=function(){updateElo(r.abbr,l.abbr);current++;saveRoundState();render();};
@@ -1944,6 +1995,18 @@ function newRound(){
 function confirmReset(){
   var val=+(document.getElementById('reset-val')?document.getElementById('reset-val').value:LC.defaultElo)||LC.defaultElo;
   if(!confirm('Reset all ratings to '+val+'?'))return;
+  if(currentLeague==='championsleague'){
+    ['epl','laliga','bundesliga','seriea','ligue1'].forEach(function(lg){
+      var cfg=LEAGUE_CONFIGS[lg];
+      var r={};cfg.teams.forEach(function(t){r[t.abbr]=val;});
+      ratingsStore[cfg.storageKey]=r;
+      try{localStorage.setItem(cfg.storageKey+'_elo_ratings',JSON.stringify(r));}catch(e){}
+    });
+    matchups=[];matchupSeason=null;matchupIdx=0;
+    seedTierFromPercentile();
+    document.getElementById('saved-note').textContent='ratings reset to '+val;
+    renderEuroRanker();return;
+  }
   ratings={};LC.teams.forEach(function(t){ratings[t.abbr]=val;});
   saveRatings();clearRoundState();buildMatchups();
   $sty('done-banner','display','none');
@@ -1954,7 +2017,67 @@ function confirmReset(){
 }
 
 function rankByRecord(){
-  if(currentLeague==='championsleague'){document.getElementById('saved-note').textContent='use individual league tabs to sort by record';return;}
+  if(currentLeague==='championsleague'){
+    document.getElementById('saved-note').textContent='fetching euro standings...';
+    var EURO_SPORTS2=[
+      {sport:'soccer',league:'eng.1',key:'epl'},{sport:'soccer',league:'esp.1',key:'laliga'},
+      {sport:'soccer',league:'ger.1',key:'bundesliga'},{sport:'soccer',league:'ita.1',key:'seriea'},
+      {sport:'soccer',league:'fra.1',key:'ligue1'}
+    ];
+    var pending2=EURO_SPORTS2.length;
+    EURO_SPORTS2.forEach(function(sp){
+      var cfg=LEAGUE_CONFIGS[sp.key];
+      var norm=RECORD_NORM[sp.key]||{};
+      fetch('https://site.api.espn.com/apis/v2/sports/'+sp.sport+'/'+sp.league+'/standings')
+      .then(function(r){return r.json();})
+      .then(function(data){
+        // Use same parsing as fetchAllStandings
+        var entryGroups=[];
+        var flat=(data.standings&&data.standings.entries)||[];
+        if(flat.length){entryGroups.push(flat);}
+        else if(data.children&&data.children.length){
+          data.children.forEach(function(conf){
+            var ce=(conf.standings&&conf.standings.entries)||(conf.children&&conf.children[0]&&conf.children[0].standings&&conf.children[0].standings.entries)||[];
+            if(ce.length)entryGroups.push(ce);
+          });
+        }
+        var entries=[];
+        entryGroups.forEach(function(list){
+          list.forEach(function(e){
+            var raw=((e.team||{}).abbreviation||(e.team||{}).shortDisplayName||'').toUpperCase();
+            var abbr=norm[raw]||raw;
+            var wins=0,losses=0,draws=0;
+            (e.stats||[]).forEach(function(s){
+              var n=s.name;
+              if(n==='wins'||n==='gamesWon'||n==='won')wins=+s.value;
+              if(n==='losses'||n==='gamesLost'||n==='lost')losses=+s.value;
+              if(n==='ties'||n==='draws'||n==='gamesDrawn')draws=+s.value;
+            });
+            if(abbr)entries.push({abbr:abbr,wins:wins,losses:losses,draws:draws});
+          });
+        });
+        if(entries.length){
+          entries.sort(function(a,b){
+            var pa=(a.wins*3+a.draws)/(a.wins+a.losses+a.draws+0.001);
+            var pb=(b.wins*3+b.draws)/(b.wins+b.losses+b.draws+0.001);
+            return pb-pa;
+          });
+          var N=entries.length;
+          var savedR={};
+          entries.forEach(function(e,i){savedR[e.abbr]=Math.max(1000,Math.min(1400,Math.round(1400-(i/(Math.max(N-1,1))*400))));});
+          cfg.teams.forEach(function(t){if(!savedR[t.abbr])savedR[t.abbr]=cfg.defaultElo;});
+          ratingsStore[cfg.storageKey]=savedR;
+          try{localStorage.setItem(cfg.storageKey+'_elo_ratings',JSON.stringify(savedR));}catch(e){}
+        }
+        pending2--;
+        if(pending2===0){
+          seedTierFromPercentile();renderEuroRanker();
+          document.getElementById('saved-note').textContent='sorted by league standings';
+        }
+      }).catch(function(){pending2--;if(pending2===0){renderEuroRanker();document.getElementById('saved-note').textContent='could not load some standings';}});
+    });
+    return;
+  }
   document.getElementById('saved-note').textContent='fetching standings...';
 
   // CFB: use AP poll (in-season) or 2025 seed data (off-season)
@@ -2207,17 +2330,113 @@ function render(){
   document.getElementById('progress').textContent='matchup '+(current+1)+' / '+matchups.length;
   assignButtons();
 }
+
+function buildRankerDivFilter(){
+  var section=document.getElementById('ranker-div-filter');
+  var catWrap=document.getElementById('ranker-cat-pills');
+  var pillWrap=document.getElementById('ranker-div-pills');
+  var hrEl=document.getElementById('ranker-div-hr');
+  if(!section)return;
+  var lg=currentLeague;
+  var cfg=DIV_CONFIGS[lg];
+  if(catWrap)catWrap.innerHTML='';
+  if(pillWrap)pillWrap.innerHTML='';
+  if(!cfg&&lg!=='championsleague'){section.style.display='none';return;}
+  if(lg==='all'){section.style.display='none';return;}
+  // Champions League: show euro league toggle pills
+  if(lg==='championsleague'){
+    section.style.display='';
+    if(hrEl)hrEl.style.display='none';
+    var _sep=document.getElementById('ranker-div-sep');if(_sep)_sep.style.display='none';
+    if(catWrap)catWrap.innerHTML='';
+    if(pillWrap){
+      pillWrap.innerHTML='';
+      var lgColors3={epl:'#3D7A5C',laliga:'#2E7D4F',bundesliga:'#4A8C3F',seriea:'#3B7A55',ligue1:'#5A9E6A'};
+      var lgNames={epl:'EPL',laliga:'La Liga',bundesliga:'Bundesliga',seriea:'Serie A',ligue1:'Ligue 1'};
+      ['epl','laliga','bundesliga','seriea','ligue1'].forEach(function(k){
+        var pill=document.createElement('span');
+        pill.className='sport-pill'+(enabledEuroLeagues[k]?' on':'');
+        pill.textContent=lgNames[k];
+        pill.setAttribute('data-euro',k);
+        pill.addEventListener('click',function(){
+          var key=this.getAttribute('data-euro');
+          toggleEuroLeague(key,this);
+          renderEuroRankings();
+        });
+        pillWrap.appendChild(pill);
+      });
+    }
+    return;
+  }
+  section.style.display='';
+  var isTwoLevel=cfg.pills&&cfg.pills.length>0&&cfg.cats&&cfg.cats.length>0;
+  var sep=document.getElementById('ranker-div-sep');
+  if(sep)sep.style.display=isTwoLevel?'':'none';
+  var curCat=divCatState[lg]||'All';
+
+  if(catWrap){
+    catWrap.innerHTML='';
+    (cfg.cats||[]).forEach(function(cat){
+      var btn=document.createElement('div');
+      // Two-level: slightly larger pill; one-level: sport-pill
+      btn.className=(isTwoLevel?'pill':'sport-pill')+(curCat===cat?' on':'');
+      if(isTwoLevel)btn.style.cssText='font-size:11px;padding:4px 10px';
+      btn.textContent=cat;
+      btn.setAttribute('data-divcat',cat);
+      btn.setAttribute('data-lg',lg);
+      btn.addEventListener('click',function(){
+        if(this.getAttribute('data-lg')===currentLeague)setDivCatRanker(this.getAttribute('data-divcat'));
+      });
+      catWrap.appendChild(btn);
+    });
+  }
+  if(pillWrap){
+    pillWrap.innerHTML='';
+    (cfg.pills||[]).forEach(function(div){
+      if(div===null)return; // skip row breaks — single row layout
+      var pill=document.createElement('span');
+      pill.className='sport-pill'+(enabledDivs[div]!==false?' on':'');
+      pill.textContent=DIV_PILL_LABELS[div]||div;
+      pill.setAttribute('data-div',div);
+      pill.setAttribute('data-lg',lg);
+      pill.addEventListener('click',function(){
+        if(this.getAttribute('data-lg')===currentLeague)toggleDivRanker(this);
+      });
+      pillWrap.appendChild(pill);
+    });
+  }
+}
+
+function toggleDivRanker(el){
+  var d=el.dataset.div;
+  enabledDivs[d]=!enabledDivs[d];
+  el.classList.toggle('on',enabledDivs[d]);
+  // Sync sidebar pills too
+  document.querySelectorAll('#div-pills .sport-pill').forEach(function(p){
+    if(p.dataset.div===d)p.classList.toggle('on',enabledDivs[d]);
+  });
+  // If all off, turn all back on
+  var vals=Object.values(enabledDivs);
+  if(vals.length&&vals.every(function(v){return !v;})){
+    Object.keys(enabledDivs).forEach(function(k){enabledDivs[k]=true;});
+    document.querySelectorAll('#ranker-div-pills .sport-pill,#div-pills .sport-pill').forEach(function(p){p.classList.add('on');});
+  }
+  renderRankings();
+}
 function renderRankings(){
   if(currentLeague==='all'){renderTierRankings();return;}
-  if(currentLeague==='championsleague'){renderEuroRankings();return;}
+  if(currentLeague==='championsleague'){buildRankerDivFilter();renderEuroRankings();return;}
   if(!LC.teams||!LC.teams.length)return;
+  buildRankerDivFilter();
   var allTeams=LC.teams.slice();
   var _divCfg=DIV_CONFIGS[currentLeague];
   if(_divCfg&&Object.keys(enabledDivs).length){
     var _anyOff=Object.values(enabledDivs).some(function(v){return !v;});
     var _rrConfPills=_divCfg.pills&&_divCfg.pills.length&&(!_divCfg.confMap||!Object.keys(_divCfg.confMap).length);
     if(_anyOff)allTeams=allTeams.filter(function(t){
-      var divKey=_rrConfPills?(t.conf||t.div):(_divCfg.pills&&_divCfg.pills.length?t.div:t.conf);
+      var _confVal=_rrConfPills?(t.conf||t.div):(_divCfg.pills&&_divCfg.pills.length?t.div:t.conf);
+      // Normalize CFB conf names to pill labels
+      var divKey={'Big Ten':'B1G','Big 12':'B12'}[_confVal]||_confVal;
       return enabledDivs[divKey]!==false;
     });
   }
@@ -2568,12 +2787,12 @@ var DIV_CONFIGS={
   nfl:{
     cats:['All','AFC','NFC'],
     confMap:{AFC:['AFC East','AFC North','AFC South','AFC West'],NFC:['NFC East','NFC North','NFC South','NFC West']},
-    pills:['AFC East','AFC North','AFC South','AFC West',null,'NFC East','NFC North','NFC South','NFC West'],
+    pills:['AFC East','AFC North','AFC South','AFC West','NFC East','NFC North','NFC South','NFC West'],
   },
   mlb:{
     cats:['All','AL','NL'],
     confMap:{AL:['AL East','AL Central','AL West'],NL:['NL East','NL Central','NL West']},
-    pills:['AL East','AL Central','AL West',null,'NL East','NL Central','NL West'],
+    pills:['AL East','AL Central','AL West','NL East','NL Central','NL West'],
   },
   nhl:{
     cats:['All','East','West'],
@@ -2598,26 +2817,24 @@ var DIV_PILL_LABELS={
 function buildDivPills(){
   var container=document.getElementById('div-pills');
   var catWrap=document.getElementById('div-cat-pills');
-  var hrEl=document.getElementById('div-filter-hr');
-  var section=document.getElementById('div-filter-section');
-  if(!container||!section)return;
+  var card=document.getElementById('div-filter-card');
+  var sep=document.getElementById('div-filter-hr');
+  if(!container||!card)return;
   container.innerHTML='';
   if(catWrap)catWrap.innerHTML='';
   var lg=currentLeague;
   var cfg=DIV_CONFIGS[lg];
-  if(!cfg){section.style.display='none';return;}
-  section.style.display='';
-
+  if(!cfg){card.style.display='none';return;}
+  card.style.display='';
   var isTwoLevel=cfg.pills&&cfg.pills.length>0&&cfg.cats&&cfg.cats.length>0;
   var _lbl=document.getElementById('div-filter-label');
   if(_lbl)_lbl.textContent=isTwoLevel?'division / conference':'conference';
+  if(sep)sep.style.display=isTwoLevel?'':'none';
 
-  // Category buttons
-  if(catWrap&&cfg.cats&&cfg.cats.length>1){
+  if(catWrap&&cfg.cats&&cfg.cats.length>0){
     var curCat=divCatState[lg]||'All';
     cfg.cats.forEach(function(cat){
       var btn=document.createElement('div');
-      // Two-level: small theme .pill; one-level: blue sport-pill
       btn.className=(isTwoLevel?'pill':'sport-pill')+(curCat===cat?' on':'');
       btn.textContent=cat;
       btn.dataset.divcat=cat;
@@ -2626,19 +2843,9 @@ function buildDivPills(){
     });
   }
 
-  // Show/hide hr separator
-  if(hrEl)hrEl.style.display=isTwoLevel?'':'none';
-
-  // Individual division pills
   if(cfg.pills&&cfg.pills.length){
     cfg.pills.forEach(function(div){
-      if(div===null){
-        // Row break
-        var br=document.createElement('div');
-        br.style.cssText='width:100%;height:0;flex-basis:100%';
-        container.appendChild(br);
-        return;
-      }
+      if(div===null)return;
       if(enabledDivs[div]===undefined)enabledDivs[div]=true;
       var pill=document.createElement('span');
       pill.className='sport-pill'+(enabledDivs[div]?' on':'');
@@ -2647,9 +2854,42 @@ function buildDivPills(){
       pill.onclick=function(){toggleDiv(this);};
       container.appendChild(pill);
     });
+  } else {
+    Object.keys(cfg.confMap||{}).forEach(function(c){
+      (cfg.confMap[c]||[]).forEach(function(d){if(enabledDivs[d]===undefined)enabledDivs[d]=true;});
+    });
   }
 }
 
+
+function setDivCatRanker(cat){
+  var lg=currentLeague;
+  var cfg=DIV_CONFIGS[lg];
+  if(!cfg)return;
+  divCatState[lg]=cat;
+  if(cat==='All'){
+    Object.keys(enabledDivs).forEach(function(k){enabledDivs[k]=true;});
+  } else {
+    var confKey=Object.keys(cfg.confMap).find(function(k){return k===cat||k.toLowerCase()===cat.toLowerCase();});
+    if(confKey){
+      var activeDivs=cfg.confMap[confKey];
+      var allDivs=(cfg.pills&&cfg.pills.length)?cfg.pills.filter(function(d){return d!==null;}):Object.values(cfg.confMap).reduce(function(a,b){return a.concat(b);});
+      allDivs.forEach(function(d){enabledDivs[d]=false;});
+      activeDivs.forEach(function(d){enabledDivs[d]=true;});
+    }
+  }
+  // Sync sidebar pills too
+  document.querySelectorAll('#div-cat-pills .pill,#div-cat-pills .sport-pill').forEach(function(el){
+    el.classList.toggle('on',el.dataset.divcat===cat);
+  });
+  document.querySelectorAll('#div-pills .sport-pill,#ranker-div-pills .sport-pill').forEach(function(el){
+    if(el.dataset.div)el.classList.toggle('on',enabledDivs[el.dataset.div]!==false);
+  });
+  document.querySelectorAll('#ranker-cat-pills .pill,#ranker-cat-pills .sport-pill').forEach(function(el){
+    el.classList.toggle('on',el.dataset.divcat===cat);
+  });
+  renderRankings();
+}
 function setDivCat(cat){
   var lg=currentLeague;
   var cfg=DIV_CONFIGS[lg];
@@ -2669,7 +2909,7 @@ function setDivCat(cat){
     if(confKey){
       var activeDivs=cfg.confMap[confKey];
       // Disable all, then enable the ones in this conf
-      var allDivs=(cfg.pills&&cfg.pills.length)?cfg.pills:Object.values(cfg.confMap).reduce(function(a,b){return a.concat(b);});
+      var allDivs=(cfg.pills&&cfg.pills.length)?cfg.pills.filter(function(d){return d!==null;}):Object.values(cfg.confMap).reduce(function(a,b){return a.concat(b);});
       allDivs.forEach(function(d){enabledDivs[d]=false;});
       activeDivs.forEach(function(d){enabledDivs[d]=true;});
     }
@@ -2911,6 +3151,7 @@ function toggleDow(el){
 function collapseBody(id,on){
   var el=document.getElementById(id);if(!el)return;
   el.classList.toggle('collapsed',!on);
+  el.style.display=on?'':'none';
   var head=el.previousElementSibling;
   if(head&&head.classList&&head.classList.contains('fs-head')&&head.style)head.style.marginBottom=on?'8px':'0';
 }
@@ -3520,7 +3761,8 @@ function applyFilters(games){
         var t=LC.teams.find(function(t){return t.abbr===abbr;});
         if(!t)return null;
         // conf-only pills (WNBA, MLS, CFB): use conf; two-level: use div
-        return _confPills?(t.conf||t.div):(_hasPills?t.div:(t.conf||t.div));
+        var _raw=_confPills?(t.conf||t.div):(_hasPills?t.div:(t.conf||t.div));
+        return {'Big Ten':'B1G','Big 12':'B12'}[_raw]||_raw;
       }
       var ak=teamDivKey(g.awayAbbr),hk=teamDivKey(g.homeAbbr);
       var acOn=!ak||enabledDivs[ak]!==false;
@@ -3583,6 +3825,28 @@ function sortGames(games){
   return games;
 }
 
+
+function getTeamDivLabel(abbr){
+  if(!LC||!LC.teams)return'';
+  var t=LC.teams.find(function(x){return x.abbr===abbr;});
+  if(!t)return'';
+  var cfg=DIV_CONFIGS[currentLeague];
+  if(!cfg)return t.conf||t.div||'';
+  var isTwoLevel=cfg.pills&&cfg.pills.length>0&&cfg.cats&&cfg.cats.length>0;
+  if(isTwoLevel){
+    // conf - div (short)
+    var conf=t.conf||'';
+    var div=t.div||'';
+    var shortDiv=DIV_PILL_LABELS[div]||div;
+    // Shorten conf too
+    var shortConf={'AFC':'AFC','NFC':'NFC','AL':'AL','NL':'NL','East':'E','West':'W'}[conf]||conf;
+    return shortConf&&shortDiv?shortConf+' - '+shortDiv:shortConf||shortDiv;
+  } else {
+    // One-tier: just conf
+    var rawConf=t.conf||t.div||'';
+    return {'Big Ten':'B1G','Big 12':'B12'}[rawConf]||rawConf;
+  }
+}
 function renderCards(games){
   var el=document.getElementById('games-content');
   if(!games.length){el.innerHTML='<div class="no-games">no games match your filters</div>';return;}
@@ -3620,6 +3884,7 @@ function renderCards(games){
         '<span class="rank-dot" style="background:'+g.dotColor+';border:'+getMedalBorder(rank)+'"></span>'+
         '<span class="game-rank-num" style="background:'+rc+';">#'+rank+'</span>'+
         (g.cfbConfTag&&(currentLeague==='ncaafb'||currentLeague==='all')?'<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:var(--text-3);margin-left:4px">'+g.cfbConfTag+'</span>':'')+
+        (g._euroLabel&&(currentLeague==='all')?'<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:#1a6b3c;margin-left:4px">'+g._euroLabel+'</span>':'')+
         (g.gcalUrl?'<a href="'+g.gcalUrl+'" target="_blank" class="gcal-btn" title="Add to Google Calendar">📅 add to gcal</a>':'')+
       '</div>'+
       '<div class="game-teams">'+
@@ -3689,7 +3954,7 @@ function loadAllGames(callback){
     fetch(url).then(function(r){return r.json();})
       .then(function(data){
         // Capture league logo from scoreboard response for soccer leagues
-        if(sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls'&&sp.key!=='championsleague'){
+        if((sp.cfg&&sp.cfg.sport==='soccer'&&sp.key!=='epl'&&sp.key!=='mls'&&sp.key!=='championsleague')||sp.key==='ncaafb'){
           var lgData=(data.leagues&&data.leagues[0])||{};
           var lgLogos=lgData.logos||[];
           var lgLogo=lgLogos[0]&&lgLogos[0].href;
@@ -3713,7 +3978,10 @@ function loadAllGames(callback){
         var tz=getTz();
         var events=(data.events||[]).map(function(ev){
           var g=processEvent(ev,tz);
-          if(g)g._league=sp.key;
+          if(g){
+            g._league=sp.key;
+            if(sp.subKey)g._euroLabel=euroLeagueLabels[sp.subKey]||sp.subKey;
+          }
           return g;
         }).filter(Boolean);
         LC=origLC;
@@ -3730,7 +3998,7 @@ function finishAllLoad(games,callback){
   // Recompute dots and stars using each game's own sport ratings for accuracy
   games=games.map(function(g){
     var sportCfg=LEAGUE_CONFIGS[g._league];
-    if(!sportCfg)return g;
+    if(!sportCfg||!sportCfg.teams||!sportCfg.teams.length)return g;
     // Load this sport's ratings
     var sportRatings=ratingsStore[sportCfg.storageKey]||null;
     if(!sportRatings){try{var s=localStorage.getItem(sportCfg.storageKey+'_elo_ratings');sportRatings=s?JSON.parse(s):null;}catch(e){}}
@@ -3810,7 +4078,8 @@ function renderAllCard(g,i){
   else if(g.isNat)badge='<span class="g-badge badge-tv">'+g.watch+'</span>';
   else badge='<span class="g-badge badge-lp">Local</span>';
   var lgColors={nba:'#BA7517',wnba:'#E85D04',nfl:'#185FA5',mls:'#C8102E',championsleague:'#1a6b3c'};
-  var sportTag='<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:'+(lgColors[g._league]||'#888')+';margin-left:6px">'+(g._league||'').toUpperCase()+'</span>';
+  var _sportLabel=g._euroLabel||(g._league||'').toUpperCase();
+  var sportTag='<span style="font-family:var(--mono);font-size:9px;font-weight:700;color:'+(lgColors[g._league]||'#888')+';margin-left:6px">'+_sportLabel+'</span>';
   var bonuses='';
   if(g.lev!==0)bonuses+='<div class="g-bonuses">'+(g.lev>0?'+':'')+g.lev+' '+g.levLbl+'</div>';
   var dateTimeLine=
@@ -3953,40 +4222,35 @@ function assignEuroButtons(){
 }
 
 function renderEuroRankings(){
-  // Within-league rankings by points from recordCache
   var lgColors2={epl:'#3D7A5C',laliga:'#2E7D4F',bundesliga:'#4A8C3F',seriea:'#3B7A55',ligue1:'#5A9E6A'};
-  var EURO_LEAGUES_ORDER=['epl','laliga','bundesliga','seriea','ligue1'];
-  var html='';
-  EURO_LEAGUES_ORDER.forEach(function(lg){
+  // Build one unified list across all enabled euro leagues
+  var all=[];
+  ['epl','laliga','bundesliga','seriea','ligue1'].forEach(function(lg){
     if(!enabledEuroLeagues[lg])return;
     var cfg=LEAGUE_CONFIGS[lg];
-    var label=euroLeagueLabels[lg];
-    var color=lgColors2[lg]||'#888';
-    // Build sorted team list by points
-    var teams=cfg.teams.map(function(t){
+    var savedR=ratingsStore[cfg.storageKey]||null;
+    if(!savedR){try{var s=localStorage.getItem(cfg.storageKey+'_elo_ratings');savedR=s?JSON.parse(s):null;}catch(e){}}
+    cfg.teams.forEach(function(t){
+      var elo=(savedR&&savedR[t.abbr])||cfg.defaultElo;
       var rec=(window.recordCache&&window.recordCache[lg+'_'+t.abbr])||'';
-      var parts=rec.split('-');
-      var pts=parts.length>=3?(+parts[0])*3+(+parts[1]):parts.length>=2?(+parts[0])*3:null;
-      return {abbr:t.abbr,name:t.name,logo:cfg.logo(t.espn),rec:rec,pts:pts};
+      all.push({abbr:t.abbr,name:t.name,logo:cfg.logo(t.espn),elo:elo,rec:rec,league:lg});
     });
-    // Sort: teams with pts first (by pts desc), then unknowns
-    var withPts=teams.filter(function(t){return t.pts!==null;}).sort(function(a,b){return b.pts-a.pts;});
-    var noPts=teams.filter(function(t){return t.pts===null;});
-    var sorted=withPts.concat(noPts);
-    var mx=withPts.length?withPts[0].pts:1;
-    var mn=withPts.length?withPts[withPts.length-1].pts:0;
-    if(mx===mn){mx+=1;mn-=1;}
-    // Section header
-    html+='<div style="font-family:var(--mono);font-size:10px;font-weight:700;color:'+color+';text-transform:uppercase;letter-spacing:.5px;padding:8px 0 4px">'+label+'</div>';
-    sorted.forEach(function(t,i){
-      var pct=t.pts!==null?Math.round(((t.pts-mn)/(mx-mn))*100):0;
-      html+='<div class="rank-row">'+
-        '<div class="rank-num">'+(i+1)+'</div>'+
-        '<img class="rank-logo" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
-        '<div class="rank-name">'+t.name+(t.rec&&t.rec!=='0-0'?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+t.rec+'</span>':'')+'</div>'+
-        '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
-        '<div class="rank-elo">'+(t.pts!==null?t.pts+'pts':'—')+'</div></div>';
-    });
+  });
+  all.sort(function(a,b){return b.elo-a.elo;});
+  var mx=all.length?all[0].elo:1200, mn=all.length?all[all.length-1].elo:1200;
+  if(mx===mn){mx+=1;mn-=1;}
+  var html='';
+  all.forEach(function(t,i){
+    var pct=Math.round(((t.elo-mn)/(mx-mn))*100);
+    var color=lgColors2[t.league]||'#888';
+    var shortLabel={'epl':'EPL','laliga':'La Liga','bundesliga':'Bundesliga','seriea':'Serie A','ligue1':'Ligue 1'}[t.league]||'';
+    html+='<div class="rank-row">'+
+      '<div class="rank-num">'+(i+1)+'</div>'+
+      '<img class="rank-logo" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
+      '<div class="rank-name">'+t.name+(t.rec&&t.rec!=='0-0'?' <span style="font-family:var(--mono);font-size:10px;color:var(--text-3)">'+t.rec+'</span>':'')+'</div>'+
+      '<span style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-right:4px;flex-shrink:0;white-space:nowrap">'+shortLabel+'</span>'+
+      '<div class="rank-bar-wrap"><div class="rank-bar-track"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div></div>'+
+      '<div class="rank-elo">'+t.elo+'</div></div>';
   });
   var el=document.getElementById('rankings');
   if(el)el.innerHTML=html||'<div class="no-games">no euro leagues selected</div>';
@@ -3994,13 +4258,68 @@ function renderEuroRankings(){
 
 function renderEuroRanker(){
   renderEuroRankings();
-  // Hide the matchup ranker UI, just show rankings
-  $sty('done-banner','display','none');
-  $sty('vs-wrap','display','none');
-  $styQ('.skip-wrap','display','none');
+  var EURO_ORDER=['epl','laliga','bundesliga','seriea','ligue1'];
+  var poolKey='euro_'+EURO_ORDER.filter(function(lg){return enabledEuroLeagues[lg];}).join('_');
+  if(!matchups.length||matchupSeason!==poolKey){
+    matchupSeason=poolKey;matchupIdx=0;
+    // Build per-league shuffled matchup lists, then interleave round-robin
+    var perLeague=[];
+    EURO_ORDER.forEach(function(lg){
+      if(!enabledEuroLeagues[lg])return;
+      var cfg=LEAGUE_CONFIGS[lg];
+      var teams=cfg.teams;
+      var pairs=[];
+      for(var i=0;i<teams.length;i++)for(var j=i+1;j<teams.length;j++)pairs.push({lg:lg,i:i,j:j});
+      var rng=mulberry32(Date.now()+lg.length);
+      for(var k=pairs.length-1;k>0;k--){var ri=Math.floor(rng()*(k+1));var tmp=pairs[k];pairs[k]=pairs[ri];pairs[ri]=tmp;}
+      perLeague.push(pairs);
+    });
+    // Interleave: take one from each league in rotation
+    var interleaved=[];
+    var maxLen=Math.max.apply(null,perLeague.map(function(p){return p.length;}));
+    for(var slot=0;slot<maxLen;slot++){
+      perLeague.forEach(function(pairs){if(slot<pairs.length)interleaved.push(pairs[slot]);});
+    }
+    matchups=interleaved;
+  }
+  var done=matchupIdx>=matchups.length;
+  $sty('done-banner','display',done?'flex':'none');
+  $sty('vs-wrap','display',done?'none':'grid');
+  $styQ('.skip-wrap','display',done?'none':'block');
   $sty('rankings-header','display','flex');
   var prog=document.getElementById('progress');
-  if(prog)prog.textContent='sorted by league points';
+  if(prog)prog.textContent='matchup '+(matchupIdx+1)+' / '+matchups.length;
+  if(!done){
+    var m=matchups[matchupIdx];
+    var cfg=LEAGUE_CONFIGS[m.lg];
+    var tA=cfg.teams[m.i],tB=cfg.teams[m.j];
+    var savedR=ratingsStore[cfg.storageKey]||{};
+    var A={abbr:tA.abbr,name:tA.name,league:m.lg,cfg:cfg,logo:cfg.logo(tA.espn),elo:savedR[tA.abbr]||cfg.defaultElo};
+    var B={abbr:tB.abbr,name:tB.name,league:m.lg,cfg:cfg,logo:cfg.logo(tB.espn),elo:savedR[tB.abbr]||cfg.defaultElo};
+    var lgLabel={'epl':'EPL','laliga':'La Liga','bundesliga':'Bundesliga','seriea':'Serie A','ligue1':'Ligue 1'};
+    document.getElementById('logo-a').src=A.logo;
+    document.getElementById('logo-b').src=B.logo;
+    var na=document.getElementById('name-a'),nb=document.getElementById('name-b');
+    if(na)na.innerHTML=A.name+'<div style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:2px">'+lgLabel[m.lg]+'</div>'+(function(){var r=window.recordCache&&window.recordCache[m.lg+'_'+A.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">'+r+'</div>':'';}());
+    if(nb)nb.innerHTML=B.name+'<div style="font-family:var(--mono);font-size:9px;color:var(--text-3);margin-top:2px">'+lgLabel[m.lg]+'</div>'+(function(){var r=window.recordCache&&window.recordCache[m.lg+'_'+B.abbr];return r&&r!=='0-0'?'<div style="font-family:var(--mono);font-size:10px;color:var(--text-3);margin-top:2px">'+r+'</div>':'';}());
+    document.getElementById('btn-a').onclick=function(){updateEuroElo(A,B);matchupIdx++;renderEuroRanker();};
+    document.getElementById('btn-b').onclick=function(){updateEuroElo(B,A);matchupIdx++;renderEuroRanker();};
+  }
+}
+
+function updateEuroElo(winner,loser){
+  var wCfg=winner.cfg,lCfg=loser.cfg;
+  var wR=ratingsStore[wCfg.storageKey]||{};
+  var lR=ratingsStore[lCfg.storageKey]||{};
+  var ra=wR[winner.abbr]||wCfg.defaultElo, rb=lR[loser.abbr]||lCfg.defaultElo;
+  var ea=1/(1+Math.pow(10,(rb-ra)/400));
+  wR[winner.abbr]=Math.round(ra+32*(1-ea));
+  lR[loser.abbr]=Math.round(rb+32*(0-(1-ea)));
+  ratingsStore[wCfg.storageKey]=wR;
+  ratingsStore[lCfg.storageKey]=lR;
+  try{localStorage.setItem(wCfg.storageKey+'_elo_ratings',JSON.stringify(wR));}catch(e){}
+  try{localStorage.setItem(lCfg.storageKey+'_elo_ratings',JSON.stringify(lR));}catch(e){}
+  seedTierFromPercentile();
 }
 
 function loadChampionsLeagueGames(callback){
@@ -4555,7 +4874,7 @@ function switchTab(tab){
   if(stdRanker)stdRanker.style.display='none';
   if(tierRanker)tierRanker.style.display='none';
   if(tab==='ranker'){
-    if(currentLeague==='championsleague'){if(stdRanker)stdRanker.style.display='block';initEuroRound();renderEuroRanker();return;}
+    if(currentLeague==='championsleague'){if(stdRanker)stdRanker.style.display='block';buildRankerDivFilter();initEuroRound();renderEuroRanker();return;}
     if(currentLeague==='all'){
       if(tierRanker)tierRanker.style.display='block';
       seedTierFromPercentile();
@@ -4593,7 +4912,7 @@ var SPORT_CATS={
     {lg:'championsleague',label:'Champs Lg',logo:'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjIwLjUiIGhlaWdodD0iMjA5LjUiIGZpbGw9Im5vbmUiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDQ0MSA0MTkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiA8cGF0aCBkPSJtMjkzLjQ0IDEyMy40NGMtMC4yNDQgMC41LTAuNzI3IDAuODQ1LTEuMjgxIDAuOTA5LTEyLjYyOCAxLjQ2NS0yNi4wNDYtMC4yOTEtMzEuMjE5LTEuMTAzLTguNjM2LTguNjI4LTE3Ljk4NS0xOC4yMjUtMjQuODc3LTI2LjYxMi0wLjcwNy0wLjg1OS0wLjc0MS0yLjA4NzYtMC4wOTEtMi45OTI0IDkuODI5LTEzLjcwMyAxOC44My0yNC41NzYgMjIuNjM1LTI4Ljg4MSAxMC44NzItMi4zNjk1IDIxLjcxMy00LjQ2NzEgMjkuMDM0LTQuNzY2MiAwLjU1My0wLjAyMjIgMS4wNzkgMC4yMzI0IDEuNDAzIDAuNjgxMSA5LjQzNyAxMy4xMjYgMTYuMTg3IDI1LjcwMyAxOC4zNTMgMzAuMjk5LTQuMzMzIDExLjY0Mi05LjU0NiAyMy40MDMtMTMuOTU3IDMyLjQ2NnptLTEyLjA0OCAyMi4yMDhjLTYuOTYxIDExLjY1NC0xMi4yNDkgMTguNjgtMTMuOTQ0IDIwLjgxNi0yLjMgMy4yNDctOC4xNjMgMTEuNzA2LTE3LjI3MSAyMC4yNjItMC41ODEgMC41NDYtMS4zMzkgMC44Ni0yLjEzOCAwLjg5NS0xMS40MDYgMC40NzUtMjIuMDExLTAuMzI1LTI2LjE0MS0xLjIyNi0zLjQ5Ny0xLjQ0Ni0xMS42MzYtNS4xMDYtMjEuMjU2LTEwLjQyNS0wLjgzOS0wLjQ2My0xLjMzMy0xLjM2Ny0xLjI3LTIuMzIxIDAuNTAyLTcuNDU3IDIuODY4LTE4LjA3OSA0Ljk2MS0yOS4zMTIgNS4xNzUtOS4wODcgMTAuNTQtMTkuNDU1IDE2LjEwMy0yNy45NzEgMC41ODYtMC44OTYgMS42ODMtMS4zMTMgMi43MTgtMS4wMyAxNi42NTcgNC41NDcgMzEuMTExIDggMzYuOTc5IDkuMzIgOC4wMzUgOS4zMTcgMTUuODIxIDE1Ljg2OCAyMS4wNTkgMTkuOTI5IDAuMzI2IDAuMjUzIDAuNDEgMC43MDkgMC4yIDEuMDYzem0tMTAwLjc4IDE2LjE5NWMtMC44NDQgMC41MjMtMS45MTkgMC40OTUtMi43My0wLjA3OS03LjI1My01LjEzNC0xNS45MDctMTEuNjk1LTIzLjExNS0xOC40My00LjI1Mi03LjI2Ni03LjUzMS0xNi41NjUtOS44Mi0yNC40ODQtMC4xNDgtMC41MS0wLjAzNC0xLjA2MiAwLjMwMi0xLjQ3MyA4LjA4OC05Ljk0MyAxNy43OTUtMTcuODEgMjEuODUzLTIwLjgwNSA5LjE1NSAzLjk0OTIgMTkuNjYzIDcuNDMzMiAyOC44NTUgMTAuNDkgMC45NCAwLjMxMiAxLjYwNCAxLjE1NSAxLjY4MiAyLjE0IDEuMjk2IDE2LjM1MiA0LjI5MiAyOS41NzYgNS4wOTIgMzQuNjI5LTMuNDMyIDMuNjY3LTEyLjQgMTEuOTgtMjIuMTE5IDE4LjAxMnptLTQwLjI4Ni02NC4zNDJjLTEuMi03LjcxOTEtMS45ODktMTUuODI2LTIuMDc2LTE5LjUzOS0wLjE5OS04LjU3MzIgMS4xNjMtMTYuMTY2IDIuNzQ1LTIzLjE5NiAwLjI2LTEuMTUwOCAwLjg1Ny0yLjE5NCAxLjcyOC0yLjk5MTIgNC41OTUtNC4yMDg3IDEyLjkwNC0xMS42MzQgMTguMTQ4LTE0Ljk5NyA0Ljk0My0zLjE2OTIgMTguNjgxLTcuNjA0MSAyNC4zNDYtOS4yNDkzIDEuMDk4LTAuMzIwMSAyLjI2OCAwLjE2ODEgMi44MzMgMS4xNjA3IDAuNjgxIDEuMTk2NSAxLjM5MyAyLjM4NDMgMi4xNDggMy41NTM2IDQuNDYgNi45NDI4IDkuMzc1IDEyLjkyIDExLjQ0NSAxNS41MDktMi43NDQgMTAuODk0LTMuOTEgMjMuMTA5LTQuNDQxIDMzLjQxMy0wLjA1IDAuOTY2Ni0wLjY2NiAxLjgxMzMtMS41NjkgMi4xNjU1LTE0LjMzMyA1LjU5MDYtMjUuMTY2IDkuOTY1LTI4LjgwNiAxMS42NDUtOS44NDggMC40MTU0LTE5LjIyOCAyLjA5MzktMjUuNTU5IDMuMjAwMi0wLjQ0OSAwLjA3OTEtMC44NzItMC4yMjYzLTAuOTQyLTAuNjczN3ptNzIuMjU0LTc0LjgxNmMwLjM5Mi0wLjYwODEgMS4wMzQtMS4wMTM1IDEuNzUyLTEuMTA4NyAxNC43MzktMS45NDY4IDI4LjIyNC0yLjIzMzUgMzMuNDA3LTIuMDkwMiA5LjQzMiA2LjI3MTcgMTguNjQ5IDE0LjU0NyAyNi4wMDUgMjIuMzk1IDAuNTE1IDAuNTUgMC41OTIgMS4zNzgyIDAuMTg1IDIuMDEzNS01LjI0OSA4LjIwODUtMTIuODgzIDE2LjA5LTE2LjIzNiAxOS41MjItMTIuNDM2IDIuOTQzLTI1LjYyIDcuMjI3MS0zNi4zMjEgMTAuNzM5LTEuMDQxIDAuMzQxMS0yLjE4NS0wLjA0NTctMi44MDctMC45NDgtOC4xMi0xMS43OTQtMTMuMjgtMjEuOTA1LTE1LjMwMy0yNS42NTYgMi4xOTYtOS44MzI3IDUuMjY3LTE4LjU4OSA5LjMxOC0yNC44NjV6bTk4LjQ1NSA5Ni44MTdjLTAuMjY0IDAuMTE5LTAuNTY3LTAuMDY3LTAuNTgyLTAuMzU1LTAuNjE4LTEyLjEwNy0xLjczMi0yMy44NzEtMi4zMTUtMjguMTczIDAuMDQ3LTEwLjQ1Ni0xLjY4Ny0yMS4zMDYtMy40MTctMjkuMzA2LTAuMDYyLTAuMjg5MiAwLjE5NC0wLjU0NzYgMC40ODUtMC40ODk1IDkuODk0IDIuMDE5NyAxMy4wNyA1LjcyNDEgMTMuMDcgNS43MjQxLTUuMjM4LTExLjc0MS0xMi43ODUtMjAuNTg5LTIwLjk4OC0yNy4yNzYtNy4wMTMtMTQuNjgtMTUuMDg1LTIxLjQ3LTE1LjA4NS0yMS40NyAwLjY1MyAzLjI0NyAwLjIwMyA2LjkxOTMtMC45NTQgMTAuNzA5LTAuMDczIDAuMjQxLTAuMzQ5IDAuMzU2LTAuNTc2IDAuMjQ2LTEzLjQ0Mi02LjU3MDgtMjcuMzIyLTkuNTcxOS0zMi42OTEtMTAuMzIzLTguMDIzLTMuODk4NS0xNi43ODYtNi40NzgxLTIzLjkxMi04LjQzMzUtMC4xOS0wLjA1MTktMC4yNDItMC4yOTc5LTAuMDg5LTAuNDI1MjMgOS40NTgtNy44NDY0IDE4LjE1OC05Ljg0MzggMTguMTU4LTkuODQzOC0xNS40MDItMC42MTY3OC0yOC42NTkgMi4xNjgtMzkuNzQ0IDYuNDI2Mi0xNi41NjItMS4zMjYzLTI3LjExMiAxLjU1MjUtMjcuMTEyIDEuNTUyNXM0LjU3MyA1LjQ3MDcgNi4zNTEgOC41MTYzYzAuMjE0IDAuMzY4NCAwLjEwMiAwLjg0MDUtMC4yNDkgMS4wODI4LTEwLjQxNyA3LjIxODQtMTcuODkxIDE1LjE0OC0yMC44MzggMTguNDQ5LTMuMjgzIDAuNDQzNy04Ljk2OSAxLjIyODYtMTMuOTM1IDIuNDUyMy0wLjE5OCAwLjA0OTQtMC4zNjYtMC4xNDk2LTAuMjg2LTAuMzM3NCA0Ljk3My0xMS44MzggMTAuMzk0LTE4LjM5MSAxMC4zOTQtMTguMzkxcy0zMS45NjQgMjIuNjgxLTM4LjAyMyA2My40MzhjMCAwIDIuNjMyLTcuMjI0NiAxMS41MzItMTguMTc1IDAuMTE3LTAuMTQzNCAwLjM0NC0wLjExNSAwLjQyIDAuMDU0NCAyLjUyMiA1LjU3OTQgNS40MDUgMTAuNTM0IDYuODU0IDEyLjgwOC00Ljg5NSA3Ljg3MzYtOC4yNzQgMTYuNDU5LTEwLjM1NSAyMy40ODUtMC4wNzIgMC4yNDQtMC4yNTYgMC40NC0wLjQ5NiAwLjUzLTcuNDAzIDIuODA4LTkuMjg5IDUuNDg3LTkuMjg5IDUuNDg3IDEuMTUxIDMuOTI4IDMuNDExIDcuNzU3IDYuMjY2IDExLjM2NiAwLjI0OCAwLjMxMiAwLjM3NCAwLjcwMiAwLjM1NyAxLjEtMC43ODYgMTcuMzk0IDQuODMgMjguODQzIDQuODMgMjguODQzIDEuMjY4LTYuMDc1IDMuNzUxLTExLjk3NiA2Ljg4Ny0xNy41MTQgMC4xMjUtMC4yMjEgMC40MTktMC4yNzYgMC42MTctMC4xMTkgNy4zMDYgNS43OTggMTQuODc0IDEwLjg2NyAxNy44NzcgMTIuNjY3IDEuNTQ5IDMuOTUyIDUuOTg0IDE0LjIwNyAxMS45MSAyNC43MjggMC4xMjQgMC4yMjIgMC4wMjMgMC41MDMtMC4yMTYgMC41OS03LjA5NiAyLjU4My0xNC4zNzYgMy43NTItMjEuMDUxIDIuMTI4IDAgMCA4LjA1IDEwLjAyIDMyLjg4MiAxNC4yOTMgNi44ODkgOC4xMzQgMTUuMjczIDE0Ljg3IDI1LjA2NCAxNy4yMSAwIDAtMi44Ny0zLjE1Mi0zLjU3OS0xNC44OTgtMC4wMTUtMC4yMzggMC4xNzYtMC40NDEgMC40MTUtMC40MzcgNi4xMzEgMC4wOTIgMTQuNDQ4IDAuMjI1IDIyLjA2MS0wLjMyNyAyLjY5OCAyLjEyNSA4LjU4NiA2Ljc5IDE0LjMyOSA5Ljc2MyAwLjI4NiAwLjE0OCAwLjMwNCAwLjU1IDAuMDI5IDAuNzE3LTEwLjA5NSA2LjA5Ny0xNi44MTIgNi42MjgtMTYuODEyIDYuNjI4IDQ1LjcyNyAwLjk3MyA3My4xODItMjguODE1IDczLjE4Mi0yOC44MTUtNy41MzIgNC45NDktMTYuMjMgOC4wMjYtMjQuODg4IDkuODU5LTAuMjkyIDAuMDYyLTAuNTQ4LTAuMTk2LTAuNDg3LTAuNDg4IDEuNjA4LTcuNzY5IDEuMTU3LTE1LjI4MSAxLjA0NC0xNy45MjggMTAuODQ5LTIuNjg4IDIwLjMxMy03LjUzIDI3LjMyLTEyLjQ4IDAuMTQxLTAuMSAwLjMzLTAuMTAxIDAuNDczLTJlLTMgMi45MTcgMi4wMjcgNS40MTMgNC4zMDEgNy45MDQgOC4wODcgMCAwIDQuNzQ0LTYuNzA0IDYuMzc2LTIyLjIzNyAxMS43NDYtMTUuMzE2IDEzLjQ5Mi0zMC45OTMgMTMuNDkyLTMwLjk5My0yLjk0NyA0LjYwMy03LjM5NyA3LjkyLTEyLjYxIDEwLjI5N3ptLTkwLjUzIDE1MS4yM2MtMTkuNjEzIDAtMzcuNDA3IDguNzU3LTQ4LjI2MSAyMS43MDVsMy40NDMgNC4yNDJjOS44NTctMTIuMjQgMjYuNjI2LTIwLjY1NiA0NC44MTgtMjAuNjU2IDE4LjE5NCAwIDM0Ljk2MiA4LjQxNiA0NC44MTkgMjAuNjU2bDMuNDQzLTQuMjQyYy0xMC44NTUtMTIuOTQ4LTI4LjY0OC0yMS43MDUtNDguMjYyLTIxLjcwNXptLTQ1Ljg3NyAyLjc0OWMtMS4yOSAxLjA0Ny0yLjc5IDEuNTU4LTQuMTE0IDEuNDAxLTEuNjc4LTAuMTkyLTIuNjk3LTAuODc4LTQuMzY3LTIuOTM1bC05LjYxOC0xMS43OTktNS4xODYgNC4yMDYgMTAuNDc1IDEyLjg2YzIuMjI2IDIuNzIzIDQuNzY0IDQuMTgxIDcuNzU1IDQuNDU1IDAuMzU0IDAuMDMzIDAuNzA0IDAuMDUxIDEuMDUgMC4wNTQgMi45IDAuMDI1IDUuNTkzLTAuOTk1IDguMjAzLTMuMTAyIDIuOTA3LTIuMzcgNC41MDMtNS4xMjEgNC44NzctOC40MTEgMC4zNC0yLjk4MS0wLjU3MS01Ljc1OC0yLjc5MS04LjQ4OGwtMTAuNDczLTEyLjg1Ni01LjE4NiA0LjIwNiA5LjYxNCAxMS44MDV2MmUtM2MxLjY3NiAyLjA0OSAyLjEzOSAzLjE4NiAxLjk4NCA0Ljg2Ny0wLjExNiAxLjMyMy0wLjkyNiAyLjY4NS0yLjIyMyAzLjczNXptMzUuNDctMzcuMTcyLTE2LjggMy40MDNjLTAuNzY3IDAuMTU1LTEuMzc0IDAuNTM4LTEuNzUxIDEuMTEtMC4zODEgMC41NzEtMC40OTggMS4yNzYtMC4zNDMgMi4wNDFsMy4zNDggMTYuNDYxYzAuNTQ1IDIuNjc3IDEuNzQ4IDQuNjA1IDMuNTc2IDUuNzMxIDEuMjA5IDAuNzQ0IDIuNjU5IDEuMTE2IDQuMzMgMS4xMTUgMC44NTEtMWUtMyAxLjc2LTAuMDk5IDIuNzIyLTAuMjk0bDEwLjUtMi4xMjYtMS4yNjMtNi4yMTQtMTAuMjE1IDIuMDdjLTIuMDkxIDAuNDIyLTIuNzcgMC4xOTEtMy4yNDctMi4xNTFsLTAuMzU5LTEuNzY2IDExLjgxNS0yLjM5My0xLjI0OS02LjE0My0xMS44MTYgMi4zOTItMC44OTctNC40MDcgMTIuOTEzLTIuNjE2LTEuMjY0LTYuMjEzem0zMi42NjggOC45ODIgMTAuMDY3IDIuNjAyIDEuNTkxLTYuMTI2LTEwLjM1Mi0yLjY3NmMtNS42NzQtMS40NjctOS41NiAwLjY1My0xMC45NCA1Ljk2OGwtNC4yMjcgMTYuMjc4Yy0wLjE5NSAwLjc1Ni0wLjExNiAxLjQ2NSAwLjIzMSAyLjA1NSAwLjM0NyAwLjU4OSAwLjkzIDEuMDAzIDEuNjg3IDEuMTk5bDMuODQzIDAuOTkzIDIuNzI0LTEwLjUyOCAxMS42NTEgMy4wMTIgMS41NzQtNi4wNTUtMTEuNjU1LTMuMDE0IDAuNDUzLTEuNzRjMC41OTktMi4zMDggMS4yODktMi41MDIgMy4zNTMtMS45Njh6bTUyLjIzNyAxNC44NjcgMy41NTQtNC4zNzljLTEuNzY1LTEuNzYyLTMuNjAyLTMuNDcyLTUuNTE2LTUuMTItMTkuODg3LTE3LjEzMS00NS42NDgtMjYuNTY0LTcyLjUzNi0yNi41NjQtMjYuODg3IDAtNTIuNjQ3IDkuNDMzLTcyLjUzNiAyNi41NjQtMS45MTMgMS42NDgtMy43NTEgMy4zNTctNS41MTYgNS4xMTlsMy41NTQgNC4zNzljMS43OTUtMS44MTIgMy42NzEtMy41NjkgNS42My01LjI1OCAxOC44Ny0xNi4yNTIgNDMuMzI3LTI1LjIwMiA2OC44NjgtMjUuMjAyczQ5Ljk5OCA4Ljk1IDY4Ljg2NyAyNS4yMDJjMS45NjEgMS42ODkgMy44MzYgMy40NDYgNS42MzEgNS4yNTl6bS0yNy4xMyAyMS43MzIgMS4xNTMtMy45NjktNC45Ni0zLjY5OCAzLjk5NC0yLjg1NSAyLjMxMyAxLjczNCAyLjYyNy04LjgzOS0xNS4yNDQgOS44MzYtNi4yNDktMy41MjggMjMuOTExLTE1LjQ0MWMwLjkyMi0wLjU5NiAyLjE4My0xLjEyMSAzLjc3OSAwLjEwNGwxLjAyMiAwLjc4NmMxLjYxMSAxLjIzOCAxLjM4MSAyLjY1NiAxLjA2NiAzLjYxNWwtNy45MzcgMjcuMjU2LTUuNDc1LTUuMDAxem0tMTEyLjUzIDEyOS4wOGgtMTcuNjM0di0xMy41MTNoMTAuNTA5bDQuMzAyIDMuNjYxaDAuMTQ0di0xMy43OTVoLTAuMTQ0bC00LjMwMiAzLjY2MWgtMTAuNTA5di0xMS43NTVoMTdsNC45MzggNS4yOGgwLjE0bC0wLjU2NC0xMS42ODZoLTM2LjI1OHYwLjE0M2wzLjMxOSA0LjAxMXYzNi4zMTdsLTMuMzE5IDQuMDF2MC4xNDFoMzcuODFsMC45MTctMTMuNDQyaC0wLjE0M2wtNi4yMDYgNi45Njd6bTYuNjYyLTg5LjgxNiAxMi40ODcgMzEuODEzaDYuOTgzbDExLjU2OS0zMi4xNjMgMS45NzMgMjguMDA4LTQuMzc0IDQuMDExdjAuMTQ0aDE4Ljk3NHYtMC4xNDRsLTMuNjY1LTQuMDExLTIuNjg0LTM2LjMxNyAyLjg5NC00LjAxMXYtMC4xMzloLTE1Ljc5OWwtMTAuNzIzIDI5Ljc2OC0xMS41NjktMjkuNzY4aC0xNi4wMTF2MC4xMzlsMy4yNDYgNC4wMTEtMS45MDcgMzYuMzE3LTMuODc2IDQuMDExdjAuMTQ0aDE1LjU4NXYtMC4xNDRsLTMuODc3LTQuMDExIDAuNzc0LTI3LjY1OHptLTUyLjUwNCA4OS43NDVoLTE1LjMwNXYtMzMuOTIybDQuMTYzNS00LjAxMXYtMC4xNDNoLTE4LjkwN3YwLjE0M2wzLjMxODYgNC4wMTF2MzYuMzE3bC0zLjMxODYgMy45Mzl2MC4yMTJoMzUuNDhsMS42OTUtMTQuMDAzaC0wLjE0NGwtNi45ODMgNy40NTd6bS0zNC4xNy01OC4wNzZ2MC4xNDRoMTcuOTg5di0wLjE0NGwtMy4zMTg2LTQuMDExdi0zNi4zMTdsMy4zMTg2LTQuMDExdi0wLjEzOWgtMTcuOTg5djAuMTM5bDMuMjQ1NiA0LjAxMXYxMy41MTRoLTE2LjAxMXYtMTMuNTE0bDMuMjQ1Ni00LjAxMXYtMC4xMzloLTE3Ljk4OHYwLjEzOWwzLjMxNjIgNC4wMTF2MzYuMzE3bC0zLjMxNjIgNC4wMTF2MC4xNDRoMTcuOTg4di0wLjE0NGwtMy4yNDU2LTQuMDExdi0xNS42OTRoMTYuMDExdjE1LjY5NGwtMy4yNDU2IDQuMDExem0yODAuOTQgNTguMTQ3aC0xNy42MzV2LTEzLjUxM2gxMC41MDhsNC4zMDMgMy42NjFoMC4xNDN2LTEzLjc5NWgtMC4xNDNsLTQuMzAzIDMuNjYxaC0xMC41MDh2LTExLjc1NWgxNy4wMDFsNC45MzYgNS4yOGgwLjE0bC0wLjU2Mi0xMS42ODZoLTM2LjI1OHYwLjE0M2wzLjMxOCA0LjAxMXYzNi4zMTdsLTMuMzE4IDQuMDF2MC4xNDFoMzcuODA5bDAuOTE4LTEzLjQ0MmgtMC4xNDRsLTYuMjA1IDYuOTY3em0tMTYxLjg4LTExLjMzMi01LjI4OC0xNy43MzItNi4yMDkgMTcuNzMyaDExLjQ5N3ptMTUuOCAxMy42NTYgMy42NjggNC4wMXYwLjE0MWgtMTkuMTEzdi0wLjE0MWwzLjY2OC00LjAxLTIuMDQ1LTYuOTY3aC0xNS44bC0yLjQwMSA2Ljk2NyAzLjQ1NyA0LjAxdjAuMTQxaC0xNC45NTN2LTAuMTQxbDMuNTI4LTQuMDEgMTMuNzU0LTM2LjMxNy0yLjYxMS00LjAxMXYtMC4xNDNoMTUuMTY1bDEzLjY4MyA0MC40NzF6bS0xODMuMjQtNjYuMjRjLTkuMTcxOCAwLTE1LjAyNi05LjI5Mi0xNS4wMjYtMTcuMzE3IDAtOS44NTIgNS4zNjAxLTE2LjI1NSAxMy4wNDktMTYuMjU1IDIuMDQ1MiAwIDQuMDIyMyAwLjIxMSA1Ljc4NjMgMC43bDYuOTExMSA4LjUxOWgwLjE0MjRsLTAuNDk0Mi0xNC4wNzdjLTEuOTc3MS0wLjc3My02LjI3NjktMS44MzEtMTEuNTY5LTEuODMxLTE2LjM2MiAwLTI1Ljc0NSAxMS4xMjItMjUuNzQ1IDIzLjkzMSAwIDEyLjY3IDkuMDI4MSAyMy43ODcgMjQuNTQ2IDIzLjc4NyA0LjE2MjMgMCAxMC4yOTktMS40MDUgMTQuNTMxLTQuNTcybDAuNjM0My03LjM5aC0wLjE0Yy0zLjU5NjIgMi44MTQtOC43NDk0IDQuNTA1LTEyLjYyNiA0LjUwNXptMjU2Ljg1IDUuNzY5LTMuMjQ1LTQuMDExdi0zNi4zMTdsMy4yNDUtNC4wMTF2LTAuMTM5aC0xNy45ODh2MC4xMzlsMy4zMTYgNC4wMTF2MzYuMzE3bC0zLjMxNiA0LjAxMXYwLjE0NGgxNy45ODh2LTAuMTQ0em0tMzkuNDU4IDQzLjcxOSA0LjQ0MiA0LjAxNXY4LjM3NWMtMS40MTIgMS42MTctMy44OCAyLjk1My03LjE5MyAyLjk1My03LjkwMSAwLTEyLjA2My05LjY0MS0xMi4wNjMtMTcuNzM1IDAtOC43OTggNC40NDYtMTYuMTg3IDEzLjYxNC0xNi4xODcgMi41MzkgMCA1LjIyIDAuMjEyIDcuNDA1IDAuOTgzbDcuMDU1IDcuNmgwLjE0bC0wLjQyNC0xMi4yNDRjLTQuMDktMi4xMTItOS4wMjgtMy4wMjMtMTQuMDM2LTMuMDIzLTE1LjAyMyAwLTI1LjY3NSA5LjIxOS0yNS42NzUgMjQuNDIgMCAxMi43MzYgOC4xODMgMjMuMjk3IDIwLjk0OSAyMy4yOTcgNS41NzQgMCAxMC42NTEtMS4yNjkgMTUuMzc3LTQuNzE1bDUuNTcgNC43MTVoMC4xNDR2LTE4LjQzOWwzLjUyNS00LjAxNXYtMC4xNGgtMTguODN2MC4xNHptLTExLjY3NS02NS4yNTNjMS40MTIgMC40MjIgMy4wMzIgMC42MzIgNC43MjYgMC42MzIgNi4yMDkgMCA4Ljg4OS0zLjM3OCA4Ljg4OS04LjM3NiAwLTUuOTEzLTMuNDU3LTguNzI2LTkuODc4LTguNzI2aC0zLjczN3YxNi40N3ptLTExLjQyNSAxNy41MjN2LTM2LjMxN2wtMy4zMTgtNC4wMTF2LTAuMTM5aDIxLjE2M2MxMi44MzggMCAxOC42OTIgNS44MzcgMTguNjkyIDE0LjcxMSAwIDkuMjE4LTYuOTgzIDE0LjkxOC0xNi41MDUgMTQuOTE4LTMuMTAzIDAtNi4yNzgtMC4yMTItOC42MDctMC43NzN2MTEuNjExbDQuNjU1IDQuMDExdjAuMTQ0aC0xOS4zOTh2LTAuMTQ0bDMuMzE4LTQuMDExem0xMDYuNTctMTQuOTIxYzAtNy43NC0yLjg5MS0yMC4wNTgtMTIuNzY5LTIwLjA1OC03LjkgMC0xMC4xNTcgNy44ODItMTAuMTU3IDEzLjIzIDAgNy44MTQgMy4yNDYgMjAuNDEyIDEyLjc3IDIwLjQxMiA2LjgzOSAwIDEwLjE1Ni02LjQ3NyAxMC4xNTYtMTMuNTg0em0tMTEuODUxIDIwLjYyYy0xMy45NjYgMC0yMi45OTQtMTEuNDcyLTIyLjk5NC0yNC40ODggMC0xMy40NDUgMTAuMzY4LTIzLjIzIDIzLjM0OC0yMy4yMyAxNC4zMTcgMCAyMy40ODggMTEuMTkzIDIzLjQ4OCAyNC4wMDIgMCAxNC42MzktMTEuMDc0IDIzLjcxNi0yMy44NDIgMjMuNzE2em0tMTQuOTE3IDE4LjQ1NSAzLjY2OSA0LjAxMXYyNS40MWMwIDcuMzE4LTMuNTk3IDkuMTQ4LTkuNDUyIDkuMTQ4LTUuOTI2IDAtOS41MjItMS42OTEtOS41MjItOS4xNDh2LTI1LjQxbDMuNjY4LTQuMDExdi0wLjE0M2gtMTguNDEydjAuMTQzbDMuMzE3IDQuMDExdjI1LjQxYzAgMTIuMTcyIDYuMjA3IDE2LjYwOSAxOS40NjYgMTYuNjA5IDEyLjA2MyAwIDE4LjItNC4xNTQgMTguMi0xNi4yNTl2LTI1Ljc2bDMuMjQyLTQuMDExdi0wLjE0M2gtMTQuMTc2djAuMTQzem04NS4xOTEgNS40ODNjMC0zLjE3Mi0yLjQxMS01LjU3LTUuNDUzLTUuNTctMy4wNzUgMC01LjQ4MiAyLjM5OC01LjQ4MiA1LjU3IDAgMy4yMzcgMi40MDcgNS42MTkgNS40ODIgNS42MTkgMy4wNDIgMCA1LjQ1My0yLjM4MiA1LjQ1My01LjYxOXptMS4zNTMgMGMwIDMuODk0LTMuMTQzIDYuNzM0LTYuODA2IDYuNzM0LTMuNjk1IDAtNi44MzMtMi44NC02LjgzMy02LjczNCAwLTMuODQ3IDMuMTM4LTYuNjkxIDYuODMzLTYuNjkxIDMuNjYzIDAgNi44MDYgMi44NDQgNi44MDYgNi42OTF6bS02LjgxNi0wLjQ2NGMwLjk5MiAwIDEuODg1LTAuMDU0IDEuODg1LTEuMjQ5IDAtMC45NjMtMC44NzItMS4xMzctMS42OTktMS4xMzdoLTEuNjAzdjIuMzg2aDEuNDE3em0xLjEwMiAwLjk0NyAyLjE5IDMuNDFoLTEuMzA2bC0yLjAzOS0zLjM1NWgtMS4zNjR2My4zNTVoLTEuMTY3di03Ljc0aDIuOTU0YzEuODM0IDAgMi43MzcgMC42NzUgMi43MzcgMi4xOTkgMCAxLjM4Ni0wLjg3MiAxLjk4NC0yLjAwNSAyLjEzMXptLTIuOTMyLTcwLjQ0OCA0LjMwNCA0LjAxMXYyMy42NDhsLTE4LjEzLTI3Ljc5OGgtMTYuMjk0djAuMTM5bDMuMzE3IDQuMDExdjM2LjMxN2wtMy4zMTcgNC4wMTF2MC4xNDRoMTQuODgzdi0wLjE0NGwtNC4zNzEtNC4wMTF2LTI5LjU2MWwyMi42MzkgMzMuNzE2aDguNDY2di00MC40NzJsMy4zMTQtNC4wMTF2LTAuMTM5aC0xNC44MTF2MC4xMzl6bTQ1LjQ4NCAxNy4wMzRjLTguMTEyLTIuMjUyLTEwLjU4LTMuMjM4LTEwLjU4LTYuOTY3IDAtNC4yOTMgNS41NzQtNS4xNCA5LjEtNS4xNCAyLjk2MyAwIDUuNzE0IDAuMzUgOC4xODMgMS4xMjZsNi43NzEgNy4zMjFoMC4xNGwtMC41NjMtMTIuNjAxYy00LjIzNS0xLjYxNi04LjY3Ny0yLjQ2NC0xMy43NTQtMi40NjQtMTAuNjUyIDAtMjAuODggMy42NjEtMjAuODggMTQuMjIxIDAgNi44MjUgNC43MjYgMTAuOTA3IDE0Ljk1NCAxMy43MjQgNy45MDEgMi4xODEgMTEuNzgxIDMuNTg3IDExLjc4MSA3LjYgMCA0LjY0NC01LjkyNiA1LjYyOC05Ljg3OCA1LjYyOC0zLjMxNCAwLTYuMjc3LTAuNDkxLTguODE4LTEuMjY2bC02LjgzOS04LjQ0NWgtMC4xNDNsMC40OTQgMTMuMzcxYzQuNjU4IDIuMTEyIDEwLjMgMi44ODUgMTUuNTg4IDIuODg1IDExLjQyNyAwIDIxLjAyMS00Ljc4MyAyMS4wMjEtMTQuNDI1IDAtOS4wOC02LjI3Ny0xMS42ODMtMTYuNTc3LTE0LjU2OHptLTMwOS42OCA5LjY0MWgxMS40OTdsLTUuMjg4LTE3LjczNy02LjIwOSAxNy43Mzd6bS0xLjI2OCAxNy44MDhoLTE0Ljk1NHYtMC4xNDRsMy41Mjk0LTQuMDExIDEzLjc1NC0zNi4zMTctMi42MTEtNC4wMTF2LTAuMTM5aDE1LjE2NGwxMy42ODQgNDAuNDY3IDMuNjY4IDQuMDExdjAuMTQ0aC0xOS4xMTR2LTAuMTQ0bDMuNjY5LTQuMDExLTIuMDQ2LTYuOTY3aC0xNS44bC0yLjQgNi45NjcgMy40NTcgNC4wMTF2MC4xNDR6IiBmaWxsPSIjMDAwMDRiIi8+Cjwvc3ZnPgo='},
     {lg:'mls',label:'MLS',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mls.png'}
   ],
-  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'data:image/png;base64,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'}],
+  football:[{lg:'nfl',label:'NFL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nfl.png'},{lg:'ncaafb',label:'CFB',logo:'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNjAiPjxlbGxpcHNlIGN4PSI1MCIgY3k9IjMwIiByeD0iNDYiIHJ5PSIyNiIgZmlsbD0iIzhCNDUxMyIvPjxsaW5lIHgxPSI0IiB5MT0iMzAiIHgyPSI5NiIgeTI9IjMwIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxsaW5lIHgxPSI1MCIgeTE9IjQiIHgyPSI1MCIgeTI9IjU2IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjEuNSIvPjxsaW5lIHgxPSIzMyIgeTE9IjYiIHgyPSIzMyIgeTI9IjU0IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iNjciIHkxPSI2IiB4Mj0iNjciIHkyPSI1NCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+'}],
   baseball:[{lg:'mlb',label:'MLB',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/mlb.png'}],
   hockey:[{lg:'nhl',label:'NHL',logo:'https://a.espncdn.com/i/teamlogos/leagues/500/nhl.png'}],
 };
@@ -4635,6 +4954,8 @@ function pickLeague(lg){
 }
 
 function switchLeague(lg){
+  // Save current filter state before switching
+  if(currentLeague&&currentLeague!==lg)saveFilterState(currentLeague);
   currentLeague=lg;
   LC=LEAGUE_CONFIGS[lg]||LEAGUE_CONFIGS.nba;
 
@@ -4744,7 +5065,7 @@ function switchLeague(lg){
   // reload elo for this league
   lastGames=[];
   initRatingsForLeague();
-  if(lg==='championsleague'){initEuroRound();}
+  if(lg==='championsleague'){matchups=[];matchupSeason=null;matchupIdx=0;initEuroRound();}
   else if(lg!=='all'){initRound();}
   switchTab(currentTab);
 
@@ -4768,8 +5089,8 @@ function switchLeague(lg){
   divCatState[lg]='All';
   buildDivPills();
   // Show euro league filter for championsleague
-  var euroSec=document.getElementById('euro-filter-section');
-  if(euroSec)euroSec.style.display=(lg==='championsleague')?'block':'none';
+  var euroCard=document.getElementById('euro-filter-card');
+  if(euroCard)euroCard.style.display=(lg==='championsleague')?'':'none';
   if(lg==='championsleague')buildEuroLeaguePills();
 
   // reload filter profiles for this league
@@ -4799,6 +5120,7 @@ function switchLeague(lg){
   // for 'all' tab: render tier rankings now that everything is ready
   if(lg==='all')renderTierRanker();
 
+  restoreFilterState(lg);
   updateStates();
   if(lg!=='ncaafb')loadGames(); // ncaafb calls loadGames() inside week init
 }
@@ -5114,11 +5436,16 @@ function normalizeRecordAbbr(sport,raw){
       if(!hasSaved&&entries&&entries.length){
         var sportCfg=LEAGUE_CONFIGS[spKey];
         var N=entries.length;
-        entries.sort(function(a,b){return b.wins-a.wins;});
+        // Sort by win% then wins for tiebreak — guarantees spread
+        entries.sort(function(a,b){
+          var wpA=a.wins/(a.wins+a.losses+0.001),wpB=b.wins/(b.wins+b.losses+0.001);
+          return wpB-wpA||b.wins-a.wins;
+        });
         var savedR={};
         entries.forEach(function(e,i){
-          var target=((sportCfg&&sportCfg.defaultElo)||1200)+((N/2-(i+1))*(600/N));
-          savedR[e.abbr]=Math.round(Math.max(1000,Math.min(1400,target)));
+          // Linear spread 1400 down to 1000, guaranteed unique by position
+          var target=Math.round(1400-((i/(Math.max(N-1,1)))*400));
+          savedR[e.abbr]=Math.max(1000,Math.min(1400,target));
         });
         if(sportCfg&&sportCfg.teams)sportCfg.teams.forEach(function(t){if(!savedR[t.abbr])savedR[t.abbr]=(sportCfg.defaultElo||1200);});
         try{localStorage.setItem(spKey+'_elo_ratings',JSON.stringify(savedR));}catch(e){}
@@ -5140,10 +5467,9 @@ function normalizeRecordAbbr(sport,raw){
 })();
 // ── CFB: Seed from 2025 Final AP Rankings + Records ──
 (function(){
-  var existing=null;
-  try{var s=localStorage.getItem('ncaafb_elo_ratings');existing=s?JSON.parse(s):null;}catch(e){}
-  var allDefault=existing&&Object.keys(existing).length>10&&Object.values(existing).every(function(v){return v===1050;});
-  if(existing&&!allDefault)return;
+  // Always reseed from 2025 records until 2026 season week 1 (Sep 3 2026)
+  var _seasonStart=new Date(2026,8,3); // Sep 3 2026
+  if(new Date()>=_seasonStart)return; // in-season: let live ratings take over
 
   // 2025 Final AP Top 25 (post-championship)
   var AP2025=[
@@ -5213,7 +5539,7 @@ function normalizeRecordAbbr(sport,raw){
     savedR[t.abbr]=eloFromRecord(RECORDS2025[t.abbr]||'6-6');
   });
   AP2025.forEach(function(r){
-    savedR[r.abbr]=Math.round(1500-((r.rank-1)*12.5));
+    savedR[r.abbr]=Math.round(1400-((r.rank-1)*16));
   });
 
   // Populate recordCache
@@ -5242,7 +5568,7 @@ function normalizeRecordAbbr(sport,raw){
         var tname=t.name.toLowerCase();
         if(tname===name||name.split(' ')[0]===tname.split(' ')[0]&&name.split(' ').pop()===tname.split(' ').pop()){
           var rank=r.current||25;
-          updated[t.abbr]=Math.round(1500-((rank-1)*12.5));
+          updated[t.abbr]=Math.round(1400-((rank-1)*16));
           window.recordCache['ncaafb_'+t.abbr]='#'+rank;
         }
       });
@@ -5284,8 +5610,22 @@ try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.
     window.recordCache['ncaafb_'+abbr]=RECORDS2025[abbr];
   });
 })();
+
+// ── RATINGS VERSION — bump to force fresh elo seed on all clients ──
+(function(){
+  var RATINGS_VER = 'v3.06';
+  var stored = null;
+  try{stored=localStorage.getItem('ranker_ratings_ver');}catch(e){}
+  if(stored !== RATINGS_VER){
+    // Wipe all saved elo ratings so fetchAllStandings re-seeds from records
+    var keys = [];
+    try{for(var i=0;i<localStorage.length;i++)keys.push(localStorage.key(i));}catch(e){}
+    keys.forEach(function(k){if(k&&k.indexOf('_elo_ratings')>=0){try{localStorage.removeItem(k);}catch(e){}}});
+    try{localStorage.setItem('ranker_ratings_ver',RATINGS_VER);}catch(e){}
+  }
+})();
+
 switchLeague('all');
-document.getElementById('w-dt-on').checked=true;
 updateStates();
 
 // ── WELCOME MODAL ──
