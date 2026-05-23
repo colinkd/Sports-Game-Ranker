@@ -121,6 +121,11 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .games-list-header{display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
 .games-list-title{font-family:var(--mono);font-size:12px;color:var(--text-2);flex:1}
 .tz-select{font-family:var(--mono);font-size:11px;color:var(--text-2);background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:5px 7px;cursor:pointer}
+@media(max-width:600px){
+  #date-bar>div,#week-bar>div{flex-wrap:wrap!important;}
+  #date-bar .pills,#week-bar .pills{width:100%;order:-1;}
+  #single-date-row,#range-date-row,#week-nav-row,#nfl-single-row,#nfl-range-row{width:100%;}
+}
 .game-card{background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:14px 14px 12px;margin-bottom:8px}
 .game-card-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
 .gcal-btn{margin-left:auto;font-size:11px;font-family:var(--mono);text-decoration:none;opacity:.55;transition:opacity .15s;cursor:pointer;color:var(--text-2);display:flex;align-items:center;gap:3px}
@@ -138,8 +143,11 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:1
 .g-time{font-size:12px;font-weight:500;color:var(--text);margin:3px 0}
 .g-badge{display:inline-block;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px}
 .badge-lp{background:#fce7f3;color:#9f1239;border:.5px solid #f9a8d4}
-.badge-tv{background:var(--blue-light);color:var(--blue);border:.5px solid #93c5fd}
+.badge-tv{background:var(--blue-light);color:var(--blue);border:.5px solid var(--blue)}
+@media(prefers-color-scheme:dark){.badge-tv{background:#0c2440;color:#6fa3d8;border-color:#1e3a5f}}
 .badge-stream{background:#dcfce7;color:#166534;border:.5px solid #86efac}
+@media(prefers-color-scheme:dark){.badge-lp{background:#2d0a1a;color:#f9a8d4;border-color:#831843}}
+@media(prefers-color-scheme:dark){.badge-stream{background:#0a2e1a;color:#4ade80;border-color:#14532d}}
 .badge-cup{background:#FFF3E0;color:#E65100;border:.5px solid #FFB74D}
 .g-stars{font-size:11px;margin-top:3px}
 .g-combined{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--amber);margin-top:3px}
@@ -178,6 +186,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 .pill{font-family:var(--mono);font-size:10px;padding:4px 6px 3px;border:.5px solid var(--border);border-radius:20px;cursor:pointer;color:var(--text-2);background:var(--bg);transition:all .12s;display:flex;align-items:center;line-height:1;white-space:nowrap}
 .pill.on{background:var(--amber);color:#fff;border-color:var(--amber)}
 .pill[data-cat="national"].on{background:var(--blue-light);color:var(--blue);border-color:var(--blue)}
+@media(prefers-color-scheme:dark){.pill[data-cat="national"].on{background:#dbeafe;color:#1e40af;border-color:#93c5fd}}
 .pill[data-cat="streaming"].on{background:#dcfce7;color:#166534;border-color:#86efac}
 .pill[data-cat="lp"].on{background:#fce7f3;color:#9f1239;border-color:#f9a8d4}
 .date-row{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
@@ -232,7 +241,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v5.26</div>
+          <div>v5.32</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -348,70 +357,68 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 <div id="view-games">
   <div class="games-layout">
     <div class="games-list-col">
-      <div id="date-bar" style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem">
-        <div style="display:flex;align-items:center;gap:8px;justify-content:space-between;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
-            <span id="date-bar-divider" style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
-            <div class="pills">
-              <div class="pill on" id="mode-single" onclick="setDateMode('single')">single date</div>
-              <div class="pill" id="mode-range" onclick="setDateMode('range')">date range</div>
-            </div>
+      <div id="date-bar" style="background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:1rem">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap">
+          <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
+          <span id="date-bar-divider" style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+          <div class="pills" style="flex-shrink:0">
+            <div class="pill on" id="mode-single" onclick="setDateMode('single')">single date</div>
+            <div class="pill" id="mode-range" onclick="setDateMode('range')">date range</div>
           </div>
-          <select class="tz-select" id="tz-select">
+          <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+          <div id="single-date-row" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+            <button class="btn btn-sm" onclick="shiftDate(-1)">←</button>
+            <span id="date-dow-label" style="font-family:var(--mono);font-size:10px;color:var(--text);white-space:nowrap;font-weight:600"></span>
+            <input type="date" class="date-in" id="date-picker" style="width:110px" onchange="updateDowLabel()"/>
+            <button class="btn btn-sm" onclick="shiftDate(1)">→</button>
+            <button class="btn btn-sm" onclick="goToday()">today</button>
+          </div>
+          <div id="range-date-row" style="display:none;align-items:center;gap:5px;flex:1;min-width:0" class="date-row">
+            <div class="date-lbl">from</div>
+            <span id="range-from-dow" style="font-family:var(--mono);font-size:10px;color:var(--text);font-weight:600;white-space:nowrap"></span>
+            <input type="date" class="date-in" id="w-from" style="width:110px" onchange="updateRangeDow()"/>
+            <div class="date-lbl">to</div>
+            <span id="range-to-dow" style="font-family:var(--mono);font-size:10px;color:var(--text);font-weight:600;white-space:nowrap"></span>
+            <input type="date" class="date-in" id="w-to" style="width:110px" onchange="updateRangeDow()"/>
+          </div>
+          <select class="tz-select" id="tz-select" style="margin-left:auto;flex-shrink:0">
             <option value="ET">ET</option><option value="CT">CT</option>
             <option value="MT">MT</option><option value="PT">PT</option>
           </select>
-        </div>
-        <div id="single-date-row" style="display:flex;align-items:center;gap:8px">
-          <button class="btn btn-sm" onclick="shiftDate(-1)">←</button>
-          <span id="date-dow-label" style="font-family:var(--mono);font-size:10px;color:var(--text);white-space:nowrap;font-weight:600;margin-right:2px"></span>
-          <input type="date" class="date-in" id="date-picker" style="width:110px" onchange="updateDowLabel()"/>
-          <button class="btn btn-sm" onclick="shiftDate(1)">→</button>
-          <button class="btn btn-sm" onclick="goToday()">today</button>
-        </div>
-        <div id="range-date-row" style="display:none;align-items:center;gap:5px" class="date-row">
-          <div class="date-lbl">from</div>
-          <span id="range-from-dow" style="font-family:var(--mono);font-size:10px;color:var(--text);font-weight:600;white-space:nowrap;margin-right:2px"></span>
-          <input type="date" class="date-in" id="w-from" style="width:110px" onchange="updateRangeDow()"/>
-          <div class="date-lbl">to</div>
-          <span id="range-to-dow" style="font-family:var(--mono);font-size:10px;color:var(--text);font-weight:600;white-space:nowrap;margin-right:2px"></span>
-          <input type="date" class="date-in" id="w-to" style="width:110px" onchange="updateRangeDow()"/>
         </div>
       </div>
 
       <!-- NFL week selector (hidden for NBA/WNBA) -->
       <div id="week-bar" style="display:none;background:var(--surface);border:.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:1rem">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
-            <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
-            <div class="pills" style="flex-shrink:0">
-              <div class="pill on" id="wmode-week" onclick="setWeekMode('week')">by week</div>
-              <div class="pill" id="wmode-single" onclick="setWeekMode('single')">single date</div>
-              <div class="pill" id="wmode-range" onclick="setWeekMode('range')">date range</div>
-            </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap">
+          <select class="season-sel" id="season-select" onchange="onSeasonChange()"></select>
+          <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+          <div class="pills" style="flex-shrink:0">
+            <div class="pill on" id="wmode-week" onclick="setWeekMode('week')">by week</div>
+            <div class="pill" id="wmode-single" onclick="setWeekMode('single')">single date</div>
+            <div class="pill" id="wmode-range" onclick="setWeekMode('range')">date range</div>
           </div>
-          <select class="tz-select" id="nfl-tz-select" style="margin-left:auto">
+          <span style="width:1px;height:18px;background:var(--border);flex-shrink:0"></span>
+          <div id="week-nav-row" style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+            <button class="btn btn-sm" onclick="stepWeek(-1)">←</button>
+            <select id="week-select" style="font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:4px 6px;flex:1;cursor:pointer" onchange="onWeekChange()"></select>
+            <button class="btn btn-sm" onclick="stepWeek(1)">→</button>
+            <button class="btn btn-sm" onclick="goNflWeekToday()">today</button>
+          </div>
+          <div id="nfl-single-row" style="display:none;align-items:center;gap:8px;flex:1;min-width:0">
+            <button class="btn btn-sm" onclick="shiftNflDate(-1)">←</button>
+            <input type="date" class="date-in" id="nfl-single-date" style="flex:1"/>
+            <button class="btn btn-sm" onclick="shiftNflDate(1)">→</button>
+            <button class="btn btn-sm" onclick="goNflToday()">today</button>
+          </div>
+          <div id="nfl-range-row" style="display:none;align-items:center;gap:5px;flex:1;min-width:0" class="date-row">
+            <div class="date-lbl">from</div><input type="date" class="date-in" id="nfl-from" style="flex:1"/>
+            <div class="date-lbl">to</div><input type="date" class="date-in" id="nfl-to" style="flex:1"/>
+          </div>
+          <select class="tz-select" id="nfl-tz-select" style="margin-left:auto;flex-shrink:0">
             <option value="ET">ET</option><option value="CT">CT</option>
             <option value="MT">MT</option><option value="PT">PT</option>
           </select>
-        </div>
-        <div id="week-nav-row" style="display:flex;align-items:center;gap:8px">
-          <button class="btn btn-sm" onclick="stepWeek(-1)">←</button>
-          <select id="week-select" style="font-family:var(--mono);font-size:11px;color:var(--text);background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-sm);padding:4px 6px;flex:1;cursor:pointer" onchange="onWeekChange()"></select>
-          <button class="btn btn-sm" onclick="stepWeek(1)">→</button>
-          <button class="btn btn-sm" onclick="goNflWeekToday()">today</button>
-        </div>
-        <div id="nfl-single-row" style="display:none;align-items:center;gap:8px">
-          <button class="btn btn-sm" onclick="shiftNflDate(-1)">←</button>
-          <input type="date" class="date-in" id="nfl-single-date" style="flex:1"/>
-          <button class="btn btn-sm" onclick="shiftNflDate(1)">→</button>
-          <button class="btn btn-sm" onclick="goNflToday()">today</button>
-        </div>
-        <div id="nfl-range-row" style="display:none;align-items:center;gap:5px" class="date-row">
-          <div class="date-lbl">from</div><input type="date" class="date-in" id="nfl-from" style="flex:1"/>
-          <div class="date-lbl">to</div><input type="date" class="date-in" id="nfl-to" style="flex:1"/>
         </div>
       </div>
 
@@ -916,7 +923,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v3.14', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v3.20', vdate: '2026-05-21',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
