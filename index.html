@@ -232,7 +232,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
     <div id="version-panel" style="display:none;font-family:var(--mono);font-size:10px;color:var(--text-3);line-height:1.4;white-space:nowrap">
       <div style="display:flex;align-items:stretch;justify-content:flex-end;gap:8px">
         <div>
-          <div>v5.23</div>
+          <div>v5.26</div>
           <div id="site-version">nba.v4.7</div>
         </div>
         <button id="demo-toggle-btn" onclick="event.stopPropagation();toggleDemoMode()" style="font-family:var(--mono);font-size:10px;padding:0 7px;border:.5px solid var(--border);border-radius:20px;background:transparent;color:var(--text-3);cursor:pointer;transition:all .15s;align-self:stretch">⚡ demo</button>
@@ -668,8 +668,8 @@ input:checked+.tog-track::after{transform:translateX(14px)}
               <label class="tog tog-blue"><input type="checkbox" id="w-nfl-div-on" checked onchange="toggleBonusSection('nfl-div-nest',this)"/><span class="tog-track"></span></label>
             </div>
             <div id="nfl-div-nest">
-              <div class="fw"><div class="fw-lbl">Divisional matchup</div><input type="number" class="fw-num" id="w-div-val" value="200"/></div>
-              <div class="fw"><div class="fw-lbl">Interconference<span class="fw-sub">AFC vs NFC</span></div><input type="number" class="fw-num" id="w-nfl-inter-val" value="150"/></div>
+              <div class="fw"><div class="fw-lbl">Divisional matchup</div><input type="number" class="fw-num" id="w-div-val" value="100"/></div>
+              <div class="fw"><div class="fw-lbl">Interconference<span class="fw-sub">AFC vs NFC</span></div><input type="number" class="fw-num" id="w-nfl-inter-val" value="100"/></div>
             </div>
           </div>
 
@@ -682,7 +682,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
               <label class="tog tog-blue"><input type="checkbox" id="w-mlb-bon-on" checked onchange="toggleBonusSection('mlb-bon-nest',this)"/><span class="tog-track"></span></label>
             </div>
             <div id="mlb-bon-nest">
-              <div class="fw"><div class="fw-lbl">Division rival</div><input type="number" class="fw-num" id="w-mlb-div-val" value="200"/></div>
+              <div class="fw"><div class="fw-lbl">Division rival</div><input type="number" class="fw-num" id="w-mlb-div-val" value="100"/></div>
               <div class="fw"><div class="fw-lbl">Interleague<span class="fw-sub">AL vs NL</span></div><input type="number" class="fw-num" id="w-mlb-inter-val" value="150"/></div>
             </div>
           </div>
@@ -825,7 +825,7 @@ input:checked+.tog-track::after{transform:translateX(14px)}
 // ════════════════════════════════════════════════════════════
 var LEAGUE_CONFIGS = {
   nba: {
-    title: 'NBA', version: 'nba.v6.19', vdate: '2026-05-21',
+    title: 'NBA', version: 'nba.v6.20', vdate: '2026-05-21',
     icon: '🏀',
     storageKey: 'nba',
     sport: 'basketball', league: 'nba',
@@ -878,7 +878,7 @@ var LEAGUE_CONFIGS = {
     chartMin:800, chartMax:1700,
   },
   wnba: {
-    title: 'WNBA', version: 'wnba.v2.13', vdate: '2026-05-21',
+    title: 'WNBA', version: 'wnba.v2.14', vdate: '2026-05-21',
     icon: '🏀',
     storageKey: 'wnba',
     sport: 'basketball', league: 'wnba',
@@ -916,7 +916,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v3.10', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v3.14', vdate: '2026-05-21',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -934,7 +934,7 @@ var LEAGUE_CONFIGS = {
     extraVsInfo: function(){ return ''; },
   },
   epl: {
-    title: 'EPL', version: 'epl.v3.23', vdate: '2026-05-21',
+    title: 'EPL', version: 'epl.v3.24', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'epl',
     sport: 'soccer', league: 'eng.1',
@@ -983,7 +983,7 @@ var LEAGUE_CONFIGS = {
   },
 
   laliga: {
-    title: 'La Liga', version: 'laliga.v1.3', vdate: '2026-05-21',
+    title: 'La Liga', version: 'laliga.v1.4', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'laliga',
     sport: 'soccer', league: 'esp.1',
@@ -1022,7 +1022,7 @@ var LEAGUE_CONFIGS = {
   },
 
   bundesliga: {
-    title: 'Bundesliga', version: 'bundesliga.v1.3', vdate: '2026-05-21',
+    title: 'Bundesliga', version: 'bundesliga.v1.4', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'bundesliga',
     sport: 'soccer', league: 'ger.1',
@@ -1059,7 +1059,7 @@ var LEAGUE_CONFIGS = {
   },
 
   seriea: {
-    title: 'Serie A', version: 'seriea.v1.3', vdate: '2026-05-21',
+    title: 'Serie A', version: 'seriea.v1.4', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'seriea',
     sport: 'soccer', league: 'ita.1',
@@ -1098,7 +1098,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ligue1: {
-    title: 'Ligue 1', version: 'ligue1.v1.3', vdate: '2026-05-21',
+    title: 'Ligue 1', version: 'ligue1.v1.4', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'ligue1',
     sport: 'soccer', league: 'fra.1',
@@ -1136,7 +1136,7 @@ var LEAGUE_CONFIGS = {
 
 
   championsleague: {
-    title: 'Champs Lg', version: 'championsleague.v1.8', vdate: '2026-05-21',
+    title: 'Champs Lg', version: 'championsleague.v1.9', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'championsleague',
     sport: 'soccer', league: null,
@@ -1158,7 +1158,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mls: {
-    title: 'MLS', version: 'mls.v1.7', vdate: '2026-05-21',
+    title: 'MLS', version: 'mls.v1.8', vdate: '2026-05-21',
     icon: '⚽',
     storageKey: 'mls',
     sport: 'soccer', league: 'usa.1',
@@ -1208,7 +1208,7 @@ var LEAGUE_CONFIGS = {
   },
 
   mlb: {
-    title: 'MLB', version: 'mlb.v1.14', vdate: '2026-05-21',
+    title: 'MLB', version: 'mlb.v1.15', vdate: '2026-05-21',
     icon: '⚾',
     storageKey: 'mlb',
     sport: 'baseball', league: 'mlb',
@@ -1274,7 +1274,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nhl: {
-    title: 'NHL', version: 'nhl.v1.12', vdate: '2026-05-21',
+    title: 'NHL', version: 'nhl.v1.13', vdate: '2026-05-21',
     icon: '🏒',
     storageKey: 'nhl',
     sport: 'hockey', league: 'nhl',
@@ -1340,7 +1340,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.14', vdate: '2026-05-21',
+    title: 'NFL', version: 'nfl.v3.15', vdate: '2026-05-21',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1394,7 +1394,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.13', vdate: '2026-05-21',
+    title: 'CFB', version: 'ncaafb.v1.14', vdate: '2026-05-21',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -1866,7 +1866,7 @@ function renderTierRankings(){
       html+='<hr class="tier-divider '+lineClass+'"/>';
     }
     lastTier=tier;
-    var rec=(function(){var r=window.recordCache&&(window.recordCache[t.league+'_'+t.abbr]);return r&&r!=='0-0'?r:'';})();
+    var rec=(function(){var lgKey=t._league||t.league;var r=window.recordCache&&(window.recordCache[lgKey+'_'+t.abbr]);return r&&r!=='0-0'?r:'';})();
     html+='<div class="rank-row">'+
       '<div class="rank-num">'+(i+1)+'</div>'+
       '<img style="width:24px;height:24px;object-fit:contain;margin-right:4px;flex-shrink:0" src="'+t.logo+'" alt="'+t.abbr+'"/>'+
@@ -3997,7 +3997,9 @@ function finishAllLoad(games,callback){
   var origLC=LC;
   // Recompute dots and stars using each game's own sport ratings for accuracy
   games=games.map(function(g){
-    var sportCfg=LEAGUE_CONFIGS[g._league];
+    // For championsleague games, use the actual sub-league config for ratings/teams
+    var _subLg=g._league==='championsleague'?(function(){var m=g.awayAbbr||g.homeAbbr;var lgs=['epl','laliga','bundesliga','seriea','ligue1'];for(var i=0;i<lgs.length;i++){if(LEAGUE_CONFIGS[lgs[i]].teams.find(function(t){return t.abbr===m;}))return lgs[i];}return null;})():null;
+    var sportCfg=_subLg?LEAGUE_CONFIGS[_subLg]:LEAGUE_CONFIGS[g._league];
     if(!sportCfg||!sportCfg.teams||!sportCfg.teams.length)return g;
     // Load this sport's ratings
     var sportRatings=ratingsStore[sportCfg.storageKey]||null;
@@ -4398,6 +4400,7 @@ function finishCLLoad(games,callback){
   LC=origLC;
   games.sort(function(a,b){
     if(b.totalStars!==a.totalStars)return b.totalStars-a.totalStars;
+    if((b.total||0)!==(a.total||0))return (b.total||0)-(a.total||0);
     return(a.utcMs||0)-(b.utcMs||0);
   });
   games.forEach(function(g,i){g.dotColor='#1a6b3c';g._rank=i+1;});
