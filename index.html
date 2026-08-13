@@ -2540,7 +2540,7 @@ function buildSeasonSelector(){
   if(currentLeague==='nba'){
     // NBA seasons: 2015-16 through current (end year 2016..current)
     // Current NBA season end year: if before Aug it's this year, else next year
-    var curEnd=now.getMonth()<8?now.getFullYear():now.getFullYear()+1;
+    var curEnd=now.getMonth()<7?now.getFullYear():now.getFullYear()+1;
     for(var y=curEnd;y>=2020;y--)seasons.push({value:y,label:(y-1)+'-'+String(y).slice(2)});
   } else if(currentLeague==='wnba'){
     // WNBA seasons: 2015 through current (single calendar year, runs May-Oct)
@@ -2613,7 +2613,7 @@ function jumpToSeasonStart(){
   var d;
   if(currentLeague==='nba'){
     // Jump to Opening Night — approx Oct 22 of start year
-    d=new Date(currentSeason-1,9,22); // Oct 22
+    d=new Date(currentSeason-1,9,20); // Oct 20 — 2026-27 opening night
     // If this is the current season, jump to today instead
     var now=new Date();
     var isCurrentSeason=(currentLeague==='nba')&&(now.getFullYear()===currentSeason||(now.getFullYear()===currentSeason-1&&now.getMonth()>=9));
