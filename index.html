@@ -923,7 +923,7 @@ var LEAGUE_CONFIGS = {
     chartMin:1350, chartMax:1700,
   },
   all: {
-    title: 'ALL SPORTS', version: 'all.v3.20', vdate: '2026-05-21',
+    title: 'ALL SPORTS', version: 'all.v3.21', vdate: '2026-10-14',
     icon: '🌈', storageKey: 'all', sport: null, league: null, calH: 2.5,
     showLeaguePass: true, showPlayoff: false, showNflBonuses: false,
     showWeekBar: false, showDateBar: true, seriesMax: 0,
@@ -1347,7 +1347,7 @@ var LEAGUE_CONFIGS = {
   },
 
   nfl: {
-    title: 'NFL', version: 'nfl.v3.15', vdate: '2026-05-21',
+    title: 'NFL', version: 'nfl.v3.16', vdate: '2026-10-14',
     icon: '🏈',
     storageKey: 'nfl',
     sport: 'football', league: 'nfl',
@@ -1401,7 +1401,7 @@ var LEAGUE_CONFIGS = {
   },
 
   ncaafb: {
-    title: 'CFB', version: 'ncaafb.v1.14', vdate: '2026-05-21',
+    title: 'CFB', version: 'ncaafb.v1.15', vdate: '2026-10-14',
     icon: '🏈',
     storageKey: 'ncaafb',
     sport: 'football', league: 'college-football',
@@ -1484,11 +1484,11 @@ var LEAGUE_CONFIGS = {
       {name:"Virginia Tech",abbr:"VT",tierAbbr:"ncaafb_VT",espn:"259",div:"ACC",conf:"ACC"},
       {name:"Wake Forest",abbr:"WAKE",tierAbbr:"ncaafb_WAKE",espn:"154",div:"ACC",conf:"ACC"},
     ],
-    defaultElo: 1050,
+    defaultElo: 960,
     TMIN:900, TMAX:1500,
     CMIN:1820, CMAX:3000, chartMin:800, chartMax:1700,
     scoreGame: function(g, v, em){
-      var combined=(em[g.awayAbbr]||1050)+(em[g.homeAbbr]||1050);
+      var combined=(em[g.awayAbbr]||960)+(em[g.homeAbbr]||960);
       return combined+(g.lev||0)+(g.tvBonus||0);
     },
     parseExtra: function(){ return {}; },
@@ -2087,61 +2087,16 @@ function rankByRecord(){
   }
   document.getElementById('saved-note').textContent='fetching standings...';
 
-  // CFB: use AP poll (in-season) or 2025 seed data (off-season)
+  // CFB: live AP poll + current-season records
   if(currentLeague==='ncaafb'){
-    document.getElementById('saved-note').textContent='loading rankings...';
-    fetch('https://site.api.espn.com/apis/v2/sports/football/college-football/rankings?group=80')
-    .then(function(r){return r.json();})
-    .then(function(data){
-      var polls=(data.rankings||[]);
-      var ap=polls.find(function(p){return p.name&&p.name.toLowerCase().indexOf('ap')>=0;})||polls[0];
-      var savedR={};
-      // Start with 2025 seed data as base
-      var RECORDS2025={'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2','UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2','BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3','UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3','GT':'9-3','TCU':'9-4','ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6','LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5','TENN':'8-4','ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5','NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10','RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8','ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6','COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6','OKST':'1-11','UCF':'5-7','WVU':'4-8','BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5','FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6','PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8','VT':'5-7','WAKE':'9-4'};
-      function eloFromRec(rec){var p=rec.split('-');var w=+p[0]||0,l=+p[1]||0,g=w+l;if(!g)return 1200;return Math.round(1000+(w/g*400));}
-      LC.teams.forEach(function(t){savedR[t.abbr]=eloFromRec(RECORDS2025[t.abbr]||'6-6');});
-      var AP2025={1:'IU',2:'MIA',3:'MISS',4:'ORE',5:'OSU',6:'UGA',7:'TTU',8:'TAMU',9:'BAMA',10:'ND',11:'BYU',12:'TEX',13:'OU',14:'UTAH',15:'VAN',16:'UVA',17:'IOWA',20:'USC',21:'MICH',22:'HOU',23:'GT',25:'TCU'};
-      Object.keys(AP2025).forEach(function(rank){savedR[AP2025[rank]]=Math.round(1400-((+rank-1)*16));});
-      window.recordCache=window.recordCache||{};
-      Object.keys(RECORDS2025).forEach(function(a){window.recordCache['ncaafb_'+a]=RECORDS2025[a];});
-      // Override with live AP poll if available
-      if(ap&&ap.ranks&&ap.ranks.length){
-        ap.ranks.slice(0,25).forEach(function(r){
-          var name=((r.team||{}).displayName||'').toLowerCase();
-          LC.teams.forEach(function(t){
-            if(t.name.toLowerCase()===name||name.indexOf(t.name.toLowerCase().split(' ').pop())>=0){
-              var rank=r.current||25;
-              savedR[t.abbr]=Math.round(1400-((rank-1)*16));
-              window.recordCache['ncaafb_'+t.abbr]='#'+rank;
-            }
-          });
-        });
-        document.getElementById('saved-note').textContent='sorted by AP rankings (live)';
-      } else {
-        document.getElementById('saved-note').textContent='sorted by 2025 final rankings';
-      }
-      try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
-      ratingsStore['ncaafb']=savedR;
-      ratings=savedR;
-      // Force re-seed and render with correct LC
-      LC=LEAGUE_CONFIGS.ncaafb;
-      seedTierFromPercentile();
-      renderRankings();
-    }).catch(function(){
-      // Apply 2025 records even on catch
-      var savedR2={};
-      var RECORDS2025b={'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2','UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2','BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3','UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3','GT':'9-3','TCU':'9-4','ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6','LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5','TENN':'8-4','ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5','NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10','RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8','ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6','COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6','OKST':'1-11','UCF':'5-7','WVU':'4-8','BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5','FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6','PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8','VT':'5-7','WAKE':'9-4'};
-      function eloFromRec2(rec){var p=rec.split('-');var w=+p[0]||0,l=+p[1]||0,g=w+l;if(!g)return 1200;return Math.round(1000+(w/g*400));}
-      LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){savedR2[t.abbr]=eloFromRec2(RECORDS2025b[t.abbr]||'6-6');});
-      window.recordCache=window.recordCache||{};
-      Object.keys(RECORDS2025b).forEach(function(a){window.recordCache['ncaafb_'+a]=RECORDS2025b[a];});
-      try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR2));}catch(e){}
-      ratingsStore['ncaafb']=savedR2;
-      ratings=savedR2;
-      LC=LEAGUE_CONFIGS.ncaafb;
-      seedTierFromPercentile();
-      renderRankings();
-      document.getElementById('saved-note').textContent='sorted by 2025 final rankings (offline)';
+    document.getElementById('saved-note').textContent='loading AP poll + records...';
+    cfbLoadLive(function(info){
+      var r=cfbSeedRatings();
+      LC=LEAGUE_CONFIGS.ncaafb;ratings=r;
+      seedTierFromPercentile();renderRankings();
+      document.getElementById('saved-note').textContent=info.ok
+        ?('sorted by '+(info.hasPoll?'AP poll + ':'')+info.season+' records')
+        :'ESPN unreachable — using last season\'s records';
     });
     return;
   }
@@ -2526,7 +2481,7 @@ function gameHr(utc,tz){var ms=utc.getTime()+(tzOff(tz)*3600000)+(utc.getTimezon
 function fmtDateShort(d){return DOW[d.getDay()]+', '+MONTHS_FULL[d.getMonth()]+' '+d.getDate();}
 
 // ── NFL WEEK SELECTOR ──
-var nflWeeks=[], nflWeekIdx=0, nflWeekMode='week', nflWeeksSeason=0;
+var nflWeeks=[], nflWeekIdx=0, nflWeekMode='week', nflWeeksSeason=0, nflWeeksLg='';
 
 // ── SEASON SELECTOR ──────────────────────────────────────
 var currentSeason = null; // year integer — for NFL/WNBA = the season year; NBA = end year (e.g. 2025 = 2024-25)
@@ -2593,6 +2548,10 @@ function onSeasonChange(){
   if(currentLeague==='nfl'){
     nflWeeks=[];
     buildNflWeeksForYear(currentSeason);
+  } else if(currentLeague==='ncaafb'){
+    nflWeeks=[];
+    buildCfbWeeksForYear(currentSeason);
+    cfbLoadLive(function(info){if(info.changedRanks||info.ok)loadGames();});
   } else {
     jumpToSeasonStart();
   }
@@ -2634,21 +2593,42 @@ function jumpToSeasonStart(){
 
 
 function buildCfbWeeksForYear(yr){
+  yr=yr||cfbDefaultSeason();
+  // Week 1 Saturday = the Saturday before Labor Day (first Monday of Sept). 2025: Aug 30, 2026: Sep 5.
+  var ld=new Date(yr,8,1);while(ld.getDay()!==1)ld.setDate(ld.getDate()+1);
+  var wk1=new Date(ld);wk1.setDate(ld.getDate()-2);
+  // Army–Navy = 2nd Saturday of December; regular-season weeks run through it
+  var an=new Date(yr,11,1);while(an.getDay()!==6)an.setDate(an.getDate()+1);an.setDate(an.getDate()+7);
+  var cc=new Date(yr,11,1);while(cc.getDay()!==6)cc.setDate(cc.getDate()+1); // conf. championship Saturday
+  function addD(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x;}
   var weeks=[];
-  // Week 0 (seasontype 2, week 0)
-  weeks.push({label:'Week 0 · '+yr,weekNum:0,seasontype:2});
-  // Regular season weeks 1-15
-  for(var w=1;w<=15;w++)weeks.push({label:'Week '+w+' · '+yr,weekNum:w,seasontype:2});
-  // Conference championships (seasontype 2, week 16 in ESPN)
-  weeks.push({label:'Conf. Championships · '+yr,weekNum:16,seasontype:2});
-  // CFP: seasontype 3
-  [{label:'CFP Round 1',w:1},{label:'CFP Quarterfinals',w:2},{label:'CFP Semifinals',w:3},{label:'CFP Championship',w:4}].forEach(function(r){
-    weeks.push({label:r.label+' · '+yr,weekNum:r.w,seasontype:3});
-  });
-  return weeks;
+  for(var n=0;;n++){
+    var sat=addD(wk1,(n-1)*7);
+    if(sat>an)break;
+    var lbl='Week '+n;
+    if(sat.getTime()===cc.getTime())lbl+=' (Conf. Champ.)';
+    else if(sat.getTime()===an.getTime())lbl+=' (Army–Navy)';
+    weeks.push({label:lbl+' · '+yr,start:addD(sat,n===0?-4:-4),end:addD(sat,2)});
+  }
+  weeks.push({label:'Bowls & CFP · Dec '+yr,start:addD(an,3),end:new Date(yr,11,31)});
+  weeks.push({label:'Bowls & CFP · Jan '+(yr+1),start:new Date(yr+1,0,1),end:new Date(yr+1,0,31)});
+  nflWeeks=weeks;nflWeeksSeason=yr;nflWeeksLg='ncaafb';
+  var sel=document.getElementById('week-select');
+  if(sel)sel.innerHTML=weeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');
+  // default: the current week (this season) or Week 1 (past seasons)
+  var now=new Date(),idx=1;
+  if(yr===cfbDefaultSeason()){
+    idx=weeks.findIndex(function(w){var e=new Date(w.end);e.setHours(23,59,59,999);return now>=w.start&&now<=e;});
+    if(idx<0)idx=(now<weeks[0].start)?0:weeks.length-1;
+  }
+  nflWeekIdx=idx;
+  if(sel)sel.value=idx;
+  var single=document.getElementById('nfl-single-date');
+  if(single&&weeks[idx])single.value=ival(weeks[idx].start);
+  loadGames();
 }
 
-function buildNflWeeksForYear(yr){nflWeeksSeason=yr;
+function buildNflWeeksForYear(yr){nflWeeksSeason=yr;nflWeeksLg='nfl';
   yr=yr||new Date().getFullYear();
   var weekStart;
   // Hardcoded season openers for known irregular weeks
@@ -3336,6 +3316,13 @@ function renderFilterProfiles(){
 var lastGames=[];
 function getTeamData(name, espnId, abbr){
   var lname=name.toLowerCase();
+  if(LC.storageKey==='ncaafb'){
+    // CFB: match by ESPN id only. Name/abbr guessing mixed up Miami (OH)/Miami, Oregon State/Oregon, etc.
+    var ct=espnId?LC.teams.find(function(t){return String(t.espn)===String(espnId);}):null;
+    if(ct)return{elo:ratings[ct.abbr]||LC.defaultElo,abbr:ct.abbr,espn:ct.espn};
+    var ua=abbr||name.substring(0,4).toUpperCase();
+    return{elo:ratings[ua]||LC.defaultElo,abbr:ua,espn:espnId||''};
+  }
   // For soccer, normalize ESPN abbreviations to our internal ones before matching
   if(LC.sport==='soccer'&&abbr){
     var SOCCER_ABBR_NORM={
@@ -3626,13 +3613,14 @@ function processEvent(ev,tz){
   if(gameLeague==='ncaafb'){
     var cfbBonOn=document.getElementById('w-cfb-bon-on')?document.getElementById('w-cfb-bon-on').checked:true;
     if(cfbBonOn){
-      // Get AP rank from Elo rating: rank≈ ceil((1500-elo)/12.5)+1
-      function cfbRank(abbr){
-        var e=ratings[abbr]||LEAGUE_CONFIGS.ncaafb.defaultElo;
-        if(e>=1200){return Math.round((1500-e)/12.5)+1;} // 1200→25, 1500→1
-        return 99; // unranked
+      // Real poll rank: ESPN's per-game curatedRank first, then our AP map (by ESPN id, then abbr)
+      function cfbRank(c,abbr){
+        var cr=c&&c.curatedRank&&c.curatedRank.current;
+        if(cr)return (cr>0&&cr<=25)?cr:99;
+        var id=c&&c.team&&String(c.team.id);
+        return (id&&cfbApRanksById[id])||cfbApRanks[abbr]||99;
       }
-      var awayRank=cfbRank(ad.abbr), homeRank=cfbRank(hd.abbr);
+      var awayRank=cfbRank(away,ad.abbr), homeRank=cfbRank(home,hd.abbr);
       var top5Val=+(document.getElementById('w-cfb-top5')||{value:300}).value||0;
       var top10Val=+(document.getElementById('w-cfb-top10')||{value:200}).value||0;
       var top25Val=+(document.getElementById('w-cfb-top25')||{value:100}).value||0;
@@ -3954,7 +3942,7 @@ function loadAllGames(callback){
   var pending=sports.length;
   function onDone(){pending--;if(pending===0)finishAllLoad(allEvents,callback);}
   sports.forEach(function(sp){
-    var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+'&limit=20';
+    var url='https://site.api.espn.com/apis/site/v2/sports/'+sp.sport+'/'+sp.league+'/scoreboard?dates='+ds+(sp.key==='ncaafb'?'&groups=80&limit=300':'&limit=20');
     // Per-fetch timeout so one slow sport can't block the rest
     var done=false;
     var timer=setTimeout(function(){if(!done){done=true;onDone();}},12000);
@@ -4481,23 +4469,21 @@ function loadGames(callback){
   var url;
 
   if(LC.showWeekBar){
+    var fbPath=currentLeague==='ncaafb'?'college-football':'nfl';
+    var fbQ=currentLeague==='ncaafb'?'&groups=80&limit=300':'&limit=50';
     if(nflWeekMode==='week'&&nflWeeks.length){
       var wk=nflWeeks[nflWeekIdx]||nflWeeks[0];
       if(!wk){el.innerHTML='<div class="no-games">loading weeks...</div>';return;}
-      if(currentLeague==='ncaafb'){
-        url='https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?week='+wk.weekNum+'&seasontype='+wk.seasontype+'&year='+(currentSeason||new Date().getFullYear())+'&limit=100&groups=80';
-      } else {
-        url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+(wk.start?dstr(wk.start):'')+'-'+(wk.end?dstr(wk.end):'')+'&limit=50';
-      }
+      url='https://site.api.espn.com/apis/site/v2/sports/football/'+fbPath+'/scoreboard?dates='+(wk.start?dstr(wk.start):'')+'-'+(wk.end?dstr(wk.end):'')+fbQ;
     } else if(nflWeekMode==='single'){
       var sd=document.getElementById('nfl-single-date').value.replace(/-/g,'');
       if(!sd){el.innerHTML='<div class="no-games">select a date</div>';return;}
-      url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+sd+'&limit=20';
+      url='https://site.api.espn.com/apis/site/v2/sports/football/'+fbPath+'/scoreboard?dates='+sd+fbQ;
     } else {
       var f=document.getElementById('nfl-from').value.replace(/-/g,'');
       var t=document.getElementById('nfl-to').value.replace(/-/g,'');
       if(!f||!t){el.innerHTML='<div class="no-games">select a date range</div>';return;}
-      url='https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates='+f+'-'+t+'&limit=50';
+      url='https://site.api.espn.com/apis/site/v2/sports/football/'+fbPath+'/scoreboard?dates='+f+'-'+t+fbQ;
     }
   } else {
     url='https://site.api.espn.com/apis/site/v2/sports/'+LC.sport+'/'+LC.league+'/scoreboard?dates='+dstr(currentDate);
@@ -5114,8 +5100,8 @@ function switchLeague(lg){
   // build week selector for NFL and EPL
   if(lg==='nfl'||lg==='ncaafb'){
     var targetYear=currentSeason||new Date().getFullYear();
-    if(!nflWeeks.length||nflWeeksSeason!==targetYear){
-      if(lg==='ncaafb'){nflWeeks=buildCfbWeeksForYear(targetYear);nflWeeksSeason=targetYear;var sel=document.getElementById('week-select');if(sel){sel.innerHTML=nflWeeks.map(function(w,i){return'<option value="'+i+'">'+w.label+'</option>';}).join('');var now=new Date();nflWeekIdx=0;sel.value=0;}loadGames();}
+    if(!nflWeeks.length||nflWeeksSeason!==targetYear||nflWeeksLg!==lg){
+      if(lg==='ncaafb')buildCfbWeeksForYear(targetYear);
       else buildNflWeeksForYear(targetYear);
     } else {
       var sel=document.getElementById('week-select');
@@ -5475,152 +5461,10 @@ function normalizeRecordAbbr(sport,raw){
     }).catch(function(){});
   });
 })();
-// ── CFB: Seed from 2025 Final AP Rankings + Records ──
-(function(){
-  // Always reseed from 2025 records until 2026 season week 1 (Sep 3 2026)
-  var _seasonStart=new Date(2026,8,3); // Sep 3 2026
-  if(new Date()>=_seasonStart)return; // in-season: let live ratings take over
 
-  // 2025 Final AP Top 25 (post-championship)
-  var AP2025=[
-    {rank:1, abbr:'IU'},    // Indiana 16-0
-    {rank:2, abbr:'MIA'},   // Miami 13-3
-    {rank:3, abbr:'MISS'},  // Ole Miss 13-2
-    {rank:4, abbr:'ORE'},   // Oregon 13-2
-    {rank:5, abbr:'OSU'},   // Ohio State 12-2
-    {rank:6, abbr:'UGA'},   // Georgia 12-2
-    {rank:7, abbr:'TTU'},   // Texas Tech 12-2
-    {rank:8, abbr:'TAMU'},  // Texas A&M 11-2
-    {rank:9, abbr:'BAMA'},  // Alabama 11-4
-    {rank:10,abbr:'ND'},    // Notre Dame 10-2
-    {rank:11,abbr:'BYU'},   // BYU 11-2
-    {rank:12,abbr:'TEX'},   // Texas 9-4
-    {rank:13,abbr:'OU'},    // Oklahoma 10-3
-    {rank:14,abbr:'UTAH'},  // Utah 10-2
-    {rank:15,abbr:'VAN'},   // Vanderbilt 10-3
-    {rank:16,abbr:'UVA'},   // Virginia 10-3
-    {rank:17,abbr:'IOWA'},  // Iowa 8-4 (bowl)
-    {rank:20,abbr:'USC'},   // USC 9-3
-    {rank:21,abbr:'MICH'},  // Michigan 9-3
-    {rank:22,abbr:'HOU'},   // Houston 9-3
-    {rank:23,abbr:'GT'},    // Georgia Tech 9-3
-    {rank:25,abbr:'TCU'},   // TCU 9-4
-  ];
-
-  // 2025 final W-L records for ALL teams in our set
-  var RECORDS2025={
-    // Ranked teams
-    'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2',
-    'UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2',
-    'BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3',
-    'UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3',
-    'GT':'9-3','TCU':'9-4',
-    // SEC unranked
-    'ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6',
-    'LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5',
-    'TENN':'8-4','TEX':'9-4',
-    // Big Ten unranked
-    'ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5',
-    'NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10',
-    'RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8',
-    // Big 12 unranked
-    'ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6',
-    'COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6',
-    'OKST':'1-11','UCF':'5-7','WVU':'4-8',
-    // ACC unranked
-    'BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5',
-    'FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6',
-    'PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8',
-    'VT':'5-7','WAKE':'9-4',
-  };
-
-  // Elo from AP rank for ranked teams: 1→1500, 25→1200
-  // Elo from win% for unranked: win%→ 900-1187 range
-  function eloFromRecord(rec){
-    var parts=rec.split('-');
-    var w=+parts[0]||0, l=+parts[1]||0;
-    var g=w+l; if(!g)return 1050;
-    var pct=w/g;
-    return Math.round(1000+(pct*400)); // 0%→1000, 100%→1400
-  }
-
-  var savedR={};
-  LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
-    savedR[t.abbr]=eloFromRecord(RECORDS2025[t.abbr]||'6-6');
-  });
-  AP2025.forEach(function(r){
-    savedR[r.abbr]=Math.round(1400-((r.rank-1)*16));
-  });
-
-  // Populate recordCache
-  window.recordCache=window.recordCache||{};
-  Object.keys(RECORDS2025).forEach(function(abbr){
-    window.recordCache['ncaafb_'+abbr]=RECORDS2025[abbr];
-  });
-
-  try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(savedR));}catch(e){}
-  if(ratingsStore)ratingsStore['ncaafb']=savedR;
-  seedTierFromPercentile();
-  if(currentLeague==='ncaafb'){ratings=savedR;renderRankings();}
-  console.log('[CFB] Seeded from 2025 final AP+records');
-
-  // Also try live AP poll
-  fetch('https://site.api.espn.com/apis/v2/sports/football/college-football/rankings?group=80')
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var polls=(data.rankings||[]);
-    var ap=polls.find(function(p){return p.name&&p.name.toLowerCase().indexOf('ap')>=0;})||polls[0];
-    if(!ap||!ap.ranks||!ap.ranks.length)return;
-    var updated=Object.assign({},savedR);
-    ap.ranks.forEach(function(r){
-      var name=((r.team||{}).displayName||'').toLowerCase();
-      LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
-        var tname=t.name.toLowerCase();
-        if(tname===name||name.split(' ')[0]===tname.split(' ')[0]&&name.split(' ').pop()===tname.split(' ').pop()){
-          var rank=r.current||25;
-          updated[t.abbr]=Math.round(1400-((rank-1)*16));
-          window.recordCache['ncaafb_'+t.abbr]='#'+rank;
-        }
-      });
-    });
-    try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(updated));}catch(e){}
-    if(ratingsStore)ratingsStore['ncaafb']=updated;
-    seedTierFromPercentile();
-    if(currentLeague==='ncaafb'){ratings=updated;renderRankings();}
-    console.log('[CFB] Updated from live AP poll');
-  }).catch(function(){console.log('[CFB] Using 2025 seed data');});
-})();
 try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.parse(tp);}catch(e){}
 // Lock sport button widths so they don't resize when label changes
 (function(){var btns=document.querySelectorAll('.sport-nav-btn');btns.forEach(function(b){b.style.minWidth=b.offsetWidth+'px';});})();
-// Ensure CFB 2025 records are in cache (must run after fetchAllStandings pre-fill)
-(function(){
-  var RECORDS2025={
-    'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2',
-    'UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2',
-    'BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3',
-    'UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3',
-    'GT':'9-3','TCU':'9-4',
-    'ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6',
-    'LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5',
-    'TENN':'8-4',
-    'ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5',
-    'NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10',
-    'RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8',
-    'ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6',
-    'COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6',
-    'OKST':'1-11','UCF':'5-7','WVU':'4-8',
-    'BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5',
-    'FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6',
-    'PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8',
-    'VT':'5-7','WAKE':'9-4',
-  };
-  window.recordCache=window.recordCache||{};
-  Object.keys(RECORDS2025).forEach(function(abbr){
-    window.recordCache['ncaafb_'+abbr]=RECORDS2025[abbr];
-  });
-})();
-
 // ── RATINGS VERSION — bump to force fresh elo seed on all clients ──
 (function(){
   var RATINGS_VER = 'v3.06';
@@ -5633,6 +5477,104 @@ try{var tp=localStorage.getItem(KEY_TIER_PROFILES);if(tp)allRatingProfiles=JSON.
     keys.forEach(function(k){if(k&&k.indexOf('_elo_ratings')>=0){try{localStorage.removeItem(k);}catch(e){}}});
     try{localStorage.setItem('ranker_ratings_ver',RATINGS_VER);}catch(e){}
   }
+})();
+
+
+// ════════════════════════════════════════════════════════════
+//  CFB LIVE DATA — AP poll + current-season records (ESPN)
+// ════════════════════════════════════════════════════════════
+// Last season's final records: used ONLY as a tiebreak before a team has played, or if ESPN is unreachable.
+var CFB_PREV_RECORDS={'IU':'16-0','MIA':'13-3','MISS':'13-2','ORE':'13-2','OSU':'12-2','UGA':'12-2','TTU':'12-2','TAMU':'11-2','BAMA':'11-4','ND':'10-2','BYU':'11-2','TEX':'9-4','OU':'10-3','UTAH':'10-2','VAN':'10-3','UVA':'10-3','IOWA':'8-4','USC':'9-3','MICH':'9-3','HOU':'9-3','GT':'9-3','TCU':'9-4','ARK':'6-6','AUB':'5-7','FLA':'7-5','UK':'6-6','LSU':'8-5','MSST':'5-8','MIZ':'7-5','SC':'7-5','TENN':'8-4','ILL':'9-4','UMD':'4-8','MSU':'4-8','MINN':'8-5','NEB':'7-6','NW':'7-6','PSU':'8-5','PUR':'2-10','RUT':'5-7','UCLA':'3-9','WASH':'9-4','WIS':'4-8','ARIZ':'9-3','ASU':'8-5','BAY':'5-7','CIN':'7-6','COLO':'3-9','ISU':'8-4','KU':'5-7','KSU':'6-6','OKST':'1-11','UCF':'5-7','WVU':'4-8','BC':'5-7','CAL':'6-6','CLEM':'7-6','DUKE':'8-5','FSU':'4-8','LOU':'10-3','NCST':'5-7','UNC':'6-6','PITT':'8-5','SMU':'8-4','STAN':'4-8','SYR':'4-8','VT':'5-7','WAKE':'9-4'};
+var cfbApRanks={}, cfbApRanksById={}, cfbLive={season:null,records:{},ok:false};
+function cfbDefaultSeason(){var n=new Date();return n.getMonth()<3?n.getFullYear()-1:n.getFullYear();}
+(function(){ // warm start from cache so game bonuses work before the network returns
+  try{
+    var c=JSON.parse(localStorage.getItem('ncaafb_live_cache')||'null');
+    if(c&&c.season===cfbDefaultSeason()){
+      cfbApRanks=c.ranks||{};cfbApRanksById=c.ranksById||{};cfbLive={season:c.season,records:c.records||{},ok:true};
+      window.recordCache=window.recordCache||{};
+      Object.keys(cfbLive.records).forEach(function(a){window.recordCache['ncaafb_'+a]=cfbLive.records[a];});
+    }
+  }catch(e){}
+})();
+function cfbCollectEntries(node,out){
+  if(!node)return;
+  if(node.standings&&node.standings.entries)node.standings.entries.forEach(function(e){out.push(e);});
+  (node.children||[]).forEach(function(c){cfbCollectEntries(c,out);});
+}
+function cfbLoadLive(done){
+  var yr=(typeof currentSeason==='number'&&currentLeague==='ncaafb')?currentSeason:cfbDefaultSeason();
+  var isCur=(yr===cfbDefaultSeason());
+  var teams=LEAGUE_CONFIGS.ncaafb.teams, byId={};
+  teams.forEach(function(t){byId[String(t.espn)]=t;});
+  function getJ(u){return fetch(u).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();});}
+  var pPoll=isCur?getJ('https://site.api.espn.com/apis/site/v2/sports/football/college-football/rankings').catch(function(){return null;}):Promise.resolve(null);
+  var pStand=getJ('https://site.api.espn.com/apis/v2/sports/football/college-football/standings?group=80&season='+yr).catch(function(){return null;});
+  Promise.all([pPoll,pStand]).then(function(res){
+    var poll=res[0],stand=res[1];
+    var ranks={},ranksById={},records={},ok=false;
+    // AP poll
+    var polls=(poll&&poll.rankings)||[];
+    var ap=polls.find(function(p){return p.type==='ap'||/^ap\b/i.test(p.shortName||p.name||'');})||polls[0];
+    if(ap&&ap.ranks&&ap.ranks.length){
+      ok=true;
+      ap.ranks.slice(0,25).forEach(function(r){
+        var id=String((r.team||{}).id||''),rk=+r.current||0;if(!id||!rk)return;
+        ranksById[id]=rk;
+        if(byId[id]){ranks[byId[id].abbr]=rk;if(r.recordSummary)records[byId[id].abbr]=String(r.recordSummary).split(' ')[0];}
+      });
+    }
+    // Standings → current W-L (overrides poll recordSummary)
+    var entries=[];cfbCollectEntries(stand,entries);
+    entries.forEach(function(e){
+      var t=byId[String((e.team||{}).id||'')];if(!t)return;
+      var w=null,l=null,ov=null;
+      (e.stats||[]).forEach(function(st){
+        if(st.name==='overall'&&st.displayValue)ov=st.displayValue;
+        if(st.name==='wins')w=+st.value;
+        if(st.name==='losses')l=+st.value;
+      });
+      var rec=ov?String(ov).split('-').slice(0,2).join('-'):(w!=null&&l!=null?w+'-'+l:null);
+      if(rec){records[t.abbr]=rec;ok=true;}
+    });
+    var oldRanks=JSON.stringify(cfbApRanks);
+    if(ok){
+      cfbApRanks=ranks;cfbApRanksById=ranksById;cfbLive={season:yr,records:records,ok:true};
+      window.recordCache=window.recordCache||{};
+      Object.keys(records).forEach(function(a){window.recordCache['ncaafb_'+a]=records[a];});
+      if(isCur){try{localStorage.setItem('ncaafb_live_cache',JSON.stringify({season:yr,ranks:ranks,ranksById:ranksById,records:records,ts:Date.now()}));}catch(e){}}
+    }
+    done&&done({ok:ok,hasPoll:!!(ap&&ap.ranks&&ap.ranks.length),changedRanks:oldRanks!==JSON.stringify(cfbApRanks),season:yr});
+  });
+}
+// Elo seed: AP #1→1400 … #25→1016.  Unranked: current win% mapped to 900–1000 (always below #25).
+function cfbBuildRatings(){
+  var r={};
+  LEAGUE_CONFIGS.ncaafb.teams.forEach(function(t){
+    var rk=cfbApRanks[t.abbr];
+    if(rk){r[t.abbr]=Math.round(1400-(rk-1)*16);return;}
+    var p=String((cfbLive.records||{})[t.abbr]||'').split('-'),w=+p[0]||0,l=+p[1]||0,pct;
+    if(w+l>0)pct=w/(w+l);
+    else{var q=(CFB_PREV_RECORDS[t.abbr]||'6-6').split('-'),qw=+q[0],ql=+q[1];pct=(qw+ql)?qw/(qw+ql):.5;}
+    r[t.abbr]=Math.round(900+pct*100);
+  });
+  return r;
+}
+function cfbSeedRatings(){
+  var r=cfbBuildRatings();
+  ratingsStore['ncaafb']=r;
+  try{localStorage.setItem('ncaafb_elo_ratings',JSON.stringify(r));localStorage.setItem('ncaafb_seed_ver','live1');}catch(e){}
+  return r;
+}
+// Startup: always refresh AP + records; only (re)seed Elo if none saved, so your matchup tuning isn't wiped on every load
+(function(){
+  var sv=null,have=false;
+  try{sv=localStorage.getItem('ncaafb_seed_ver');have=!!localStorage.getItem('ncaafb_elo_ratings');}catch(e){}
+  cfbLoadLive(function(info){
+    if(!have||sv!=='live1'){cfbSeedRatings();seedTierFromPercentile();}
+    if(currentLeague==='ncaafb'){ratings=ratingsStore.ncaafb||ratings;renderRankings();}
+    if((currentLeague==='ncaafb'||currentLeague==='all')&&info.changedRanks&&typeof loadGames==='function')loadGames();
+  });
 })();
 
 switchLeague('all');
